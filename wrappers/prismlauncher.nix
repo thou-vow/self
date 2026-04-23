@@ -40,13 +40,13 @@
   flake.nixosModules."wrappers.prismlauncher".imports = [
     # Support
     {
-      options.users.users = let
+      options.custom.users = let
         subImports = [
           # Support
           (inputs.wrapper-modules.lib.mkInstallModule {
             name = "prismlauncher";
-            optloc = ["custom" "wrappers"];
-            loc = ["packages"];
+            optloc = ["wrappers"];
+            loc = ["core" "packages"];
             value = self.wrapperModules.prismlauncher;
           })
         ];

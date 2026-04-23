@@ -6,6 +6,7 @@
 } @ flake: {
   flake = {
     nixosModules.core = {
+      config,
       pkgs,
       system,
       ...
@@ -17,15 +18,19 @@
           || lib.hasPrefix "wrappers." k)
         |> builtins.attrValues;
 
-      options = {
-        custom.core.flakePath = lib.mkOption {
+      options.custom = {
+        core.flakePath = lib.mkOption {
           type = lib.types.nullOr lib.types.str;
           description = "The absolute path of this flake.";
         };
 
-        users.users = lib.mkOption {
+        users = lib.mkOption {
           type = lib.types.attrsOf (lib.types.submodule {
-            options.custom.core = {
+            options.core = {
+              packages = lib.mkOption {
+                type = lib.types.listOf lib.types.package;
+                default = [];
+              };
               shellAliases = lib.mkOption {
                 type = lib.types.attrsOf lib.types.str;
                 default = {};
@@ -46,6 +51,11 @@
           inherit (withSystem system (args: args)) inputs' self';
         };
 
+        users.users = lib.mkMerge (lib.mapAttrsToList (name: subconfig: {
+            ${name}.packages = subconfig.core.packages;
+          })
+          config.custom.users);
+
         nixpkgs.pkgs = withSystem system ({pkgs, ...}: pkgs);
       };
     };
@@ -58,7 +68,7 @@
     }: {
       imports = [wlib.modules.default];
 
-      options.custom.core.eject = {
+      options.core.eject = {
         directory = lib.mkOption {
           type = lib.types.str;
           default = "\${SELF_EJECT_DIR:-$HOME/.eject}";
@@ -81,7 +91,7 @@
 
         runShell =
           lib.mapAttrsToList (name: path: let
-            entryEjectDir = "${config.custom.core.eject.directory}/${baseNameOf path}";
+            entryEjectDir = "${config.core.eject.directory}/${baseNameOf path}";
           in {
             data =
               pkgs.writeScript "${name}-ejector"
@@ -97,7 +107,7 @@
                 fi
               '';
           })
-          config.custom.core.eject.entries;
+          config.core.eject.entries;
       };
     };
   };

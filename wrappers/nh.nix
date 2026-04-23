@@ -23,8 +23,8 @@
     # Support
     (inputs.wrapper-modules.lib.mkInstallModule {
       name = "nh";
+     optloc = ["custom" "wrappers"];
       loc = ["environment" "systemPackages"];
-      optloc = ["custom" "wrappers"];
       value = self.wrapperModules.nh;
     })
 

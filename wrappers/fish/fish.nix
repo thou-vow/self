@@ -51,7 +51,7 @@
       };
 
       config = {
-        custom.core.eject.entries.fishConfig = let
+        core.eject.entries.fishConfig = let
           configFish = pkgs.writeTextFile {
             name = "config.fish";
             text = let
@@ -150,7 +150,7 @@
           "--init-command" = {
             sep = "=";
             data = [
-              "source ${config.custom.core.eject.directory}/${baseNameOf config.custom.core.eject.entries.fishConfig}/config.fish"
+              "source ${config.core.eject.directory}/${baseNameOf config.core.eject.entries.fishConfig}/config.fish"
             ];
           };
         };
@@ -198,34 +198,33 @@
   flake.nixosModules."wrappers.fish".imports = [
     # Support
     ({config, ...}: {
-      options.users.users = let
+      options.custom.users = let
         subImports = [
           # Support
           (inputs.wrapper-modules.lib.mkInstallModule {
             name = "fish";
-            optloc = ["custom" "wrappers"];
-            loc = ["packages"];
+            optloc = ["wrappers"];
+            loc = ["core" "packages"];
             value = self.wrapperModules.fish;
-            _class = "nixos";
           })
 
           # Schema
           (sub: {
-            options.custom.wrappers.fish.loadSystemEnvironment = lib.mkOption {
+            options.wrappers.fish.loadSystemEnvironment = lib.mkOption {
               type = lib.types.bool;
               default = false;
             };
 
-            config.custom.wrappers.fish = {
-              interactiveInitFish = lib.mkIf sub.config.custom.wrappers.atuin.enable ''
+            config.wrappers.fish = {
+              interactiveInitFish = lib.mkIf sub.config.wrappers.atuin.enable ''
                 ${
-                  lib.getExe sub.config.custom.wrappers.atuin.wrapper
+                  lib.getExe sub.config.wrappers.atuin.wrapper
                 } init fish ${
-                  lib.escapeShellArgs sub.config.custom.wrappers.atuin.initFlags
+                  lib.escapeShellArgs sub.config.wrappers.atuin.initFlags
                 } | source
               '';
 
-              overrides = lib.mkIf sub.config.custom.wrappers.fish.loadSystemEnvironment [
+              overrides = lib.mkIf sub.config.wrappers.fish.loadSystemEnvironment [
                 (pkg: pkg.override {fishEnvPreInit = source: source config.system.build.setEnvironment;})
               ];
             };

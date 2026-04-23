@@ -32,7 +32,7 @@
       };
 
       config = {
-        custom.core.eject.entries.niriConfig = let
+        core.eject.entries.niriConfig = let
           configKdl = pkgs.writeTextFile {
             name = "config.kdl";
             text = config.configKdl;
@@ -48,11 +48,11 @@
 
         drv.installPhase = ''
           runHook preInstall
-          ${lib.getExe config.package} validate -c "${config.custom.core.eject.entries.niriConfig}/config.kdl"
+          ${lib.getExe config.package} validate -c "${config.core.eject.entries.niriConfig}/config.kdl"
           runHook postInstall
         '';
 
-        env."NIRI_CONFIG" = "${config.custom.core.eject.directory}/${baseNameOf config.custom.core.eject.entries.niriConfig}/config.kdl";
+        env."NIRI_CONFIG" = "${config.core.eject.directory}/${baseNameOf config.core.eject.entries.niriConfig}/config.kdl";
 
         filesToPatch = ["share/systemd/user/niri.service"];
 
@@ -79,13 +79,13 @@
   flake.nixosModules."wrappers.niri".imports = [
     # Support
     {
-      options.users.users = let
+      options.custom.users = let
         subImports = [
           # Support
           (inputs.wrapper-modules.lib.mkInstallModule {
             name = "niri";
-            optloc = ["custom" "wrappers"];
-            loc = ["packages"];
+            optloc = ["wrappers"];
+            loc = ["core" "packages"];
             value = self.wrapperModules.niri;
           })
         ];
