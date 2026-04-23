@@ -55,33 +55,29 @@
       ...
     }: {
       imports = let
-        isPartsModule = file:
+        isFlakeModule = file:
           file.hasExt "nix"
           && file.name != "flake.nix"
           && !lib.hasPrefix "_" file.name;
       in
         (./.
-          |> lib.fileset.fileFilter isPartsModule
+          |> lib.fileset.fileFilter isFlakeModule
           |> lib.fileset.toList)
         ++ [
-          inputs.wrapper-modules.flakeModules.wrappers
+          inputs.wrapper-modules.flakeModules.default
         ];
 
-      flake.nixosConfigurations.u = lib.nixosSystem {
-        modules = [self.nixosModules."hosts.u"];
-        specialArgs = {system = "x86_64-linux";};
+      flake = {
+        nixosConfigurations.u = lib.nixosSystem {
+          modules = [
+            self.nixosModules."hosts.u"
+            self.nixosModules.core
+          ];
+          specialArgs = {system = "x86_64-linux";};
+        };
       };
 
-      perSystem = {
-        pkgs,
-        system,
-        ...
-      }: {
-        _module.args.pkgs = import inputs.nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-        };
-
+      perSystem = {pkgs, ...}: {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [alejandra kdlfmt schemat taplo];
         };
@@ -99,13 +95,8 @@
             includes = ["*.scm"];
           };
         };
-
-        wrappers.control_type = "build";
       };
 
-      systems = [
-        "aarch64-linux"
-        "x86_64-linux"
-      ];
+      systems = ["aarch64-linux" "x86_64-linux"];
     });
 }

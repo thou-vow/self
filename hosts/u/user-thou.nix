@@ -5,31 +5,30 @@
     pkgs,
     ...
   }: {
-    custom = {
-      core.users.thou = {
-        shellAliases = {};
-        variables = {};
-      };
-
-      wrappers = {
-        atuin.users.thou = {
-          enable = true;
-          daemon.enable = true;
-          initFlags = ["--disable-up-arrow"];
-        };
-        fish.users.thou = {
-          enable = true;
-          loadSystemEnvironment = true;
-          shellAbbrs = config.custom.core.users.thou.shellAliases;
-          variables = config.custom.core.users.thou.variables;
-        };
-        prismlauncher.users.thou.enable = true;
-      };
-    };
-
     users.users.thou = {
       uid = 1000;
       isNormalUser = true;
+      custom = {
+        core = {
+          shellAliases = {};
+          variables = {};
+        };
+        wrappers = {
+          helix.enable = true;
+          atuin = {
+            enable = true;
+            daemon.enable = true;
+            initFlags = ["--disable-up-arrow"];
+          };
+          fish = {
+            enable = true;
+            loadSystemEnvironment = true;
+            shellAbbrs = config.users.users.thou.custom.core.shellAliases;
+            variables = config.users.users.thou.custom.core.variables;
+          };
+          prismlauncher.enable = true;
+        };
+      };
       description = "thou";
       extraGroups = ["home-manager" "networkmanager" "wheel"];
       packages =
@@ -63,7 +62,7 @@
         ];
       password = "123";
 
-      shell = config.custom.build.wrappers.fish.users.thou.outPackage;
+      shell = config.users.users.thou.custom.wrappers.fish.wrapper;
     };
   };
 }

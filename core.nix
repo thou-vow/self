@@ -1,22 +1,31 @@
 {
+  inputs,
   lib,
   withSystem,
   ...
-}: {
+} @ flake: {
   flake = {
     nixosModules.core = {
+      pkgs,
       system,
       ...
     }: {
-      options.custom.core = {
-        flakePath = lib.mkOption {
+      imports =
+        flake.config.flake.nixosModules
+        |> lib.filterAttrs (k: _:
+          lib.hasPrefix "extra." k
+          || lib.hasPrefix "wrappers." k)
+        |> builtins.attrValues;
+
+      options = {
+        custom.core.flakePath = lib.mkOption {
           type = lib.types.nullOr lib.types.str;
           description = "The absolute path of this flake.";
         };
 
-        users = lib.mkOption {
+        users.users = lib.mkOption {
           type = lib.types.attrsOf (lib.types.submodule {
-            options = {
+            options.custom.core = {
               shellAliases = lib.mkOption {
                 type = lib.types.attrsOf lib.types.str;
                 default = {};
@@ -26,8 +35,9 @@
                 default = {};
               };
             };
+
+            config._module.args.pkgs = pkgs;
           });
-          default = {};
         };
       };
 
@@ -48,7 +58,7 @@
     }: {
       imports = [wlib.modules.default];
 
-      options.core.eject = {
+      options.custom.core.eject = {
         directory = lib.mkOption {
           type = lib.types.str;
           default = "\${SELF_EJECT_DIR:-$HOME/.eject}";
@@ -63,14 +73,15 @@
         _module.args = let
           system = pkgs.stdenv.hostPlatform.system;
         in {
-          inherit (withSystem system (args: args)) inputs' self' system;
+          inherit (withSystem system (args: args)) inputs' self';
+          inherit system;
         };
 
         escapingFunction = wlib.escapeShellArgWithEnv;
 
         runShell =
           lib.mapAttrsToList (name: path: let
-            entryEjectDir = "${config.core.eject.directory}/${baseNameOf path}";
+            entryEjectDir = "${config.custom.core.eject.directory}/${baseNameOf path}";
           in {
             data =
               pkgs.writeScript "${name}-ejector"
@@ -86,8 +97,17 @@
                 fi
               '';
           })
-          config.core.eject.entries;
+          config.custom.core.eject.entries;
       };
     };
+  };
+
+  perSystem = {system, ...}: {
+    _module.args.pkgs = import inputs.nixpkgs {
+      inherit system;
+      config.allowUnfree = true;
+    };
+
+    wrappers.packages.core = true;
   };
 }

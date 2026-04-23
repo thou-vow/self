@@ -4,27 +4,26 @@
     pkgs,
     ...
   }: {
-    options.custom.extra.waydroid.enable = lib.mkEnableOption "Waydroid";
+    options.custom.extra.waydroid = {
+      enable = lib.mkEnableOption "Waydroid";
+    };
 
-    config = let
-      cfg = config.custom.extra.waydroid;
-    in
-      lib.mkIf cfg.enable {
-        # https://github.com/pioner14/Waydroid_on_NixOS
-        boot.kernel.sysctl = {
-          "net.ipv4.conf.all.forwarding" = 1;
-          "net.ipv4.ip_forward" = 1;
-          "net.ipv6.conf.all.forwarding" = 1;
-        };
-
-        networking.firewall.trustedInterfaces = ["waydroid0"];
-
-        systemd.services."waydroid-container".wantedBy = lib.mkForce [];
-
-        virtualisation.waydroid = {
-          enable = true;
-          package = pkgs.waydroid-nftables;
-        };
+    config = lib.mkIf config.custom.extra.waydroid.enable {
+      # https://github.com/pioner14/Waydroid_on_NixOS
+      boot.kernel.sysctl = {
+        "net.ipv4.conf.all.forwarding" = 1;
+        "net.ipv4.ip_forward" = 1;
+        "net.ipv6.conf.all.forwarding" = 1;
       };
+
+      networking.firewall.trustedInterfaces = ["waydroid0"];
+
+      systemd.services."waydroid-container".wantedBy = lib.mkForce [];
+
+      virtualisation.waydroid = {
+        enable = true;
+        package = pkgs.waydroid-nftables;
+      };
+    };
   };
 }

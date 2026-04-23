@@ -1,7 +1,6 @@
 {
   inputs,
   lib,
-  self,
   ...
 }: {
   flake.nixosModules."hosts.u" = {
@@ -9,23 +8,13 @@
     pkgs,
     ...
   }: {
-    imports =
-      [
-        self.nixosModules.core
-      ]
-      ++ (self.nixosModules
-        |> lib.filterAttrs (k: _:
-          lib.hasPrefix "extra." k
-          || lib.hasPrefix "wrappers." k)
-        |> builtins.attrValues);
-
     custom = {
       core = {
         flakePath = "/self";
       };
       extra = {
         flatpak.enable = true;
-        determinate-nix.enable = true;
+        determinate.enable = true;
         waydroid.enable = true;
       };
       wrappers = {

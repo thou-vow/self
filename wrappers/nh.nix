@@ -1,39 +1,38 @@
 {
   inputs,
   lib,
+  self,
   ...
 }: {
-  perSystem = {
-    pkgs,
-    ...
-  }: {
-    packages.nh = inputs.wrapper-modules.lib.wrapPackage {
-      inherit pkgs;
-      env.NH_SHOW_ACTIVATION_LOGS = "true";
+  flake .wrappers.nh.imports = [
+    # Support
+    self.wrapperModules.core
+
+    # Schema
+    ({pkgs, ...}: {
       package = lib.mkDefault pkgs.nh;
-    };
-  };
+    })
 
-  flake.nixosModules."wrappers.nh" = {
-    config,
-    self',
-    ...
-  }: {
-    options.custom = {
-      build.wrappers.nh.outPackage = lib.mkOption {type = lib.types.package;};
+    # Base defaults
+    {
+      env.NH_SHOW_ACTIVATION_LOGS = "true";
+    }
+  ];
 
-      wrappers.nh.enable = lib.mkEnableOption "nh";
-    };
+  flake.nixosModules."wrappers.nh".imports = [
+    # Support
+    (inputs.wrapper-modules.lib.mkInstallModule {
+      name = "nh";
+      loc = ["environment" "systemPackages"];
+      optloc = ["custom" "wrappers"];
+      value = self.wrapperModules.nh;
+    })
 
-    config = let
-      cfg = config.custom.wrappers.nh;
-    in {
-      custom.build.wrappers.nh.outPackage = lib.mkIf cfg.enable (let
-        package = self'.packages.nh;
-      in
-        if config.custom.core.flakePath or null != null
-        then package.wrap {env.NH_FLAKE = config.custom.core.flakePath;}
-        else package);
-    };
-  };
+    # Schema
+    ({config, ...}: {
+      custom.wrappers.nh.env = lib.mkIf (config.custom.system.core.flakePath or null != null) {
+        NH_FLAKE = config.custom.system.core.flakePath;
+      };
+    })
+  ];
 }

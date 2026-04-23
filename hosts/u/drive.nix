@@ -13,20 +13,43 @@
     imports = [inputs.impermanence.nixosModules.impermanence];
 
     boot = {
-      initrd.postResumeCommands = ''
-        mkdir "/btrfs"
-        mount ${config.fileSystems."/".device} "/btrfs"
+      initrd.systemd = {
+        extraBin = {
+          btrfs = "${pkgs.btrfs-progs}/bin/btrfs";  
+          date = "${pkgs.coreutils}/bin/date";  
+          mkdir = "${pkgs.coreutils}/bin/mkdir";  
+          mv = "${pkgs.coreutils}/bin/mv";  
+          stat = "${pkgs.coreutils}/bin/stat";  
+        };
+        
+        services.impermanence-btrfs-rolling = {
+          description = "Archiving existing Btrfs @ subvolume and creating a fresh one";
 
-        if [[ -e "/btrfs/@" ]]; then
-          mkdir -p /btrfs/old
-          timestamp=$(date '+%Y-%m-%d_%H-%M-%S' --date="@$(stat -c %Y "/btrfs/@")")
-          mv "/btrfs/@" "/btrfs/old/@$timestamp"
-        fi
+          after = ["initrd-root-device.target" "local-fs-pre.target"];
+          before = ["initrd.target"];
+          requiredBy = ["initrd.target"];
+          requires = ["initrd-root-device.target"];
 
-        btrfs subvolume create "/btrfs/@"
+          script = ''
+            mkdir "/btrfs_tmp"
+            mount ${config.fileSystems."/".device} "/btrfs_tmp"
 
-        umount "/btrfs"
-      '';
+            if [[ -e "/btrfs_tmp/@" ]]; then
+              mkdir -p /btrfs_tmp/old
+              timestamp=$(date '+%Y-%m-%d_%H-%M-%S' --date="@$(stat -c %Y "/btrfs_tmp/@")")
+              mv "/btrfs_tmp/@" "/btrfs_tmp/old/@$timestamp"
+            fi
+
+            btrfs subvolume create "/btrfs_tmp/@"
+
+            umount "/btrfs_tmp"
+          '';
+
+          serviceConfig.Type = "oneshot";
+          unitConfig.DefaultDependencies = false;
+        };
+      };
+
       loader = {
         efi.efiSysMountPoint = "/boot";
         grub = {

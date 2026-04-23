@@ -88,8 +88,8 @@
     systemd.services = {
       disable-i915-mitigations = {
         description = "Set i915 (Intel Graphics) mitigations off at runtime";
-        wantedBy = ["multi-user.target"];
         before = ["graphical.target"];
+        wantedBy = ["multi-user.target"];
         serviceConfig = {
           ExecStart = let
             script = pkgs.writeShellScript "disable-i915-mitigations" ''
