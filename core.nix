@@ -1,36 +1,62 @@
 {
   inputs,
   lib,
+  self,
   withSystem,
   ...
-} @ flake: {
-  flake = {
-    nixosModules.core = {
-      config,
-      pkgs,
-      system,
-      ...
-    }: {
-      imports =
-        flake.config.flake.nixosModules
-        |> lib.filterAttrs (k: _:
-          lib.hasPrefix "extra." k
-          || lib.hasPrefix "wrappers." k)
-        |> builtins.attrValues;
+}: {
+  options.flake = {
+    wrappers = lib.mkOption {
+      type = lib.types.lazyAttrsOf (lib.types.submodule {
+        options = {
+          integrationModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
+          module = lib.mkOption {type = lib.types.deferredModule;};
+          nixosModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
+          nixosUserModule = lib.mkOption {type = with lib.types; nullOr (functionTo deferredModule);};
+        };
+      });
+      default = {};
+    };
 
-      options.custom = {
-        core.flakePath = lib.mkOption {
-          type = lib.types.nullOr lib.types.str;
-          description = "The absolute path of this flake.";
+    nixosUserModules = lib.mkOption {
+      type = with lib.types; lazyAttrsOf (functionTo deferredModule);
+      default = {};
+    };
+
+    wrapperModules = lib.mkOption {
+      type = with lib.types; lazyAttrsOf deferredModule;
+      default = {};
+    };
+
+    wrapperIntegrationModules = lib.mkOption {
+      type = with lib.types; lazyAttrsOf deferredModule;
+      default = {};
+    };
+  };
+
+  config = {
+    flake = {
+      nixosModules.core = {system, ...}: {
+        options.custom = {
+          flakePath = lib.mkOption {
+            type = lib.types.nullOr lib.types.str;
+            description = "The absolute path of this flake.";
+          };
         };
 
-        users = lib.mkOption {
-          type = lib.types.attrsOf (lib.types.submodule {
-            options.core = {
-              packages = lib.mkOption {
-                type = lib.types.listOf lib.types.package;
-                default = [];
-              };
+        config = {
+          _module.args = {inherit (withSystem system (args: args)) inputs' self';};
+
+          nixpkgs.pkgs = withSystem system ({pkgs, ...}: pkgs);
+        };
+      };
+
+      nixosUserModules.core = user: let
+        namespace = ["custom" "users" user];
+      in {
+        options = lib.setAttrByPath namespace (lib.mkOption {
+          type = lib.types.submodule {
+            options = {
               shellAliases = lib.mkOption {
                 type = lib.types.attrsOf lib.types.str;
                 default = {};
@@ -40,84 +66,26 @@
                 default = {};
               };
             };
-
-            config._module.args.pkgs = pkgs;
-          });
-        };
-      };
-
-      config = {
-        _module.args = {
-          inherit (withSystem system (args: args)) inputs' self';
-        };
-
-        users.users = lib.mkMerge (lib.mapAttrsToList (name: subconfig: {
-            ${name}.packages = subconfig.core.packages;
-          })
-          config.custom.users);
-
-        nixpkgs.pkgs = withSystem system ({pkgs, ...}: pkgs);
-      };
-    };
-
-    wrappers.core = {
-      config,
-      pkgs,
-      wlib,
-      ...
-    }: {
-      imports = [wlib.modules.default];
-
-      options.core.eject = {
-        directory = lib.mkOption {
-          type = lib.types.str;
-          default = "\${SELF_EJECT_DIR:-$HOME/.eject}";
-        };
-        entries = lib.mkOption {
-          type = lib.types.attrsOf lib.types.path;
+          };
           default = {};
-        };
+        });
       };
 
-      config = {
+      wrapperModules.core = {pkgs, ...}: {
         _module.args = let
           system = pkgs.stdenv.hostPlatform.system;
         in {
           inherit (withSystem system (args: args)) inputs' self';
           inherit system;
         };
-
-        escapingFunction = wlib.escapeShellArgWithEnv;
-
-        runShell =
-          lib.mapAttrsToList (name: path: let
-            entryEjectDir = "${config.core.eject.directory}/${baseNameOf path}";
-          in {
-            data =
-              pkgs.writeScript "${name}-ejector"
-              # sh
-              ''
-                #!${lib.getExe pkgs.dash}
-                inputDir=${path}
-                ejectDir=${entryEjectDir}
-                if [ ! -d "$ejectDir" ]; then
-                  mkdir -p "$ejectDir" &&
-                  cp -RL "$inputDir"/. "$ejectDir"/ &&
-                  chmod -R u+w "$ejectDir"
-                fi
-              '';
-          })
-          config.core.eject.entries;
       };
     };
-  };
 
-  perSystem = {system, ...}: {
-    _module.args.pkgs = import inputs.nixpkgs {
-      inherit system;
-      config.allowUnfree = true;
+    perSystem = {system, ...}: {
+      _module.args.pkgs = import inputs.nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
     };
-
-    wrappers.packages.core = true;
   };
 }

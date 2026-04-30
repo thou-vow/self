@@ -3,7 +3,7 @@
   lib,
   ...
 }: {
-  flake.nixosModules."hosts.u" = {
+  flake.nixosModules.u = {
     config,
     pkgs,
     ...

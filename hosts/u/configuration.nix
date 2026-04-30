@@ -1,25 +1,35 @@
 {
   inputs,
   lib,
+  self,
   ...
 }: {
-  flake.nixosModules."hosts.u" = {
+  flake.nixosModules.u = {
     config,
     pkgs,
     ...
   }: {
+    imports =
+      [
+        (self.lib.mkInstallWrappers {
+          method.variant = "nixos";
+          wrappers = {
+            inherit
+              (self.wrappers)
+              nh
+              ;
+          };
+        })
+      ]
+      ++ (with self.nixosModules; [
+        core
+        determinate
+        flatpak
+        waydroid
+      ]);
+
     custom = {
-      core = {
-        flakePath = "/self";
-      };
-      extra = {
-        flatpak.enable = true;
-        determinate.enable = true;
-        waydroid.enable = true;
-      };
-      wrappers = {
-        nh.enable = true;
-      };
+      flakePath = "/self";
     };
 
     boot = {
@@ -55,6 +65,7 @@
         heroic
         inxi
         iotop
+        jq
         lm_sensors
         lsof
         ncdu
@@ -154,10 +165,10 @@
             owner = "nixos";
             repo = "nixpkgs";
           };
-          # self.to = {
-          #   type = "git";
-          #   url = "file://${config.mods.flakePath}";
-          # };
+          self.to = {
+            type = "git";
+            url = "file://${config.custom.flakePath}";
+          };
         };
 
       settings = {
@@ -205,7 +216,8 @@
         };
       };
       blueman.enable = true;
-      logmein-hamachi.enable = true;
+      # kmscon.enable = true;
+      # logmein-hamachi.enable = true;
       lvm.enable = false;
       openssh.enable = true;
       pipewire = {

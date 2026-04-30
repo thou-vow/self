@@ -1,58 +1,44 @@
-{...}: {
-  flake.nixosModules."hosts.u" = {
+{self, ...}: {
+  flake.nixosModules.u = {
     config,
     inputs',
     pkgs,
     ...
   }: {
+    imports =
+      [
+        (self.lib.mkInstallWrappers {
+          method = {
+            variant = "nixosUser";
+            user = "thou";
+          };
+          wrappers = {
+            inherit
+              (self.wrappers)
+              atuin
+              direnv
+              fish
+              helix
+              kitty
+              niri
+              prismlauncher
+              ;
+          };
+        })
+      ]
+      ++ map (m: m "thou")
+      (with self.nixosUserModules; [core]);
+
     custom.users.thou = {
-      core = {
-        packages =
-          (with pkgs; [
-            azahar
-            bc
-            cemu
-            distrobox
-            dolphin-emu
-            gcc
-            imagemagick
-            krita
-            libreoffice
-            mame
-            mangohud
-            melonds
-            mgba
-            pcsx2
-            protonplus
-            qbittorrent
-            rclone
-            ripgrep
-            typst
-            vlc
-            xdg-utils
-            yazi
-            zathura
-          ])
-          ++ [
-            inputs'.nix-packages.legacyPackages.discord-rpc-lsp
-          ];
-        shellAliases = {};
-        variables = {};
-      };
+      shellAliases = {};
+      variables = {};
       wrappers = {
-        helix.enable = true;
-        atuin = {
-          enable = true;
-          daemon.enable = true;
-          initFlags = ["--disable-up-arrow"];
-        };
+        atuin.daemon.enable = true;
         fish = {
-          enable = true;
           loadSystemEnvironment = true;
-          shellAbbrs = config.custom.users.thou.core.shellAliases;
-          variables = config.custom.users.thou.core.variables;
+          shellAbbrs = config.custom.users.thou.shellAliases;
+          variables = config.custom.users.thou.variables;
         };
-        prismlauncher.enable = true;
       };
     };
 
@@ -61,6 +47,35 @@
       isNormalUser = true;
       description = "thou";
       extraGroups = ["home-manager" "networkmanager" "wheel"];
+      packages =
+        (with pkgs; [
+          azahar
+          bc
+          cemu
+          distrobox
+          dolphin-emu
+          gcc
+          imagemagick
+          krita
+          libreoffice
+          mame
+          mangohud
+          melonds
+          mgba
+          pcsx2
+          protonplus
+          qbittorrent
+          rclone
+          ripgrep
+          typst
+          vlc
+          xdg-utils
+          yazi
+          zathura
+        ])
+        ++ [
+          inputs'.nix-packages.packages.discord-rpc-lsp
+        ];
       password = "123";
       shell = config.custom.users.thou.wrappers.fish.wrapper;
     };

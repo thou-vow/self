@@ -1,96 +1,80 @@
 {
-  inputs,
   lib,
   self,
   ...
 }: {
-  flake.wrappers.niri.imports = [
-    # Support
-    self.wrapperModules.core
+  flake.wrappers.niri = {
+    module = lib.mkMerge [
+            self.wrapperModules.core
+      self.wrapperModules.eject
 
-    # Schema
-    ({
-      config,
-      pkgs,
-      ...
-    }: {
-      options = {
-        configKdl = lib.mkOption {
-          type = lib.types.lines;
-          default = "";
-        };
-        extraPaths = lib.mkOption {
-          type = lib.types.listOf (lib.types.submodule {
-            options = {
-              name = lib.mkOption {type = lib.types.str;};
-              path = lib.mkOption {type = lib.types.path;};
-            };
-          });
-          default = [];
-        };
-        xwayland-satellite.package = lib.mkOption {type = lib.types.package;};
-      };
-
-      config = {
-        core.eject.entries.niriConfig = let
-          configKdl = pkgs.writeTextFile {
-            name = "config.kdl";
-            text = config.configKdl;
+      ({
+        config,
+        pkgs,
+        ...
+      }: {
+        options = {
+          configKdl = lib.mkOption {
+            type = lib.types.lines;
+            default = "";
           };
-        in
-          pkgs.linkFarm "niri-config" ([
-              {
-                inherit (configKdl) name;
-                path = configKdl;
-              }
-            ]
-            ++ config.extraPaths);
+          extraPaths = lib.mkOption {
+            type = lib.types.listOf (lib.types.submodule {
+              options = {
+                name = lib.mkOption {type = lib.types.str;};
+                path = lib.mkOption {type = lib.types.path;};
+              };
+            });
+            default = [];
+          };
+          xwayland-satellite.package = lib.mkOption {type = lib.types.package;};
+        };
 
-        drv.installPhase = ''
-          runHook preInstall
-          ${lib.getExe config.package} validate -c "${config.core.eject.entries.niriConfig}/config.kdl"
-          runHook postInstall
+        config = {
+          eject.entries.niriConfig = pkgs.linkFarm "niri-config" (
+            self.lib.mkLinkFarmOptionalText (config.configKdl != "") {
+              inherit pkgs;
+              name = "config.kdl";
+              text = config.configKdl;
+            }
+            ++ config.extraPaths
+          );
+
+          drv.installPhase = ''
+            runHook preInstall
+            ${lib.getExe config.package} validate -c "${config.eject.entries.niriConfig}/config.kdl"
+            runHook postInstall
+          '';
+
+          env."NIRI_CONFIG" = "${config.eject.directory}/${baseNameOf config.eject.entries.niriConfig}/config.kdl";
+
+          filesToPatch = ["share/systemd/user/niri.service"];
+
+          package = lib.mkDefault pkgs.niri;
+
+          xwayland-satellite.package = lib.mkDefault pkgs.xwayland-satellite;
+        };
+      })
+
+      ({pkgs, ...}: {
+        configKdl = ''
+          include "manual-config.kdl"
         '';
-
-        env."NIRI_CONFIG" = "${config.core.eject.directory}/${baseNameOf config.core.eject.entries.niriConfig}/config.kdl";
-
-        filesToPatch = ["share/systemd/user/niri.service"];
-
-        package = lib.mkDefault pkgs.niri;
-
-        xwayland-satellite.package = lib.mkDefault pkgs.xwayland-satellite;
-      };
-    })
-
-    # Base defaults
-    {
-      configKdl = ''
-        include "manual-config.kdl"
-      '';
-      extraPaths = [
-        {
-          name = "manual-config.kdl";
-          path = ./manual-config.kdl;
-        }
-      ];
-    }
-  ];
-
-  flake.nixosModules."wrappers.niri".imports = [
-    # Support
-    {
-      options.custom.users = let
-        subImports = [
-          # Support
-          (inputs.wrapper-modules.lib.mkInstallModule {
-            name = "niri";
-            optloc = ["wrappers"];
-            loc = ["core" "packages"];
-            value = self.wrapperModules.niri;
-          })
+        extraPackages = with pkgs; [
+          brightnessctl
+          dash
+          fuzzel
+          nautilus
+          wireplumber
+          wl-clipboard
         ];
-      in
-        lib.mkOption {type = lib.types.attrsOf (lib.types.submodule {imports = subImports;});};
-    }
-  ];
+        extraPaths = [
+          {
+            name = "manual-config.kdl";
+            path = ./manual-config.kdl;
+          }
+        ];
+      })
+    ];
+  };
 }

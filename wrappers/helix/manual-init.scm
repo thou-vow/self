@@ -1,17 +1,7 @@
-(require-builtin helix/core/keymaps as hx.core.keymaps.)
 (require (prefix-in hx.cfg. "helix/configuration.scm"))
-(require (prefix-in hx.cmd. "helix/commands.scm"))
-(require (prefix-in hx.theme. "helix/themes.scm"))
-(require (prefix-in keys. "init/keybindings.scm"))
-(require (prefix-in theme. "init/theme.scm"))
+(require "init/keybindings.scm")
+(require "init/theme.scm")
 (require "self/utils.scm")
-
-(hx.cfg.set-keybindings!
-  (~> keys.keybindings
-    (value->jsexpr-string)
-    (hx.core.keymaps.helix-string->keymap)))
-(hx.theme.register-theme theme.theme)
-(hx.cmd.theme "theme")
 
 (hx.cfg.set-option! 'bufferline "always")
 (hx.cfg.set-option! 'color-modes #t)

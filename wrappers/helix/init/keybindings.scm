@@ -1,6 +1,6 @@
+(require-builtin helix/core/keymaps as hx.core.keymaps.)
+(require (prefix-in hx.cfg. "helix/configuration.scm"))
 (require "self/utils.scm")
-
-(provide keybindings)
 
 (define (normal->select value)
   (define command-map
@@ -343,4 +343,9 @@
   (kv (ls 'normal normal-mode)
     (ls 'insert insert-mode)
     (ls 'select select-mode)))
+
+(hx.cfg.set-keybindings!
+  (~> keybindings
+    (value->jsexpr-string)
+    (hx.core.keymaps.helix-string->keymap)))
 

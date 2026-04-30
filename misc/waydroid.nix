@@ -1,14 +1,6 @@
 {lib, ...}: {
-  flake.nixosModules."extra.waydroid" = {
-    config,
-    pkgs,
-    ...
-  }: {
-    options.custom.extra.waydroid = {
-      enable = lib.mkEnableOption "Waydroid";
-    };
-
-    config = lib.mkIf config.custom.extra.waydroid.enable {
+  flake.nixosModules.waydroid = {pkgs, ...}: {
+    config = {
       # https://github.com/pioner14/Waydroid_on_NixOS
       boot.kernel.sysctl = {
         "net.ipv4.conf.all.forwarding" = 1;

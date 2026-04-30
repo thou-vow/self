@@ -1,9 +1,8 @@
 {
-  inputs,
   lib,
   ...
 }: {
-  flake.nixosModules."hosts.u" = {pkgs, ...}: let
+  flake.nixosModules.u = {inputs', pkgs,...}: let
     internalHddId = "0x50014ee6b2ede306";
   in {
     boot = {
@@ -24,9 +23,9 @@
 
       # kernelPackages =
       #   pkgs.linuxPackagesFor
-      #   inputs.nix-packages.legacyPackages.${pkgs.stdenv.hostPlatform.system}.attunedPackages.custom-linux;
+      #   inputs'.nix-packages.packages.custom-linux-attuned;
       kernelPackages =
-        inputs.nix-cachyos-kernel.legacyPackages.${pkgs.stdenv.hostPlatform.system}.linuxPackages-cachyos-lts-lto-x86_64-v3;
+        inputs'.nix-cachyos-kernel.legacyPackages.linuxPackages-cachyos-lts-lto-x86_64-v3;
 
       kernelParams = [
         # I think these are needed for Wi-Fi to work properly
@@ -61,11 +60,11 @@
 
     hardware = {
       cpu.intel.updateMicrocode = true;
-      graphics.package = inputs.nix-packages.legacyPackages.${pkgs.stdenv.hostPlatform.system}.attunedPackages.mesa;
+      graphics.package = inputs'.nix-packages.packages.mesa-attuned;
       enableRedistributableFirmware = true;
     };
 
-    # nix.package = inputs.nix-packages.legacyPackages.${pkgs.stdenv.hostPlatform.system}.attunedPackages.lix;
+    # nix.package = inputs'.nix-packages.packages.determinate-nix-attuned;
 
     services = {
       udev.extraRules = lib.concatStringsSep ", " [

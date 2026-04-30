@@ -3,7 +3,7 @@
   lib,
   ...
 }: {
-  flake.nixosModules."hosts.u" = {
+  flake.nixosModules.u = {
     config,
     pkgs,
     ...
@@ -54,6 +54,7 @@
         efi.efiSysMountPoint = "/boot";
         grub = {
           enable = true;
+          configurationLimit = 7;
           device = "/dev/disk/by-id/wwn-${hddId}";
           efiInstallAsRemovable = true;
           efiSupport = true;
@@ -89,7 +90,7 @@
       "/persist" = {
         enable = true;
         directories = [
-          config.custom.core.flakePath
+          config.custom.flakePath
           "/etc/NetworkManager/system-connections"
           "/root/.cache/nix"
           "/root/.local/share/nix"
