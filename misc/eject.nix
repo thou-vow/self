@@ -8,8 +8,6 @@
     pkgs,
     ...
   }: {
-    imports = [inputs.nix-wrapper-modules.lib.modules.default];
-
     options = {
       eject = {
         directory = lib.mkOption {

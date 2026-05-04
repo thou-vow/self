@@ -6,7 +6,6 @@
 }: {
   flake.wrappers.nh = {
     module = lib.mkMerge [
-      inputs.nix-wrapper-modules.lib.modules.default
       self.wrapperModules.core
 
       ({pkgs, ...}: {

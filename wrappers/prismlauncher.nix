@@ -1,12 +1,13 @@
 {
   lib,
+  inputs,
   self,
   ...
 }: {
   flake.wrappers.prismlauncher = {
     module = lib.mkMerge [
       self.wrapperModules.core
-      
+
       ({
         config,
         pkgs,
@@ -31,7 +32,7 @@
       }: {
         jdks =
           (with pkgs; [
-            graalvmPackages.graalvm-oracle_17
+            # graalvmPackages.graalvm-oracle_17
             jdk8
             jdk17
             jdk21

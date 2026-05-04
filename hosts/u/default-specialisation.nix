@@ -5,6 +5,7 @@
 }: {
   flake.nixosModules.u = {
     config,
+    inputs',
     pkgs,
     ...
   }:
@@ -21,7 +22,11 @@
         ];
 
         kernelPackages =
-          inputs.nix-cachyos-kernel.legacyPackages.${pkgs.stdenv.hostPlatform.system}.linuxPackages-cachyos-lts-lto;
+          inputs'.nyx-loner.legacyPackages.linuxPackages_cachyos-lto;
+
+        kernelParams = [
+          "mitigations=off"
+        ];
       };
 
       hardware = {
@@ -33,14 +38,15 @@
         enableAllHardware = true;
       };
 
-      # Sometimes the default don't work
       networking.nameservers = [
         "8.8.4.4"
         "8.8.8.8"
       ];
 
-      # nix.package = pkgs.lixPackageSets.latest.lix;
-
-      services.cloudflare-warp.enable = true;
+      zramSwap = {
+        enable = true;
+        memoryPercent = 80;
+        priority = 1;
+      };
     };
 }

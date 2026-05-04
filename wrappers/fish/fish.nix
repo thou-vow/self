@@ -222,6 +222,10 @@
           config = mk {
             overrides = lib.mkIf cfg.loadSystemEnvironment [
               (pkg: pkg.override {fishEnvPreInit = source: source config.system.build.setEnvironment;})
+              (pkg:
+                pkg.overrideAttrs {
+                  doCheck = false;
+                })
             ];
           };
         })

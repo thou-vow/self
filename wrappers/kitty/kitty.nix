@@ -5,7 +5,7 @@
 }: {
   flake.wrappers.kitty = {
     module = lib.mkMerge [
-            self.wrapperModules.core
+      self.wrapperModules.core
       self.wrapperModules.eject
 
       ({
@@ -54,20 +54,8 @@
           );
 
           kittyConf = lib.mkMerge [
-            (lib.mkIf (config.keybindings != {}) (
-              lib.mkOrder 510 (config.keybindings
-                |> lib.generators.toKeyValue {
-                  mkKeyValue = k: v: "map ${k} ${v}";
-                })
-            ))
-            (lib.mkIf (config.mouseBindings != {}) (
-              lib.mkOrder 520 (config.mouseBindings
-                |> lib.generators.toKeyValue {
-                  mkKeyValue = k: v: "mouse_map ${k} ${v}";
-                })
-            ))
             (lib.mkIf (config.settings != {}) (
-              lib.mkOrder 530 (config.settings
+              lib.mkOrder 510 (config.settings
                 |> lib.generators.toKeyValue {
                   mkKeyValue = key: value: let
                     value' =
@@ -78,6 +66,18 @@
                         else "no"
                       else toString value;
                   in "${key} ${value'}";
+                })
+            ))
+            (lib.mkIf (config.keybindings != {}) (
+              lib.mkOrder 520 (config.keybindings
+                |> lib.generators.toKeyValue {
+                  mkKeyValue = k: v: "map ${k} ${v}";
+                })
+            ))
+            (lib.mkIf (config.mouseBindings != {}) (
+              lib.mkOrder 530 (config.mouseBindings
+                |> lib.generators.toKeyValue {
+                  mkKeyValue = k: v: "mouse_map ${k} ${v}";
                 })
             ))
           ];
@@ -97,7 +97,7 @@
             path = ./theme.conf;
           }
         ];
-        kittyConf = lib.mkBefore ''
+        kittyConf = ''
           include ./manual-kitty.conf
         '';
         settings.clear_all_shortcuts = true;

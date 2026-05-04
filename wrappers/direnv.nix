@@ -7,7 +7,7 @@
     module = lib.mkMerge [
       self.wrapperModules.core
       self.wrapperModules.eject
-      
+
       ({
         config,
         pkgs,

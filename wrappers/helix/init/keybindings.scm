@@ -348,4 +348,3 @@
   (~> keybindings
     (value->jsexpr-string)
     (hx.core.keymaps.helix-string->keymap)))
-

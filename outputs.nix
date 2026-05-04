@@ -2,12 +2,15 @@
   inputs,
   lib,
   self,
+  withSystem,
   ...
 }: {
   flake = {
     nixosConfigurations.u = lib.nixosSystem {
-      modules = [self.nixosModules.u];
-      specialArgs = {system = "x86_64-linux";};
+      modules = [
+        self.nixosModules.u
+        {nixpkgs.pkgs = withSystem "x86_64-linux" ({pkgs, ...}: pkgs);}
+      ];
     };
   };
 
@@ -37,10 +40,16 @@
         name = "all";
       };
 
+      test = self.lib.mkWrappersPackage {
+        inherit pkgs;
+        name = "shell";
+        wrappers = {inherit (self.wrappers)  prismlauncher;};
+      };
+
       shell = self.lib.mkWrappersPackage {
         inherit pkgs;
         name = "shell";
-        wrappers = {inherit (self.wrappers) atuin direnv fish;};
+        wrappers = {inherit (self.wrappers) atuin direnv fish helix;};
       };
     };
   };

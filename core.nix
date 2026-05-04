@@ -36,7 +36,7 @@
 
   config = {
     flake = {
-      nixosModules.core = {system, ...}: {
+      nixosModules.core = {pkgs, ...}: {
         options.custom = {
           flakePath = lib.mkOption {
             type = lib.types.nullOr lib.types.str;
@@ -45,9 +45,12 @@
         };
 
         config = {
-          _module.args = {inherit (withSystem system (args: args)) inputs' self';};
-
-          nixpkgs.pkgs = withSystem system ({pkgs, ...}: pkgs);
+          _module.args = let
+            system = pkgs.stdenv.hostPlatform.system;
+          in {
+            inherit (withSystem system (args: args)) inputs' self';
+            inherit system;
+          };
         };
       };
 
@@ -72,6 +75,10 @@
       };
 
       wrapperModules.core = {pkgs, ...}: {
+        imports = [
+          inputs.nix-wrapper-modules.lib.modules.default
+        ];
+
         _module.args = let
           system = pkgs.stdenv.hostPlatform.system;
         in {

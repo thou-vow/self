@@ -5,7 +5,7 @@
 }: {
   flake.wrappers.niri = {
     module = lib.mkMerge [
-            self.wrapperModules.core
+      self.wrapperModules.core
       self.wrapperModules.eject
 
       ({
@@ -48,26 +48,32 @@
 
           env."NIRI_CONFIG" = "${config.eject.directory}/${baseNameOf config.eject.entries.niriConfig}/config.kdl";
 
-          filesToPatch = ["share/systemd/user/niri.service"];
-
           package = lib.mkDefault pkgs.niri;
 
           xwayland-satellite.package = lib.mkDefault pkgs.xwayland-satellite;
         };
       })
 
-      ({pkgs, ...}: {
+      ({
+        inputs',
+        pkgs,
+        ...
+      }: {
         configKdl = ''
           include "manual-config.kdl"
         '';
-        extraPackages = with pkgs; [
-          brightnessctl
-          dash
-          fuzzel
-          nautilus
-          wireplumber
-          wl-clipboard
-        ];
+        extraPackages =
+          (with pkgs; [
+            brightnessctl
+            dash
+            fuzzel
+            nautilus
+            wireplumber
+            wl-clipboard
+          ])
+          ++ (with inputs'.nix-packages.packages; [
+            brave-latest
+          ]);
         extraPaths = [
           {
             name = "manual-config.kdl";

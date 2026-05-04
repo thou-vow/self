@@ -6,6 +6,7 @@
 }: {
   flake.nixosModules.u = {
     config,
+    inputs',
     pkgs,
     ...
   }: {
@@ -37,14 +38,9 @@
         "kernel.nmi_watchdog" = 0;
         "kernel.split_lock_mitigate" = 0;
         "vm.swappiness" = 1;
-        "vm.dirty_background_ratio" = 2;
-        "vm.dirty_ratio" = 4;
+        "vm.dirty_background_bytes" = 16777216;
+        "vm.dirty_bytes" = 67108864;
       };
-      kernelParams = [
-        "zswap.enabled=1"
-        "zswap.max_pool_percent=80"
-        "zswap.shrinker_enabled=0"
-      ];
     };
 
     console.useXkbConfig = true;
@@ -173,6 +169,8 @@
 
       settings = {
         experimental-features = ["flakes" "nix-command" "pipe-operators"];
+        keep-derivations = true;
+        keep-outputs = true;
         trusted-users = ["@wheel"];
       };
     };

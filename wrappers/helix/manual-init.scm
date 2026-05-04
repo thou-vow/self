@@ -31,7 +31,6 @@
 (hx.cfg.set-option! 'lsp.display-messages #t)
 (hx.cfg.set-option! 'lsp.display-inlay-hints #t)
 (hx.cfg.set-option! 'search.smart-case #t)
-(hx.cfg.set-option! 'soft-wrap.enable #t)
 (hx.cfg.set-option! 'statusline.left
   '("mode"
     "separator"

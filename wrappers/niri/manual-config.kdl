@@ -117,7 +117,7 @@ binds {
         spawn "kitty" "-1"
     }
     Super+W hotkey-overlay-title="Open browser" repeat=false {
-        spawn "flatpak" "--user" "run" "com.brave.Browser"
+        spawn "brave"
     }
     Super+I repeat=false {
         toggle-column-tabbed-display
@@ -195,4 +195,3 @@ window-rule {
         proportion 0.5
     }
 }
-

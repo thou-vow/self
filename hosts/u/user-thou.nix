@@ -35,7 +35,6 @@
       wrappers = {
         atuin.daemon.enable = true;
         fish = {
-          loadSystemEnvironment = true;
           shellAbbrs = config.custom.users.thou.shellAliases;
           variables = config.custom.users.thou.variables;
         };
@@ -46,7 +45,7 @@
       uid = 1000;
       isNormalUser = true;
       description = "thou";
-      extraGroups = ["home-manager" "networkmanager" "wheel"];
+      extraGroups = ["networkmanager" "wheel"];
       packages =
         (with pkgs; [
           azahar

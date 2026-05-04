@@ -15,13 +15,13 @@
     boot = {
       initrd.systemd = {
         extraBin = {
-          btrfs = "${pkgs.btrfs-progs}/bin/btrfs";  
-          date = "${pkgs.coreutils}/bin/date";  
-          mkdir = "${pkgs.coreutils}/bin/mkdir";  
-          mv = "${pkgs.coreutils}/bin/mv";  
-          stat = "${pkgs.coreutils}/bin/stat";  
+          btrfs = "${pkgs.btrfs-progs}/bin/btrfs";
+          date = "${pkgs.coreutils}/bin/date";
+          mkdir = "${pkgs.coreutils}/bin/mkdir";
+          mv = "${pkgs.coreutils}/bin/mv";
+          stat = "${pkgs.coreutils}/bin/stat";
         };
-        
+
         services.impermanence-btrfs-rolling = {
           description = "Archiving existing Btrfs @ subvolume and creating a fresh one";
 
@@ -71,7 +71,7 @@
       "/" = {
         device = "/dev/disk/by-id/wwn-${hddId}-part4";
         fsType = "btrfs";
-        options = ["subvol=@" "commit=60" "compress=zstd:10" "noatime"];
+        options = ["subvol=@" "commit=60" "compress=zstd:11" "noatime"];
       };
       "/nix" = {
         device = "/dev/disk/by-id/wwn-${hddId}-part4";
@@ -94,7 +94,6 @@
           "/etc/NetworkManager/system-connections"
           "/root/.cache/nix"
           "/root/.local/share/nix"
-          "/root/.local/state/nix"
           "/srv"
           "/var/lib/flatpak"
           "/var/lib/machines"
@@ -111,8 +110,8 @@
             ".cache/nix"
             ".cargo"
             ".config/Cemu"
+            ".config/BraveSoftware"
             ".config/discord"
-            ".config/heroic"
             ".config/PCSX2"
             ".local/bin"
             ".local/share/Cemu"
@@ -120,15 +119,11 @@
             ".local/share/direnv"
             ".local/share/dolphin-emu"
             ".local/share/nix"
-            ".local/share/osuconfig"
-            ".local/share/osu-wine"
             ".local/share/qBittorrent"
             ".local/share/Steam"
             ".local/share/umu"
             ".local/share/waydroid"
-            ".local/share/wineprefixes"
             ".local/share/yawl"
-            ".local/state/nix"
             ".m2"
             ".ssh"
             ".steam"
