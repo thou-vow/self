@@ -106,6 +106,7 @@
         ];
         users.thou = {
           directories = [
+            ".cache/BraveSoftware"
             ".cache/mesa_shader_cache"
             ".cache/nix"
             ".cargo"
@@ -114,19 +115,25 @@
             ".config/discord"
             ".config/PCSX2"
             ".local/bin"
+            ".local/share/atuin"
             ".local/share/Cemu"
             ".local/share/containers"
             ".local/share/direnv"
             ".local/share/dolphin-emu"
+            ".local/share/flatpak"
+            ".local/share/helix"
             ".local/share/nix"
             ".local/share/qBittorrent"
             ".local/share/Steam"
+            ".local/share/steel"
             ".local/share/umu"
             ".local/share/waydroid"
             ".local/share/yawl"
+            ".local/share/zoxide"
             ".m2"
             ".ssh"
             ".steam"
+            ".var"
             "Desktop"
             "Documents"
             "Downloads"
@@ -137,17 +144,10 @@
             "Public"
             "Templates"
             "Videos"
-
-            ".local/share/atuin"
-            ".local/share/flatpak"
-            ".local/share/steel"
-            ".local/share/zoxide"
-            ".var"
           ];
           files = [
-            ".local/share/fish/fish_history"
-
             ".env"
+            ".local/share/fish/fish_history"
           ];
         };
       };
@@ -160,16 +160,6 @@
         verbosity = "crit";
         extraOptions = ["--loadavg-target" "2.0"];
       };
-
-      # These rules only apply for HDD, preferably connected via USB 2.0
-      udev.extraRules = lib.concatStringsSep ", " [
-        ''ACTION=="add|change"''
-        ''SUBSYSTEM=="block"''
-        ''ENV{DEVTYPE}=="disk"''
-        ''ENV{ID_WWN}=="${hddId}"''
-        # ''ATTR{queue/rotational}==1'' # Extra HDD validation
-        ''RUN+="${lib.getExe pkgs.hdparm} -a 1024 -B 255 /dev/%k"''
-      ];
     };
 
     swapDevices = [

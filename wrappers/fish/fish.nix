@@ -64,35 +64,42 @@
                 set -q __fish_config_sourced; and exit
                 set -g __fish_config_sourced 1
               '')
-              (lib.mkIf (config.variables != {}) (
-                lib.mkOrder 510 (config.variables
-                  |> lib.mapAttrsToList (k: v: "set -gx ${k} ${lib.escapeShellArg v}")
-                  |> builtins.concatStringsSep "\n")
-              ))
-              (lib.mkIf (pluginsWithCompletions != [])
-                (lib.mkOrder 520 ''
-                  set -p fish_complete_path ${pluginsWithCompletions
-                    |> builtins.attrValues
-                    |> map (p: "${p}/completions")
-                    |> lib.concatStringsSep " "}
-                ''))
-              (lib.mkIf (pluginsWithFunctions != [])
-                (lib.mkOrder 530 ''
-                  set -p fish_function_path ${pluginsWithFunctions
-                    |> builtins.attrValues
-                    |> map (p: "${p}/functions")
-                    |> lib.concatStringsSep " "}
-                ''))
-              (lib.mkIf (pluginsWithConf != [])
-                (lib.mkOrder 540 ''
-                  for plugin_dir in ${pluginsWithConf
-                    |> builtins.attrValues
-                    |> lib.concatStringsSep " "}
+              (lib.pipe config.variables [
+                (lib.generators.toKeyValue {
+                  mkKeyValue = k: v: "set -gx ${k} ${lib.escapeShellArg v}";
+                })
+                (lib.mkOrder 510)
+                (lib.mkIf (config.variables != {}))
+              ])
+              (lib.pipe pluginsWithCompletions [
+                builtins.attrValues
+                (map (p: "${p}/completions"))
+                (lib.concatStringsSep " ")
+                (s: "set -p fish_complete_path ${s}")
+                (lib.mkOrder 520)
+                (lib.mkIf (pluginsWithCompletions != []))
+              ])
+              (lib.pipe pluginsWithFunctions [
+                builtins.attrValues
+                (map (p: "${p}/functions"))
+                (lib.concatStringsSep " ")
+                (s: "set -p fish_function_path ${s}")
+                (lib.mkOrder 530)
+                (lib.mkIf (pluginsWithFunctions != []))
+              ])
+              (lib.pipe pluginsWithConf [
+                builtins.attrValues
+                (lib.concatStringsSep " ")
+                (s: ''
+                  for plugin_dir in ${s}
                     for f in $plugin_dir/conf.d/*.fish
                       source $f
                     end
                   end
-                ''))
+                '')
+                (lib.mkOrder 540)
+                (lib.mkIf (pluginsWithConf != []))
+              ])
               (lib.mkIf (config.loginInitFish != "")
                 (lib.mkOrder 550 ''
                   status is-login; and begin
@@ -126,6 +133,8 @@
             ++ config.extraPaths
           );
 
+          filesToPatch = ["share/systemd/user/niri.service"];
+
           flags = {
             "--no-config" = true;
             "--init-command" = {
@@ -137,18 +146,20 @@
           };
 
           interactiveInitFish = lib.mkMerge [
-            (lib.mkIf (config.shellAbbrs != {}) (
-              lib.mkOrder 510 (config.shellAbbrs
-                |> lib.generators.toKeyValue {
-                  mkKeyValue = k: v: "abbr --add ${k} ${lib.escapeShellArg v}";
-                })
-            ))
-            (lib.mkIf (config.shellAliases != {}) (
-              lib.mkOrder 520 (config.shellAliases
-                |> lib.generators.toKeyValue {
-                  mkKeyValue = k: v: "alias ${k} ${lib.escapeShellArg v}";
-                })
-            ))
+            (lib.pipe config.shellAbbrs [
+              (lib.generators.toKeyValue {
+                mkKeyValue = k: v: "abbr --add ${k} ${lib.escapeShellArg v}";
+              })
+              (lib.mkOrder 510)
+              (lib.mkIf (config.shellAbbrs != {}))
+            ])
+            (lib.pipe config.shellAliases [
+              (lib.generators.toKeyValue {
+                mkKeyValue = k: v: "alias ${k} ${lib.escapeShellArg v}";
+              })
+              (lib.mkOrder 520)
+              (lib.mkIf (config.shellAliases != {}))
+            ])
           ];
 
           package = lib.mkDefault pkgs.fish;

@@ -167,12 +167,15 @@
           };
         };
 
-      settings = {
-        experimental-features = ["flakes" "nix-command" "pipe-operators"];
-        keep-derivations = true;
-        keep-outputs = true;
-        trusted-users = ["@wheel"];
-      };
+      settings = lib.mkMerge [
+        self.nixConfig
+        {
+          experimental-features = ["flakes" "nix-command"];
+          keep-derivations = true;
+          keep-outputs = true;
+          trusted-users = ["@wheel"];
+        }
+      ];
     };
 
     programs = {
@@ -214,8 +217,7 @@
         };
       };
       blueman.enable = true;
-      # kmscon.enable = true;
-      # logmein-hamachi.enable = true;
+      kmscon.enable = true;
       lvm.enable = false;
       openssh.enable = true;
       pipewire = {

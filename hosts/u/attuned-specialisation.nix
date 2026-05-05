@@ -48,17 +48,6 @@
         enableRedistributableFirmware = true;
       };
 
-      # services = {
-      #   udev.extraRules = lib.concatStringsSep ", " [
-      #     ''ACTION=="add|change"''
-      #     ''SUBSYSTEM=="block"''
-      #     ''ENV{DEVTYPE}=="disk"''
-      #     ''ENV{ID_WWN}=="${internalHddId}"''
-      #     ''ATTR{queue/rotational}==1''
-      #     ''RUN+="${lib.getExe pkgs.hdparm} -B 255 /dev/%k"''
-      #   ];
-      # };
-
       swapDevices = [
         {
           device = "/dev/disk/by-id/wwn-${internalHddId}-part4";

@@ -62,10 +62,10 @@ gestures {
     }
 }
 binds {
-    Super+End hotkey-overlay-title="Suspend session" repeat=false {
+    Mod+End hotkey-overlay-title="Suspend session" repeat=false {
         suspend
     }
-    Super+Shift+End hotkey-overlay-title="Quit session" repeat=false {
+    Mod+Shift+End hotkey-overlay-title="Quit session" repeat=false {
         quit
     }
     XF86AudioMicMute allow-when-locked=true hotkey-overlay-title="Toggle microphone" {
@@ -92,97 +92,97 @@ binds {
     Shift+Print repeat=false {
         screenshot-window
     }
-    Super+Return hotkey-overlay-title="Open fuzzel" repeat=false {
+    Mod+Return hotkey-overlay-title="Open fuzzel" repeat=false {
         spawn "fuzzel"
     }
-    Super+Equal {
+    Mod+Equal {
         set-column-width "+5%"
     }
-    Super+Shift+Equal {
+    Mod+Shift+Equal {
         set-window-height "+5%"
     }
-    Super+Minus {
+    Mod+Minus {
         set-column-width "-5%"
     }
-    Super+Shift+Minus {
+    Mod+Shift+Minus {
         set-window-height "-5%"
     }
-    Super+Tab repeat=false {
+    Mod+Tab repeat=false {
         switch-focus-between-floating-and-tiling
     }
-    Super+Q repeat=false {
+    Mod+Q repeat=false {
         close-window
     }
-    Super+T hotkey-overlay-title="Open terminal" repeat=false {
+    Mod+T hotkey-overlay-title="Open terminal" repeat=false {
         spawn "kitty" "-1"
     }
-    Super+W hotkey-overlay-title="Open browser" repeat=false {
+    Mod+W hotkey-overlay-title="Open browser" repeat=false {
         spawn "brave"
     }
-    Super+I repeat=false {
+    Mod+I repeat=false {
         toggle-column-tabbed-display
     }
-    Super+O repeat=false {
+    Mod+O repeat=false {
         toggle-overview
     }
-    Super+F repeat=false {
+    Mod+F repeat=false {
         toggle-window-floating
     }
-    Super+Z repeat=false {
+    Mod+Z repeat=false {
         maximize-window-to-edges
     }
-    Super+Shift+Z repeat=false {
+    Mod+Shift+Z repeat=false {
         fullscreen-window
     }
-    Super+C {
+    Mod+C {
         center-column
     }
-    Super+M repeat=false {
+    Mod+M repeat=false {
         maximize-column
     }
-    Super+Shift+Slash repeat=false {
+    Mod+Shift+Slash repeat=false {
         show-hotkey-overlay
     }
-    Super+H {
+    Mod+H {
         focus-column-left
     }
-    Super+Shift+H {
+    Mod+Shift+H {
         move-column-left
     }
-    Super+Ctrl+H {
+    Mod+Ctrl+H {
         consume-or-expel-window-left
     }
-    Super+J {
+    Mod+J {
         focus-window-down
     }
-    Super+Shift+J {
+    Mod+Shift+J {
         move-window-down
     }
-    Super+K {
+    Mod+K {
         focus-window-up
     }
-    Super+Shift+K {
+    Mod+Shift+K {
         move-window-up
     }
-    Super+L {
+    Mod+L {
         focus-column-right
     }
-    Super+Shift+L {
+    Mod+Shift+L {
         move-column-right
     }
-    Super+Ctrl+L {
+    Mod+Ctrl+L {
         consume-or-expel-window-right
     }
-    Super+P {
+    Mod+P {
         focus-workspace-up
     }
-    Super+Shift+P {
+    Mod+Shift+P {
         move-column-to-workspace-up
     }
-    Super+N {
+    Mod+N {
         focus-workspace-down
     }
-    Super+Shift+N {
+    Mod+Shift+N {
         move-column-to-workspace-down
     }
 }

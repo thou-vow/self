@@ -23,7 +23,8 @@
       name,
       pkgs,
       wrappers,
-    }: ({
+    }:
+      lib.pipe {
         modules = [
           {_module.args = {inherit pkgs;};}
           (self.lib.mkInstallWrappers {
@@ -34,13 +35,14 @@
             inherit wrappers;
           })
         ];
-      }
-      |> lib.evalModules
-      |> (eval:
-        pkgs.symlinkJoin {
-          inherit name;
-          paths = eval.config.namespace.packages;
-        }));
+      } [
+        lib.evalModules
+        (eval:
+          pkgs.symlinkJoin {
+            inherit name;
+            paths = eval.config.namespace.packages;
+          })
+      ];
 
     mkInstallWrappers = {
       method,
@@ -59,9 +61,10 @@
         imports =
           {
             nixos =
-              (wrappers
-                |> lib.filterAttrs (_: v: v.nixosModule or null != null)
-                |> lib.mapAttrsToList (_: v: v.nixosModule))
+              lib.pipe wrappers [
+                (lib.filterAttrs (_: v: v.nixosModule or null != null))
+                (lib.mapAttrsToList (_: v: v.nixosModule))
+              ]
               ++ [
                 ({config, ...}: {
                   environment.systemPackages =
@@ -69,9 +72,10 @@
                 })
               ];
             nixosUser =
-              (wrappers
-                |> lib.filterAttrs (_: v: v.nixosUserModule or null != null)
-                |> lib.mapAttrsToList (_: v: v.nixosUserModule method.user))
+              lib.pipe wrappers [
+                (lib.filterAttrs (_: v: v.nixosUserModule or null != null))
+                (lib.mapAttrsToList (_: v: v.nixosUserModule method.user))
+              ]
               ++ [
                 ({config, ...}: {
                   users.users.${method.user}.packages =
@@ -97,10 +101,10 @@
               })
               wrappers;
 
-            integrationModules =
-              wrappers
-              |> lib.filterAttrs (_: v: v.integrationModule or null != null)
-              |> lib.mapAttrsToList (_: v: v.integrationModule);
+            integrationModules = lib.pipe wrappers [
+              (lib.filterAttrs (_: v: v.integrationModule or null != null))
+              (lib.mapAttrsToList (_: v: v.integrationModule))
+            ];
 
             packagesModule = {config, ...}: {
               options.packages = lib.mkOption {

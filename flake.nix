@@ -1,29 +1,26 @@
-{
+rec {
   inputs = {
-    nix-packages.url = "git+https://github.com/thou-vow/nix-packages?shallow=1";
-
-    nixpkgs.follows = "nix-packages/nixpkgs";
-    nixpkgs-stable.follows = "nix-packages/nixpkgs-stable";
-
+    determinate.follows = "nix-packages/determinate";
+    determinate-nix.follows = "nix-packages/determinate-nix";
     flake-parts.follows = "nix-packages/flake-parts";
     impermanence = {
       url = "git+https://github.com/nix-community/impermanence?shallow=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     import-tree.follows = "nix-packages/import-tree";
+    nix-packages.url = "git+https://github.com/thou-vow/nix-packages?shallow=1";
     nix-wrapper-modules = {
       url = "git+https://github.com/BirdeeHub/nix-wrapper-modules?shallow=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    treefmt-nix.follows = "nix-packages/treefmt-nix";
-
-    determinate.follows = "nix-packages/determinate";
-    determinate-nix.follows = "nix-packages/determinate-nix";
+    nixpkgs.follows = "nix-packages/nixpkgs";
+    nixpkgs-stable.follows = "nix-packages/nixpkgs-stable";
     nyx-loner.follows = "nix-packages/nyx-loner";
     nix-index-database = {
       url = "git+https://github.com/nix-community/nix-index-database?shallow=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    treefmt-nix.follows = "nix-packages/treefmt-nix";
   };
 
   nixConfig = {
@@ -42,5 +39,6 @@
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake {inherit inputs;} ({lib, ...}: {
       imports = [(inputs.import-tree.filterNot (lib.hasSuffix "flake.nix") ./.)];
+      flake = {inherit nixConfig;};
     });
 }

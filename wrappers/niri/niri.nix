@@ -48,6 +48,8 @@
 
           env."NIRI_CONFIG" = "${config.eject.directory}/${baseNameOf config.eject.entries.niriConfig}/config.kdl";
 
+          extraPackages = [config.xwayland-satellite.package];
+
           package = lib.mkDefault pkgs.niri;
 
           xwayland-satellite.package = lib.mkDefault pkgs.xwayland-satellite;
@@ -82,5 +84,12 @@
         ];
       })
     ];
+
+    nixosUserModule = user:
+      lib.mkMerge [
+        ({pkgs, ...}: {
+          xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-gnome];
+        })
+      ];
   };
 }

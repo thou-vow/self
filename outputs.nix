@@ -43,7 +43,7 @@
       test = self.lib.mkWrappersPackage {
         inherit pkgs;
         name = "shell";
-        wrappers = {inherit (self.wrappers)  prismlauncher;};
+        wrappers = {inherit (self.wrappers) prismlauncher;};
       };
 
       shell = self.lib.mkWrappersPackage {

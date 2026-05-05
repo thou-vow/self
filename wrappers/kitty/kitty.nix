@@ -54,32 +54,35 @@
           );
 
           kittyConf = lib.mkMerge [
-            (lib.mkIf (config.settings != {}) (
-              lib.mkOrder 510 (config.settings
-                |> lib.generators.toKeyValue {
-                  mkKeyValue = key: value: let
-                    value' =
-                      if builtins.isBool value
-                      then
-                        if value
-                        then "yes"
-                        else "no"
-                      else toString value;
-                  in "${key} ${value'}";
-                })
-            ))
-            (lib.mkIf (config.keybindings != {}) (
-              lib.mkOrder 520 (config.keybindings
-                |> lib.generators.toKeyValue {
-                  mkKeyValue = k: v: "map ${k} ${v}";
-                })
-            ))
-            (lib.mkIf (config.mouseBindings != {}) (
-              lib.mkOrder 530 (config.mouseBindings
-                |> lib.generators.toKeyValue {
-                  mkKeyValue = k: v: "mouse_map ${k} ${v}";
-                })
-            ))
+            (lib.pipe config.settings [
+              (lib.generators.toKeyValue {
+                mkKeyValue = key: value: let
+                  value' =
+                    if builtins.isBool value
+                    then
+                      if value
+                      then "yes"
+                      else "no"
+                    else toString value;
+                in "${key} ${value'}";
+              })
+              (lib.mkOrder 510)
+              (lib.mkIf (config.settings != {}))
+            ])
+            (lib.pipe config.keybindings [
+              (lib.generators.toKeyValue {
+                mkKeyValue = k: v: "map ${k} ${v}";
+              })
+              (lib.mkOrder 520)
+              (lib.mkIf (config.keybindings != {}))
+            ])
+            (lib.pipe config.mouseBindings [
+              (lib.generators.toKeyValue {
+                mkKeyValue = k: v: "mouse_map ${k} ${v}";
+              })
+              (lib.mkOrder 530)
+              (lib.mkIf (config.mouseBindings != {}))
+            ])
           ];
 
           package = lib.mkDefault pkgs.kitty;
