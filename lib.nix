@@ -51,6 +51,7 @@
       namespace =
         {
           direct = method.namespace;
+          nixOnDroid = ["custom" "wrappers"];
           nixos = ["custom" "wrappers"];
           nixosUser = ["custom" "users" method.user "wrappers"];
         }.${
@@ -60,6 +61,17 @@
       {pkgs, ...}: {
         imports =
           {
+            nixOnDroid =
+              lib.pipe wrappers [
+                (lib.filterAttrs (_: v: v.nixOnDroidModule or null != null))
+                (lib.mapAttrsToList (_: v: v.nixOnDroidModule))
+              ]
+              ++ [
+                ({config, ...}: {
+                  environment.packages =
+                    lib.attrByPath (namespace ++ ["packages"]) [] config;
+                })
+              ];
             nixos =
               lib.pipe wrappers [
                 (lib.filterAttrs (_: v: v.nixosModule or null != null))

@@ -11,10 +11,21 @@
         options = {
           integrationModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
           module = lib.mkOption {type = lib.types.deferredModule;};
+          nixOnDroidModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
           nixosModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
           nixosUserModule = lib.mkOption {type = with lib.types; nullOr (functionTo deferredModule);};
         };
       });
+      default = {};
+    };
+
+    nixOnDroidConfigurations = lib.mkOption {
+      type = with lib.types; lazyAttrsOf raw;
+      default = {};
+    };
+
+    nixOnDroidModules = lib.mkOption {
+      type = with lib.types; lazyAttrsOf deferredModule;
       default = {};
     };
 
@@ -36,6 +47,15 @@
 
   config = {
     flake = {
+      nixOnDroidModules.core = {pkgs, ...}: {
+        _module.args = let
+          system = pkgs.stdenv.hostPlatform.system;
+        in {
+          inherit (withSystem system (args: args)) inputs' self';
+          inherit system;
+        };
+      };
+
       nixosModules.core = {pkgs, ...}: {
         options.custom = {
           flakePath = lib.mkOption {

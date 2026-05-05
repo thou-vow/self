@@ -6,6 +6,11 @@
   ...
 }: {
   flake = {
+    nixOnDroidConfigurations.leia = inputs.nix-on-droid.lib.nixOnDroidConfiguration {
+      modules = [self.nixOnDroidModules.leia];
+      pkgs = withSystem "aarch64-linux" ({pkgs, ...}: pkgs);
+    };
+
     nixosConfigurations.u = lib.nixosSystem {
       modules = [
         self.nixosModules.u
@@ -38,12 +43,6 @@
         inherit (self) wrappers;
         inherit pkgs;
         name = "all";
-      };
-
-      test = self.lib.mkWrappersPackage {
-        inherit pkgs;
-        name = "shell";
-        wrappers = {inherit (self.wrappers) prismlauncher;};
       };
 
       shell = self.lib.mkWrappersPackage {
