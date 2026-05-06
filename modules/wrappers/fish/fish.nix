@@ -219,7 +219,7 @@
     ];
 
     nixosUserModule = user: let
-      namespace = ["custom" "users" user "wrappers"];
+      namespace = ["wrappers" "users" user];
       mk = lib.setAttrByPath (namespace ++ ["fish"]);
     in
       lib.mkMerge [
@@ -233,10 +233,6 @@
           config = mk {
             overrides = lib.mkIf cfg.loadSystemEnvironment [
               (pkg: pkg.override {fishEnvPreInit = source: source config.system.build.setEnvironment;})
-              (pkg:
-                pkg.overrideAttrs {
-                  doCheck = false;
-                })
             ];
           };
         })

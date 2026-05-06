@@ -27,17 +27,20 @@
         })
       ]
       ++ map (m: m "thou")
-      (with self.nixosUserModules; [core]);
+      (with self.nixosUserModules; [prefs]);
 
-    custom.users.thou = {
-      shellAliases = {};
-      variables = {};
-      wrappers = {
-        atuin.daemon.enable = true;
-        fish = {
-          shellAbbrs = config.custom.users.thou.shellAliases;
-          variables = config.custom.users.thou.variables;
-        };
+    wrappers.users.thou = {
+      atuin.daemon.enable = true;
+      fish = {
+        shellAbbrs = config.ext.users.thou.prefs.shellAliases;
+        variables = config.ext.users.thou.prefs.variables;
+      };
+    };
+
+    ext.users.thou = {
+      prefs = {
+        shellAliases = {};
+        variables = {};
       };
     };
 
@@ -76,7 +79,7 @@
           inputs'.nix-packages.packages.discord-rpc-lsp
         ];
       password = "123";
-      shell = config.custom.users.thou.wrappers.fish.wrapper;
+      shell = config.wrappers.users.thou.fish.wrapper;
     };
   };
 }

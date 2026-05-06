@@ -25,7 +25,11 @@
           };
         })
       ]
-      ++ (with self.nixOnDroidModules; [core]);
+      ++ (with self.nixOnDroidModules; [
+        core
+        nix
+        state
+      ]);
 
     environment = {
       etcBackupExtension = "bk";
@@ -36,32 +40,10 @@
       motd = null;
     };
 
-    nix = {
-      extraOptions = ''
-        extra-experimental-features = flakes nix-command
-      '';
-
-      nixPath =
-        lib.mapAttrsToList (k: _: "${k}=flake:${k}") config.nix.registry;
-
-      package = inputs'.nixpkgs-nod.legacyPackages.nixVersions.nix_2_31;
-
-      registry =
-        lib.mapAttrs (_: value: {flake = value;})
-        (lib.filterAttrs (_: value: lib.isType "flake" value) inputs)
-        // {
-          nixpkgs-master.to = {
-            type = "github";
-            owner = "nixos";
-            repo = "nixpkgs";
-          };
-        };
-    };
-
     system.stateVersion = "24.05";
 
     time.timeZone = "America/Sao_Paulo";
 
-    user.shell = lib.getExe config.custom.wrappers.fish.wrapper;
+    user.shell = lib.getExe config.wrappers.fish.wrapper;
   };
 }

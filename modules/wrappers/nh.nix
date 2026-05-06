@@ -18,14 +18,14 @@
     ];
 
     nixosModule = let
-      namespace = ["custom" "wrappers"];
+      namespace = ["wrappers"];
       mk = lib.setAttrByPath (namespace ++ ["nh"]);
     in
       lib.mkMerge [
         ({config, ...}: {
           config = mk {
-            env = lib.mkIf (config.custom.flakePath or null != null) {
-              NH_FLAKE = config.custom.flakePath;
+            env = lib.mkIf (config.ext.state.flakePath or null != null) {
+              NH_FLAKE = config.ext.state.flakePath;
             };
           };
         })

@@ -90,7 +90,7 @@
       "/persist" = {
         enable = true;
         directories = [
-          config.custom.flakePath
+          config.ext.state.flakePath
           "/etc/NetworkManager/system-connections"
           "/root/.cache/nix"
           "/root/.local/share/nix"

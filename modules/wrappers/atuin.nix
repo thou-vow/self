@@ -61,7 +61,7 @@
     ];
 
     nixosUserModule = user: let
-      namespace = ["custom" "users" user "wrappers"];
+      namespace = ["wrappers" "users" user];
       mk = lib.setAttrByPath (namespace ++ ["atuin"]);
     in
       lib.mkMerge [

@@ -59,7 +59,6 @@
           nixpkgs.follows = "nixpkgs";
         };
       };
-      nixpkgs-nod.url = "github:NixOS/nixpkgs/88d3861acdd3d2f0e361767018218e51810df8a1";
       nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
       nyx-loner = {
         url = "github:lonerOrz/nyx-loner";

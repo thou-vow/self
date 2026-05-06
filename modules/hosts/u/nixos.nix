@@ -24,13 +24,15 @@
       ]
       ++ (with self.nixosModules; [
         core
-        determinate
         flatpak
+        nix
+        state
         waydroid
       ]);
 
-    custom = {
-      flakePath = "/self";
+    ext = {
+      nix.determinate.enable = true;
+      state.flakePath = "/self";
     };
 
     boot = {
@@ -143,39 +145,6 @@
       };
       nftables.enable = true;
       useNetworkd = true;
-    };
-
-    nix = {
-      daemonCPUSchedPolicy = "idle";
-      daemonIOSchedClass = "idle";
-
-      nixPath =
-        lib.mapAttrsToList (k: _: "${k}=flake:${k}") config.nix.registry;
-
-      registry =
-        lib.mapAttrs (_: value: {flake = value;})
-        (lib.filterAttrs (_: value: lib.isType "flake" value) inputs)
-        // {
-          nixpkgs-master.to = {
-            type = "github";
-            owner = "nixos";
-            repo = "nixpkgs";
-          };
-          self.to = {
-            type = "git";
-            url = "file://${config.custom.flakePath}";
-          };
-        };
-
-      settings = lib.mkMerge [
-        self.nixConfig
-        {
-          experimental-features = ["flakes" "nix-command"];
-          keep-derivations = true;
-          keep-outputs = true;
-          trusted-users = ["@wheel"];
-        }
-      ];
     };
 
     programs = {

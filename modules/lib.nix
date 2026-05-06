@@ -51,9 +51,9 @@
       namespace =
         {
           direct = method.namespace;
-          nixOnDroid = ["custom" "wrappers"];
-          nixos = ["custom" "wrappers"];
-          nixosUser = ["custom" "users" method.user "wrappers"];
+          nixOnDroid = ["wrappers"];
+          nixos = ["wrappers"];
+          nixosUser = ["wrappers" "users" method.user];
         }.${
           method.variant
         } or (throw "Unexpected method.variant in mkInstallWrappers: ${method.variant}");
