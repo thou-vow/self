@@ -71,18 +71,16 @@
     }: {
       imports = [inputs.determinate.nixosModules.default];
 
-      options.ext.nix.determinate = {
-        enable = lib.mkEnableOption "Determinate Nix";
-        package = lib.mkOption {
-          type = lib.types.package;
-          default = inputs'.determinate-nix.packages.default;
+      options.ext.nix = {
+        determinate = {
+          enable = lib.mkEnableOption "Determinate Nix";
         };
       };
 
       config = {
         determinate.enable = config.ext.nix.determinate.enable;
 
-        environment.variables.DETSYS_IDS_TELEMETRY = "disabled";
+        environment.variables.DETSYS_IDS_TELEMETRY = lib.mkIf config.ext.nix.determinate.enable "disabled";
 
         nix = {
           daemonCPUSchedPolicy = "idle";
@@ -90,10 +88,6 @@
 
           nixPath =
             lib.mapAttrsToList (k: _: "${k}=flake:${k}") config.nix.registry;
-
-          package =
-            lib.mkIf config.ext.nix.determinate.enable
-            (lib.mkOverride 75 config.ext.nix.determinate.package);
 
           registry = lib.mkMerge [
             (lib.pipe inputs [

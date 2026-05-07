@@ -17,65 +17,37 @@
 
     formatter = pkgs: pkgs.alejandra;
 
-    inputs = {
-      flake-file.follows = "nix-packages/flake-file";
-      flake-parts.follows = "nix-packages/flake-parts";
-      import-tree.follows = "nix-packages/import-tree";
-      nixpkgs.follows = "nix-packages/nixpkgs";
-      treefmt-nix.follows = "nix-packages/treefmt-nix";
-
-      determinate = {
-        url = "github:DeterminateSystems/determinate";
-        inputs.nix.inputs = {
-          nixpkgs-regression.follows = "nixpkgs";
-          nixpkgs-23-11.follows = "nixpkgs";
-        };
-      };
-      determinate-nix.follows = "determinate/nix";
-      home-manager = {
-        url = "github:nix-community/home-manager";
-        inputs.nixpkgs.follows = "nixpkgs";
-      };
-      impermanence = {
-        url = "github:nix-community/impermanence";
-        inputs = {
-          home-manager.follows = "home-manager";
-          nixpkgs.follows = "nixpkgs";
-        };
-      };
-      nix-packages.url = "github:thou-vow/nix-packages";
-      nix-wrapper-modules = {
-        url = "github:BirdeeHub/nix-wrapper-modules";
-        inputs.nixpkgs.follows = "nixpkgs";
-      };
-      nix-index-database = {
-        url = "github:nix-community/nix-index-database";
-        inputs.nixpkgs.follows = "nixpkgs";
-      };
-      nix-on-droid = {
-        url = "github:nix-community/nix-on-droid";
-        inputs = {
-          home-manager.follows = "home-manager";
-          nixpkgs.follows = "nixpkgs";
-        };
-      };
-      nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
-      nyx-loner = {
-        url = "github:lonerOrz/nyx-loner";
-        inputs = {
-          home-manager.follows = "home-manager";
-        };
-      };
-    };
+    inputs = lib.mkMerge ([
+        {
+          nix-packages.url = "github:thou-vow/nix-packages";
+        }
+      ]
+      ++ map (k: {${k}.follows = "nix-packages/${k}";}) [
+        "determinate"
+        "determinate-nix"
+        "flake-file"
+        "flake-parts"
+        "home-manager"
+        "impermanence"
+        "import-tree"
+        "nix-index-database"
+        "nix-on-droid"
+        "nix-wrapper-modules"
+        "nixpkgs"
+        "nixpkgs-nod"
+        "nixpkgs-stable"
+        "nyx-loner"
+        "treefmt-nix"
+      ]);
 
     nixConfig = lib.pipe top.config.substituters [
       builtins.attrValues
       (map ({
-        key,
-        url,
+        keys,
+        urls,
       }: {
-        extra-substituters = [url];
-        extra-trusted-public-keys = [key];
+        extra-substituters = urls;
+        extra-trusted-public-keys = keys;
       }))
       lib.mkMerge
     ];
@@ -87,20 +59,20 @@
 
   substituters = {
     nix-community = {
-      url = "https://nix-community.cachix.org";
-      key = "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=";
+      urls = ["https://nix-community.cachix.org"];
+      keys = ["nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="];
     };
     nix-on-droid = {
-      url = "https://nix-on-droid.cachix.org";
-      key = "nix-on-droid.cachix.org-1:56snoMJTXmDRC1Ei24CmKoUqvHJ9XCp+nidK7qkMQrU=";
+      urls = ["https://nix-on-droid.cachix.org"];
+      keys = ["nix-on-droid.cachix.org-1:56snoMJTXmDRC1Ei24CmKoUqvHJ9XCp+nidK7qkMQrU="];
     };
     nyx-loner = {
-      url = "https://cache.garnix.io";
-      key = "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=";
+      urls = ["https://cache.garnix.io"];
+      keys = ["cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="];
     };
     thou-vow = {
-      url = "https://thou-vow.cachix.org";
-      key = "thou-vow.cachix.org-1:n6zUvWYOI7kh0jgd+ghWhxeMd9tVdYF2KdOvufJ/Qy4=";
+      urls = ["https://thou-vow.cachix.org"];
+      keys = ["thou-vow.cachix.org-1:n6zUvWYOI7kh0jgd+ghWhxeMd9tVdYF2KdOvufJ/Qy4="];
     };
   };
 }

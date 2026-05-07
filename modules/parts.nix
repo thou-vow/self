@@ -43,8 +43,8 @@
     substituters = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
-          key = lib.mkOption {type = lib.types.str;};
-          url = lib.mkOption {type = lib.types.str;};
+          keys = lib.mkOption {type = with lib.types; listOf str;};
+          urls = lib.mkOption {type = with lib.types; listOf str;};
         };
       });
       default = {};

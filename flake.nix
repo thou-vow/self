@@ -11,50 +11,21 @@
   };
 
   inputs = {
-    determinate = {
-      url = "github:DeterminateSystems/determinate";
-      inputs.nix.inputs = {
-        nixpkgs-23-11.follows = "nixpkgs";
-        nixpkgs-regression.follows = "nixpkgs";
-      };
-    };
-    determinate-nix.follows = "determinate/nix";
+    determinate.follows = "nix-packages/determinate";
+    determinate-nix.follows = "nix-packages/determinate-nix";
     flake-file.follows = "nix-packages/flake-file";
     flake-parts.follows = "nix-packages/flake-parts";
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    impermanence = {
-      url = "github:nix-community/impermanence";
-      inputs = {
-        home-manager.follows = "home-manager";
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
+    home-manager.follows = "nix-packages/home-manager";
+    impermanence.follows = "nix-packages/impermanence";
     import-tree.follows = "nix-packages/import-tree";
-    nix-index-database = {
-      url = "github:nix-community/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nix-on-droid = {
-      url = "github:nix-community/nix-on-droid";
-      inputs = {
-        home-manager.follows = "home-manager";
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
+    nix-index-database.follows = "nix-packages/nix-index-database";
+    nix-on-droid.follows = "nix-packages/nix-on-droid";
     nix-packages.url = "github:thou-vow/nix-packages";
-    nix-wrapper-modules = {
-      url = "github:BirdeeHub/nix-wrapper-modules";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nix-wrapper-modules.follows = "nix-packages/nix-wrapper-modules";
     nixpkgs.follows = "nix-packages/nixpkgs";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
-    nyx-loner = {
-      url = "github:lonerOrz/nyx-loner";
-      inputs.home-manager.follows = "home-manager";
-    };
+    nixpkgs-nod.follows = "nix-packages/nixpkgs-nod";
+    nixpkgs-stable.follows = "nix-packages/nixpkgs-stable";
+    nyx-loner.follows = "nix-packages/nyx-loner";
     treefmt-nix.follows = "nix-packages/treefmt-nix";
   };
 }

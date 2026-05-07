@@ -92,6 +92,7 @@
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
+          "nix-packages",
           "determinate",
           "nix",
           "nixpkgs"
@@ -149,10 +150,12 @@
       "inputs": {
         "flake-compat": "flake-compat",
         "gitignore": [
+          "nix-packages",
           "determinate",
           "nix"
         ],
         "nixpkgs": [
+          "nix-packages",
           "determinate",
           "nix",
           "nixpkgs"
@@ -200,6 +203,7 @@
     "home-manager": {
       "inputs": {
         "nixpkgs": [
+          "nix-packages",
           "nixpkgs"
         ]
       },
@@ -220,9 +224,11 @@
     "impermanence": {
       "inputs": {
         "home-manager": [
+          "nix-packages",
           "home-manager"
         ],
         "nixpkgs": [
+          "nix-packages",
           "nixpkgs"
         ]
       },
@@ -259,6 +265,7 @@
       "inputs": {
         "nix-github-actions": "nix-github-actions",
         "nixpkgs": [
+          "nix-packages",
           "nyx-loner",
           "nixpkgs"
         ]
@@ -283,9 +290,11 @@
         "git-hooks-nix": "git-hooks-nix",
         "nixpkgs": "nixpkgs",
         "nixpkgs-23-11": [
+          "nix-packages",
           "nixpkgs"
         ],
         "nixpkgs-regression": [
+          "nix-packages",
           "nixpkgs"
         ]
       },
@@ -305,10 +314,12 @@
     "nix-formatter-pack": {
       "inputs": {
         "nixpkgs": [
+          "nix-packages",
           "nix-on-droid",
           "nixpkgs"
         ],
         "nmd": [
+          "nix-packages",
           "nix-on-droid",
           "nmd"
         ],
@@ -331,6 +342,7 @@
     "nix-github-actions": {
       "inputs": {
         "nixpkgs": [
+          "nix-packages",
           "nyx-loner",
           "jovian",
           "nixpkgs"
@@ -354,6 +366,7 @@
     "nix-index-database": {
       "inputs": {
         "nixpkgs": [
+          "nix-packages",
           "nixpkgs"
         ]
       },
@@ -374,14 +387,22 @@
     "nix-on-droid": {
       "inputs": {
         "home-manager": [
+          "nix-packages",
           "home-manager"
         ],
         "nix-formatter-pack": "nix-formatter-pack",
         "nixpkgs": [
+          "nix-packages",
           "nixpkgs"
         ],
-        "nixpkgs-docs": "nixpkgs-docs",
-        "nixpkgs-for-bootstrap": "nixpkgs-for-bootstrap",
+        "nixpkgs-docs": [
+          "nix-packages",
+          "nixpkgs"
+        ],
+        "nixpkgs-for-bootstrap": [
+          "nix-packages",
+          "nixpkgs"
+        ],
         "nmd": "nmd"
       },
       "locked": {
@@ -400,20 +421,34 @@
     },
     "nix-packages": {
       "inputs": {
+        "determinate": "determinate",
+        "determinate-nix": [
+          "nix-packages",
+          "determinate",
+          "nix"
+        ],
         "flake-file": "flake-file",
         "flake-parts": "flake-parts_2",
         "helix-steel": "helix-steel",
+        "home-manager": "home-manager",
+        "impermanence": "impermanence",
         "import-tree": "import-tree",
+        "nix-index-database": "nix-index-database",
+        "nix-on-droid": "nix-on-droid",
+        "nix-wrapper-modules": "nix-wrapper-modules",
         "nixpkgs": "nixpkgs_3",
-        "rust-overlay": "rust-overlay",
+        "nixpkgs-nod": "nixpkgs-nod",
+        "nixpkgs-stable": "nixpkgs-stable",
+        "nyx-loner": "nyx-loner",
+        "rust-overlay": "rust-overlay_2",
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1778044607,
-        "narHash": "sha256-zfMB9AVt8drOWZaNU/qkj6updDXD7tWqjE+KpS0NkvE=",
+        "lastModified": 1778120314,
+        "narHash": "sha256-TMLgpMBCDrLid4KiGqqP/icDNl6BMQHCG4chJY2TfZU=",
         "owner": "thou-vow",
         "repo": "nix-packages",
-        "rev": "adb45c1b16646fc869096625433c7cca39b64796",
+        "rev": "640c4e258bef53d6caf83a387f57424f6acee32f",
         "type": "github"
       },
       "original": {
@@ -425,6 +460,7 @@
     "nix-wrapper-modules": {
       "inputs": {
         "nixpkgs": [
+          "nix-packages",
           "nixpkgs"
         ]
       },
@@ -456,35 +492,19 @@
         "url": "https://flakehub.com/f/NixOS/nixpkgs/0.2511"
       }
     },
-    "nixpkgs-docs": {
+    "nixpkgs-nod": {
       "locked": {
-        "lastModified": 1705957679,
-        "narHash": "sha256-Q8LJaVZGJ9wo33wBafvZSzapYsjOaNjP/pOnSiKVGHY=",
+        "lastModified": 1769018530,
+        "narHash": "sha256-MJ27Cy2NtBEV5tsK+YraYr2g851f3Fl1LpNHDzDX15c=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9a333eaa80901efe01df07eade2c16d183761fa3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "release-23.05",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs-for-bootstrap": {
-      "locked": {
-        "lastModified": 1720244366,
-        "narHash": "sha256-WrDV0FPMVd2Sq9hkR5LNHudS3OSMmUrs90JUTN+MXpA=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "49ee0e94463abada1de470c9c07bfc12b36dcf40",
+        "rev": "88d3861acdd3d2f0e361767018218e51810df8a1",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "49ee0e94463abada1de470c9c07bfc12b36dcf40",
+        "rev": "88d3861acdd3d2f0e361767018218e51810df8a1",
         "type": "github"
       }
     },
@@ -536,11 +556,11 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1777918403,
-        "narHash": "sha256-7QiZv0LcW1yIOLo2LNuCQjWon1Z1r99FwK24hbtBOF4=",
+        "lastModified": 1778036283,
+        "narHash": "sha256-62EWg6lI0qyzm7oAx5cAnGkLutvJsRBe0KkEW2JDZCE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "afc5551119aae6eab73a95c1960891cfe63204f6",
+        "rev": "ed67bc86e84e51d4a88e73c7fd36006dc876476f",
         "type": "github"
       },
       "original": {
@@ -553,6 +573,7 @@
     "nmd": {
       "inputs": {
         "nixpkgs": [
+          "nix-packages",
           "nix-on-droid",
           "nixpkgs-docs"
         ],
@@ -592,18 +613,19 @@
       "inputs": {
         "flake-schemas": "flake-schemas",
         "home-manager": [
+          "nix-packages",
           "home-manager"
         ],
         "jovian": "jovian",
         "nixpkgs": "nixpkgs_4",
-        "rust-overlay": "rust-overlay_2"
+        "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1778002349,
-        "narHash": "sha256-xI+Deo8fDTnux5QF9DbUIi8Hdd425wBperaxStGV8aU=",
+        "lastModified": 1778089063,
+        "narHash": "sha256-VnyVTQHpB1kdugpyxo+Mn3UAtX9KMSAUQsN9MnvRrBo=",
         "owner": "lonerOrz",
         "repo": "nyx-loner",
-        "rev": "1b4de35cb33ca7b59eb2d8bf2f1bf9e60b665e48",
+        "rev": "babfe4cd63d26151341a16c1bc117a6c437eb8a8",
         "type": "github"
       },
       "original": {
@@ -614,10 +636,13 @@
     },
     "root": {
       "inputs": {
-        "determinate": "determinate",
+        "determinate": [
+          "nix-packages",
+          "determinate"
+        ],
         "determinate-nix": [
-          "determinate",
-          "nix"
+          "nix-packages",
+          "determinate-nix"
         ],
         "flake-file": [
           "nix-packages",
@@ -627,22 +652,47 @@
           "nix-packages",
           "flake-parts"
         ],
-        "home-manager": "home-manager",
-        "impermanence": "impermanence",
+        "home-manager": [
+          "nix-packages",
+          "home-manager"
+        ],
+        "impermanence": [
+          "nix-packages",
+          "impermanence"
+        ],
         "import-tree": [
           "nix-packages",
           "import-tree"
         ],
-        "nix-index-database": "nix-index-database",
-        "nix-on-droid": "nix-on-droid",
+        "nix-index-database": [
+          "nix-packages",
+          "nix-index-database"
+        ],
+        "nix-on-droid": [
+          "nix-packages",
+          "nix-on-droid"
+        ],
         "nix-packages": "nix-packages",
-        "nix-wrapper-modules": "nix-wrapper-modules",
+        "nix-wrapper-modules": [
+          "nix-packages",
+          "nix-wrapper-modules"
+        ],
         "nixpkgs": [
           "nix-packages",
           "nixpkgs"
         ],
-        "nixpkgs-stable": "nixpkgs-stable",
-        "nyx-loner": "nyx-loner",
+        "nixpkgs-nod": [
+          "nix-packages",
+          "nixpkgs-nod"
+        ],
+        "nixpkgs-stable": [
+          "nix-packages",
+          "nixpkgs-stable"
+        ],
+        "nyx-loner": [
+          "nix-packages",
+          "nyx-loner"
+        ],
         "treefmt-nix": [
           "nix-packages",
           "treefmt-nix"
@@ -653,6 +703,7 @@
       "inputs": {
         "nixpkgs": [
           "nix-packages",
+          "nyx-loner",
           "nixpkgs"
         ]
       },
@@ -673,16 +724,16 @@
     "rust-overlay_2": {
       "inputs": {
         "nixpkgs": [
-          "nyx-loner",
+          "nix-packages",
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1777950921,
-        "narHash": "sha256-NpOgt8ISaHTDNJZjNUfwFfbieKfRXzab4WKM31gZCGA=",
+        "lastModified": 1778037418,
+        "narHash": "sha256-EZnAOkPgEeOO2rCRhwkTvesCq/E6dbsyxhMyaefgIWM=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "366ea19e0e55b768f74b7a0b2a20f847e7ae828d",
+        "rev": "adf987c76af8d17b8256d23631bcf203f81e1a63",
         "type": "github"
       },
       "original": {

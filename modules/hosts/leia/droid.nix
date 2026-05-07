@@ -20,6 +20,7 @@
               atuin
               direnv
               fish
+              git
               helix
               ;
           };
@@ -31,14 +32,22 @@
         state
       ]);
 
+    wrappers = {
+      git.settings.user = {
+        email = "thou.vow.etoile@gmail.com";
+        name = "thou-vow";
+      };
+    };
+
     environment = {
       etcBackupExtension = "bk";
       packages = with pkgs; [
-        git
         nano
       ];
       motd = null;
     };
+
+    nix.package = inputs'.nixpkgs-nod.legacyPackages.nixVersions.latest;
 
     system.stateVersion = "24.05";
 

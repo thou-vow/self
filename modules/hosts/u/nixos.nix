@@ -45,8 +45,6 @@
       };
     };
 
-    console.useXkbConfig = true;
-
     environment = {
       systemPackages = with pkgs; [
         btop
@@ -84,7 +82,6 @@
         wget
         zip
       ];
-
       variables = {
         MESA_SHADER_CACHE_MAX_SIZE = "10G";
         NIXPKGS_ALLOW_UNFREE = "1";
@@ -154,7 +151,6 @@
       };
       firefox.enable = true;
       git.enable = true;
-      haguichi.enable = true;
       steam.enable = true;
     };
 
@@ -186,7 +182,11 @@
         };
       };
       blueman.enable = true;
-      kmscon.enable = true;
+      kmscon = {
+        enable = true;
+        hwRender = true;
+        useXkbConfig = true;
+      };
       lvm.enable = false;
       openssh.enable = true;
       pipewire = {

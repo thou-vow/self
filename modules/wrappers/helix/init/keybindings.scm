@@ -282,7 +282,7 @@
     (ls 'ret (kv (ls 'q "wclose")
               (ls 'ret "rotate_view")
               (ls 'o "wonly")
-              (ls 'x "hsplit")
+              (ls 's "hsplit")
               (ls 'h "jump_view_left")
               (ls 'H "swap_view_left")
               (ls 'j "jump_view_down")
@@ -291,7 +291,7 @@
               (ls 'K "swap_view_up")
               (ls 'l "jump_view_right")
               (ls 'L "swap_view_right")
-              (ls 'y "vsplit")))
+              (ls 'v "vsplit")))
     (ls 'S-ret "rotate_view_reverse")))
 
 (define normal-mode

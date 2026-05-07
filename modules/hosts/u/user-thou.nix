@@ -18,6 +18,7 @@
               atuin
               direnv
               fish
+              git
               helix
               kitty
               niri
@@ -34,6 +35,10 @@
       fish = {
         shellAbbrs = config.ext.users.thou.prefs.shellAliases;
         variables = config.ext.users.thou.prefs.variables;
+      };
+      git.settings.user = {
+        email = "thou.vow.etoile@gmail.com";
+        name = "thou-vow";
       };
     };
 
