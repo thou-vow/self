@@ -1,18 +1,18 @@
 {
+  inputs,
   lib,
   self,
   ...
 }: {
   flake.wrappers.kitty = {
     module = lib.mkMerge [
-      self.wrapperModules.core
-      self.wrapperModules.eject
-
       ({
         config,
         pkgs,
         ...
       }: {
+        imports = [self.wrapperModules.eject];
+
         options = {
           extraPaths = lib.mkOption {
             type = lib.types.listOf (lib.types.submodule {

@@ -1,18 +1,18 @@
 {
+  inputs,
   lib,
   self,
   ...
 }: {
   flake.wrappers.git = {
     module = lib.mkMerge [
-      self.wrapperModules.core
-      self.wrapperModules.eject
-
       ({
         config,
         pkgs,
         ...
       }: {
+        imports = [self.wrapperModules.eject];
+
         options = {
           gitconfig = lib.mkOption {
             type = lib.types.lines;

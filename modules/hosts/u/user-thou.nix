@@ -3,11 +3,12 @@
     config,
     inputs',
     pkgs,
+    system,
     ...
   }: {
     imports =
       [
-        (self.lib.mkInstallWrappers {
+        (self.lib.mkInstallWrappers system {
           method = {
             variant = "nixosUser";
             user = "thou";

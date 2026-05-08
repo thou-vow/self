@@ -1,13 +1,11 @@
 {
-  lib,
   inputs,
+  lib,
   self,
   ...
 }: {
   flake.wrappers.prismlauncher = {
     module = lib.mkMerge [
-      self.wrapperModules.core
-
       ({
         config,
         pkgs,

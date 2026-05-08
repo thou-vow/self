@@ -8,11 +8,12 @@
     config,
     inputs',
     pkgs,
+    system,
     ...
   }: {
     imports =
       [
-        (self.lib.mkInstallWrappers {
+        (self.lib.mkInstallWrappers system {
           method.variant = "nixos";
           wrappers = {
             inherit
@@ -23,7 +24,6 @@
         })
       ]
       ++ (with self.nixosModules; [
-        core
         flatpak
         nix
         state

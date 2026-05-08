@@ -8,11 +8,12 @@
     config,
     inputs',
     pkgs,
+    system,
     ...
   }: {
     imports =
       [
-        (self.lib.mkInstallWrappers {
+        (self.lib.mkInstallWrappers system {
           method.variant = "nixOnDroid";
           wrappers = {
             inherit
@@ -27,7 +28,6 @@
         })
       ]
       ++ (with self.nixOnDroidModules; [
-        core
         nix
         state
       ]);

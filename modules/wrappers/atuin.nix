@@ -5,9 +5,6 @@
 }: {
   flake.wrappers.atuin = {
     module = lib.mkMerge [
-      self.wrapperModules.core
-      self.wrapperModules.eject
-
       ({
         config,
         pkgs,
@@ -15,6 +12,8 @@
       }: let
         tomlFmt = pkgs.formats.toml {};
       in {
+        imports = [self.wrapperModules.eject];
+
         options.settings = lib.mkOption {
           inherit (tomlFmt) type;
           default = {};

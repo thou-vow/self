@@ -1,4 +1,8 @@
-{lib, ...}: {
+{
+  flake-parts-lib,
+  lib,
+  ...
+}: {
   options = {
     flake = {
       wrappers = lib.mkOption {
@@ -40,6 +44,22 @@
       };
     };
 
+    perSystem = flake-parts-lib.mkPerSystemOption {
+      options.pkgs =
+        lib.pipe [
+          "default"
+          "nixOnDroid"
+          "nixos"
+          "wrappers"
+        ] [
+          (map (name: {
+            inherit name;
+            value = lib.mkOption {type = lib.types.pkgs;};
+          }))
+          builtins.listToAttrs
+        ];
+    };
+
     substituters = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
@@ -49,5 +69,9 @@
       });
       default = {};
     };
+  };
+
+  config.perSystem = {config, ...}: {
+    _module.args.pkgs = config.pkgs.default;
   };
 }

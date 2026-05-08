@@ -1,18 +1,18 @@
 {
+  inputs,
   lib,
   self,
   ...
 }: {
   flake.wrappers.niri = {
     module = lib.mkMerge [
-      self.wrapperModules.core
-      self.wrapperModules.eject
-
       ({
         config,
         pkgs,
         ...
       }: {
+        imports = [self.wrapperModules.eject];
+
         options = {
           configKdl = lib.mkOption {
             type = lib.types.lines;

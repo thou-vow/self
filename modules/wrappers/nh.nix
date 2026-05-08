@@ -1,13 +1,11 @@
 {
-  lib,
   inputs,
+  lib,
   self,
   ...
 }: {
   flake.wrappers.nh = {
     module = lib.mkMerge [
-      self.wrapperModules.core
-
       ({pkgs, ...}: {
         package = lib.mkDefault pkgs.nh;
       })

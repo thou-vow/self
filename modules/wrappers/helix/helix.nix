@@ -1,19 +1,19 @@
 {
+  inputs,
   lib,
   self,
   ...
 }: {
   flake.wrappers.helix = {
     module = lib.mkMerge [
-      self.wrapperModules.core
-      self.wrapperModules.eject
-
       ({
         config,
         inputs',
         pkgs,
         ...
       }: {
+        imports = [self.wrapperModules.eject];
+
         options.steel = {
           cogs = lib.mkOption {
             type = lib.types.listOf (lib.types.submodule {
