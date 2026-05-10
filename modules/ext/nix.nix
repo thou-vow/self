@@ -42,7 +42,7 @@
 
         package =
           lib.mkIf config.ext.nix.determinate.enable
-          (lib.mkOverride 75 config.ext.nix.determinate.package);
+          (lib.mkOverride 99 config.ext.nix.determinate.package);
 
         registry = lib.mkMerge [
           (lib.pipe inputs [

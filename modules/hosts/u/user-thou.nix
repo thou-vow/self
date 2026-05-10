@@ -32,7 +32,7 @@
       (with self.nixosUserModules; [prefs]);
 
     wrappers.users.thou = {
-      atuin.daemon.enable = true;
+      atuin.daemon.systemd.enable = true;
       fish = {
         shellAbbrs = config.ext.users.thou.prefs.shellAliases;
         variables = config.ext.users.thou.prefs.variables;

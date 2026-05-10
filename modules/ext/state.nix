@@ -4,11 +4,12 @@
   ...
 }: {
   flake = {
-    nixOnDroid.state = {
+    nixOnDroidModules.state = {
       options.ext.state = {
         flakePath = lib.mkOption {
           type = lib.types.nullOr lib.types.str;
           description = "The absolute path of this flake.";
+          default = null;
         };
       };
     };
@@ -18,6 +19,7 @@
         flakePath = lib.mkOption {
           type = lib.types.nullOr lib.types.str;
           description = "The absolute path of this flake.";
+          default = null;
         };
       };
     };

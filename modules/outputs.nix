@@ -51,17 +51,16 @@
     };
 
     pkgs = let
-      stable = import inputs.nixpkgs-stable {
-        inherit system;
-        config.allowUnfree = true;
-      };
       unstable = import inputs.nixpkgs {
         inherit system;
         config.allowUnfree = true;
       };
     in {
       default = unstable;
-      nixOnDroid = stable;
+      nixOnDroid = import inputs.nixpkgs-nod {
+        inherit system;
+        config.allowUnfree = true;
+      };
       nixos = unstable;
       wrappers = unstable;
     };

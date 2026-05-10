@@ -45,6 +45,8 @@
       };
     };
 
+    console.useXkbConfig = true;
+
     environment = {
       systemPackages = with pkgs; [
         btop
@@ -182,11 +184,6 @@
         };
       };
       blueman.enable = true;
-      kmscon = {
-        enable = true;
-        hwRender = true;
-        useXkbConfig = true;
-      };
       lvm.enable = false;
       openssh.enable = true;
       pipewire = {

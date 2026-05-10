@@ -24,7 +24,9 @@
       name,
       wrappers,
       extraIntegrationModules ? [],
-    }:
+    }: let
+        pkgs = withSystem system ({config,...}: config.pkgs.nixOnDroid);
+    in
       (eval:
         pkgs.symlinkJoin {
           inherit name;
@@ -149,7 +151,7 @@
       );
 
     nixosSystem = system: {modules, ...} @ attrs:
-      inputs.nix-on-droid.lib.nixOnDroidConfiguration (
+      lib.nixosSystem (
         attrs
         // {
           modules =

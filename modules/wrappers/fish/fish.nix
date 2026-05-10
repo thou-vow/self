@@ -206,13 +206,22 @@
     ];
 
     integrationModule = lib.mkMerge [
-      ({config, ...}: {
+      ({
+        config,
+        pkgs,
+        ...
+      }: let
+      in {
         fish.interactiveInitFish = lib.mkMerge [
           (lib.mkIf (config.atuin or {} != {}) ''
-            ${lib.getExe config.atuin.wrapper} init fish ${lib.escapeShellArgs config.atuin.initFlags} | source
+            source ${pkgs.runCommand "atuin-init-fish" {nativeBuildInputs = [pkgs.writableTmpDirAsHomeHook];} ''
+              ${lib.getExe config.atuin.wrapper} init fish ${lib.escapeShellArgs config.atuin.initFlags} > $out
+            ''}
           '')
           (lib.mkIf (config.direnv or {} != {}) (lib.mkAfter ''
-            ${lib.getExe config.direnv.wrapper} hook fish | source
+            source ${pkgs.runCommand "direnv-hook-fish" {nativeBuildInputs = [pkgs.writableTmpDirAsHomeHook];} ''
+              ${lib.getExe config.direnv.wrapper} hook fish > $out
+            ''}
           ''))
         ];
       })

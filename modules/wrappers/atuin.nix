@@ -14,9 +14,12 @@
       in {
         imports = [self.wrapperModules.eject];
 
-        options.settings = lib.mkOption {
-          inherit (tomlFmt) type;
-          default = {};
+        options = {
+          daemon.enable = lib.mkEnableOption "Atuin daemon";
+          settings = lib.mkOption {
+            inherit (tomlFmt) type;
+            default = {};
+          };
         };
 
         config = {
@@ -32,6 +35,11 @@
           env."ATUIN_CONFIG_DIR" = "${config.eject.directory}/${baseNameOf config.eject.entries.atuinConfig}";
 
           package = lib.mkDefault pkgs.atuin;
+
+          settings = lib.mkIf config.daemon.enable {
+            enabled = true;
+            autostart = true;
+          };
         };
       })
 
@@ -67,17 +75,17 @@
         ({config, ...}: let
           cfg = lib.attrByPath (namespace ++ ["atuin"]) {} config;
         in {
-          options = mk {daemon.enable = lib.mkEnableOption "Atuin daemon";};
+          options = mk {daemon.systemd.enable = lib.mkEnableOption "Atuin systemd units";};
 
           config = lib.mkMerge [
             (mk {
-              settings = lib.mkIf cfg.daemon.enable {
-                enabled = true;
+              settings = lib.mkIf (cfg.daemon.enable && cfg.daemon.systemd.enable) {
+                autostart = lib.mkOverride 99 false;
                 systemd_socket = true;
               };
             })
             {
-              systemd.user = lib.mkIf cfg.daemon.enable {
+              systemd.user = lib.mkIf (cfg.daemon.enable && cfg.daemon.systemd.enable) {
                 services = {
                   "${user}-atuin-daemon" = {
                     enable = true;
@@ -86,7 +94,7 @@
                     requires = ["${user}-atuin-daemon.socket"];
                     environment.ATUIN_LOG = "info";
                     serviceConfig = {
-                      ExecStart = "${lib.getExe cfg.wrapper} daemon";
+                      ExecStart = "${lib.getExe cfg.wrapper} daemon start";
                       Restart = "on-failure";
                       RestartSteps = 3;
                       RestartMaxDelaySec = 6;
