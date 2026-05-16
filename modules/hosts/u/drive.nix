@@ -94,7 +94,6 @@
           "/etc/NetworkManager/system-connections"
           "/root/.cache/nix"
           "/root/.local/share/nix"
-          "/srv"
           "/var/lib/flatpak"
           "/var/lib/machines"
           "/var/lib/nixos"
@@ -146,8 +145,8 @@
             "Videos"
           ];
           files = [
+            ".config/nushell/history.txt"
             ".env"
-            ".local/share/fish/fish_history"
           ];
         };
       };

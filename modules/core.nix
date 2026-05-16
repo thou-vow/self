@@ -35,7 +35,8 @@
 
     wrapperModules.core = {pkgs, ...}: {
       imports = [
-        inputs.nix-wrapper-modules.lib.modules.default
+        inputs.nix-wrapper-modules.lib.modules.makeWrapper
+        inputs.nix-wrapper-modules.lib.modules.symlinkScript
       ];
 
       _module.args = let

@@ -3,60 +3,81 @@
   lib,
   self,
   ...
-}: {
-  flake.wrappers.niri = {
-    module = lib.mkMerge [
-      ({
+}:
+lib.mkMerge [
+  {
+    flake.wrappers.niri = {
+      module = {
         config,
         pkgs,
         ...
       }: {
-        imports = [self.wrapperModules.eject];
+        imports = [self.wrapperModules.writeFiles];
 
         options = {
           configKdl = lib.mkOption {
-            type = lib.types.lines;
+            type = self.lib.dagLinesType;
             default = "";
           };
-          extraPaths = lib.mkOption {
-            type = lib.types.listOf (lib.types.submodule {
-              options = {
-                name = lib.mkOption {type = lib.types.str;};
-                path = lib.mkOption {type = lib.types.path;};
-              };
-            });
-            default = [];
+          extraConfigFiles = lib.mkOption {
+            type = self.lib.filesType pkgs;
+            default = {};
           };
-          xwayland-satellite.package = lib.mkOption {type = lib.types.package;};
+          xwayland-satellite.package = lib.mkOption {
+            type = lib.types.package;
+            default = pkgs.xwayland-satellite;
+          };
         };
 
         config = {
-          eject.entries.niriConfig = pkgs.linkFarm "niri-config" (
-            self.lib.mkLinkFarmOptionalText (config.configKdl != "") {
-              inherit pkgs;
-              name = "config.kdl";
-              text = config.configKdl;
-            }
-            ++ config.extraPaths
-          );
-
-          drv.installPhase = ''
+          drv.installPhase = lib.mkIf (config.configKdl != "") ''
             runHook preInstall
-            ${lib.getExe config.package} validate -c "${config.eject.entries.niriConfig}/config.kdl"
+            ${lib.getExe config.package} validate -c "${config.writeFiles.niriConfig.drv}/config.kdl"
             runHook postInstall
           '';
 
-          env."NIRI_CONFIG" = "${config.eject.directory}/${baseNameOf config.eject.entries.niriConfig}/config.kdl";
+          envDefault."NIRI_CONFIG" = "${config.writeFiles.niriConfig.location}/config.kdl";
 
           extraPackages = [config.xwayland-satellite.package];
 
+          filesToPatch = ["share/systemd/user/niri.service"];
+
           package = lib.mkDefault pkgs.niri;
 
-          xwayland-satellite.package = lib.mkDefault pkgs.xwayland-satellite;
+          writeFiles.niriConfig = {
+            eject.enable = true;
+            entries = lib.mkMerge [
+              {
+                "config.kdl" = lib.mkIf (config.configKdl != "") {
+                  subject.text = config.configKdl;
+                };
+              }
+              config.extraConfigFiles
+            ];
+          };
         };
-      })
+      };
 
-      ({
+      nixosUserModule = user: {
+        config,
+        pkgs,
+        ...
+      }: let
+          namespace = ["wrappers" "users" user];
+          cfg = lib.attrByPath (namespace ++ ["niri"]) {} config;
+      in {
+        xdg.portal = {
+          enable = true;
+          configPackages = [cfg.wrapper];
+          extraPortals = [pkgs.xdg-desktop-portal-gnome];
+        };
+      };
+    };
+  }
+
+  {
+    flake.wrappers.niri = {
+      module = {
         inputs',
         pkgs,
         ...
@@ -76,20 +97,10 @@
           ++ (with inputs'.nix-packages.packages; [
             brave-latest
           ]);
-        extraPaths = [
-          {
-            name = "manual-config.kdl";
-            path = ./manual-config.kdl;
-          }
-        ];
-      })
-    ];
-
-    nixosUserModule = user:
-      lib.mkMerge [
-        ({pkgs, ...}: {
-          xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-gnome];
-        })
-      ];
-  };
-}
+        extraConfigFiles = {
+          "manual-config.kdl".subject.source = ./manual-config.kdl;
+        };
+      };
+    };
+  }
+]

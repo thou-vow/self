@@ -1,6 +1,7 @@
 {
   lib,
   inputs,
+  nixConfig,
   ...
 } @ top: {
   flake = {
@@ -9,40 +10,26 @@
       inputs',
       ...
     }: {
-      options.ext.nix.determinate = {
-        enable = lib.mkEnableOption "Determinate Nix";
-        package = lib.mkOption {
-          type = lib.types.package;
-          default = inputs'.determinate-nix.packages.default;
-        };
-      };
-
-      config.nix = {
+      nix = {
         extraOptions = let
-          inherit (top.config.flake-file.nixConfig) extra-substituters extra-trusted-public-keys;
+          inherit (nixConfig) extra-substituters extra-trusted-public-keys;
         in
           lib.mkMerge [
             ''
               extra-experimental-features = flakes nix-command
-              extra-substituters = ${toString top.config.flake-file.nixConfig.extra-substituters}
-              extra-trusted-public-keys = ${toString top.config.flake-file.nixConfig.extra-substituters}
               keep-derivations = true
               keep-outputs = true
             ''
             (lib.mkIf (extra-substituters != []) ''
-              extra-substituters = ${toString top.config.flake-file.nixConfig.extra-substituters}
+              extra-substituters = ${toString extra-substituters}
             '')
             (lib.mkIf (extra-trusted-public-keys != []) ''
-              extra-trusted-public-keys = ${toString top.config.flake-file.nixConfig.extra-trusted-public-keys}
+              extra-trusted-public-keys = ${toString extra-trusted-public-keys}
             '')
           ];
 
         nixPath =
           lib.mapAttrsToList (k: _: "${k}=flake:${k}") config.nix.registry;
-
-        package =
-          lib.mkIf config.ext.nix.determinate.enable
-          (lib.mkOverride 99 config.ext.nix.determinate.package);
 
         registry = lib.mkMerge [
           (lib.pipe inputs [
@@ -80,7 +67,8 @@
       config = {
         determinate.enable = config.ext.nix.determinate.enable;
 
-        environment.variables.DETSYS_IDS_TELEMETRY = lib.mkIf config.ext.nix.determinate.enable "disabled";
+        environment.variables.DETSYS_IDS_TELEMETRY =
+          lib.mkIf config.ext.nix.determinate.enable "disabled";
 
         nix = {
           daemonCPUSchedPolicy = "idle";
@@ -108,7 +96,7 @@
           ];
 
           settings = {
-            inherit (top.config.flake-file.nixConfig) extra-substituters extra-trusted-public-keys;
+            inherit (nixConfig) extra-substituters extra-trusted-public-keys;
             extra-experimental-features = ["flakes" "nix-command"];
             keep-derivations = true;
             keep-outputs = true;

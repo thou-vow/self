@@ -3,19 +3,20 @@
   lib,
   self,
   ...
-}: {
-  flake.wrappers.git = {
-    module = lib.mkMerge [
-      ({
+}:
+lib.mkMerge [
+  {
+    flake.wrappers.git = {
+      module = {
         config,
         pkgs,
         ...
       }: {
-        imports = [self.wrapperModules.eject];
+        imports = [self.wrapperModules.writeFiles];
 
         options = {
           gitconfig = lib.mkOption {
-            type = lib.types.lines;
+            type = self.lib.dagLinesType;
             default = "";
           };
           settings = lib.mkOption {
@@ -25,27 +26,26 @@
         };
 
         config = {
-          eject.entries.gitConfig = pkgs.linkFarm "git-config" (
-            self.lib.mkLinkFarmOptionalText (config.gitconfig != "") {
-              inherit pkgs;
-              name = "gitconfig";
-              text = config.gitconfig;
-            }
-          );
-
-          env."GIT_CONFIG_GLOBAL" = "${config.eject.directory}/${baseNameOf config.eject.entries.gitConfig}/gitconfig";
+          envDefault."GIT_CONFIG_GLOBAL" = "${config.writeFiles.gitConfig.location}/gitconfig";
 
           gitconfig = lib.mkMerge [
             (lib.pipe config.settings [
               lib.generators.toGitINI
-              (lib.mkOrder 510)
+              (self.lib.mkNamedEntryBetween "SETTINGS" ["DEFAULT"] [])
               (lib.mkIf (config.settings != {}))
             ])
           ];
 
           package = lib.mkDefault pkgs.git;
+
+          writeFiles.gitConfig = {
+            eject.enable = true;
+            entries."gitconfig" = lib.mkIf (config.gitconfig != "") {
+              subject.text = config.gitconfig;
+            };
+          };
         };
-      })
-    ];
-  };
-}
+      };
+    };
+  }
+]

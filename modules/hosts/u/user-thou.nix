@@ -1,4 +1,4 @@
-{self, ...}: {
+{installWrappers, self, ...}: {
   flake.nixosModules.u = {
     config,
     inputs',
@@ -8,21 +8,18 @@
   }: {
     imports =
       [
-        (self.lib.mkInstallWrappers system {
-          method = {
-            variant = "nixosUser";
-            user = "thou";
-          };
+        (installWrappers system {
+          method.nixosUser.user = "thou";
           wrappers = {
             inherit
               (self.wrappers)
               atuin
               direnv
-              fish
               git
               helix
               kitty
               niri
+              nushell
               prismlauncher
               ;
           };
@@ -33,9 +30,9 @@
 
     wrappers.users.thou = {
       atuin.daemon.systemd.enable = true;
-      fish = {
-        shellAbbrs = config.ext.users.thou.prefs.shellAliases;
-        variables = config.ext.users.thou.prefs.variables;
+      nushell = {
+        environmentVariables = config.ext.users.thou.prefs.environmentVariables;
+        shellAliases = config.ext.users.thou.prefs.shellAliases;
       };
       git.settings.user = {
         email = "thou.vow.etoile@gmail.com";
@@ -45,8 +42,8 @@
 
     ext.users.thou = {
       prefs = {
+        environmentVariables = {};
         shellAliases = {};
-        variables = {};
       };
     };
 
@@ -63,6 +60,7 @@
           distrobox
           dolphin-emu
           gcc
+          geminicommit
           imagemagick
           krita
           libreoffice
@@ -85,7 +83,7 @@
           inputs'.nix-packages.packages.discord-rpc-lsp
         ];
       password = "123";
-      shell = config.wrappers.users.thou.fish.wrapper;
+      shell = config.wrappers.users.thou.nushell.wrapper;
     };
   };
 }

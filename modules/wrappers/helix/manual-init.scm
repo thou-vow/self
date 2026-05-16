@@ -62,7 +62,7 @@
       (kv (ls 'name language-name)
         (ls 'auto-format #f)
         (ls 'indent (kv (ls 'tab-width 2) (ls 'unit "\t"))))))
-  (ls "c" "css" "fish" "java" "javascript" "json" "kdl" "nix" "rust" "scheme" "typescript" "typst" "yaml"))
+  (ls "c" "css" "fish" "java" "javascript" "json" "kdl" "nix" "nu" "rust" "scheme" "typescript" "typst" "yaml"))
 
 (hx.cfg.update-language-config! "html"
   (kv (ls 'name "html")

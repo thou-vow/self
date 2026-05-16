@@ -6,20 +6,20 @@
   ...
 }: {
   flake = {
-    nixOnDroidConfigurations.leia = self.lib.nixOnDroidConfiguration "aarch64-linux" {
-      modules = [self.nixOnDroidModules.leia];
-    };
+    nixOnDroidConfigurations.leia =
+      self.lib.nixOnDroidConfiguration
+      (withSystem "aarch64-linux" ({pkgs-nod, ...}: pkgs-nod)) {
+        modules = [self.nixOnDroidModules.leia];
+      };
 
-    nixosConfigurations.u = self.lib.nixosSystem "x86_64-linux" {
-      modules = [self.nixosModules.u];
-    };
+    nixosConfigurations.u =
+      self.lib.nixosSystem
+      (withSystem "x86_64-linux" ({pkgs, ...}: pkgs)) {
+        modules = [self.nixosModules.u];
+      };
   };
 
-  perSystem = {
-    pkgs,
-    system,
-    ...
-  }: {
+  perSystem = {pkgs, ...}: {
     devShells.default = pkgs.mkShell {
       buildInputs = with pkgs; [alejandra kdlfmt schemat taplo];
     };
@@ -39,30 +39,20 @@
     };
 
     packages = {
-      all = self.lib.mkWrappersPackage system {
+      all = self.lib.mkWrappersPackage pkgs {
         inherit (self) wrappers;
         name = "all";
       };
 
-      shell = self.lib.mkWrappersPackage system {
-        name = "shell";
-        wrappers = {inherit (self.wrappers) atuin direnv fish helix;};
+      helix = self.lib.mkWrappersPackage pkgs {
+        name = "helix";
+        wrappers = {inherit (self.wrappers) helix;};
       };
-    };
 
-    pkgs = let
-      unstable = import inputs.nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
+      shell = self.lib.mkWrappersPackage pkgs {
+        name = "shell";
+        wrappers = {inherit (self.wrappers) atuin direnv helix nushell;};
       };
-    in {
-      default = unstable;
-      nixOnDroid = import inputs.nixpkgs-nod {
-        inherit system;
-        config.allowUnfree = true;
-      };
-      nixos = unstable;
-      wrappers = unstable;
     };
   };
 

@@ -18,6 +18,11 @@
         default = {};
       };
 
+      lib = lib.mkOption {
+        type = lib.types.attrs;
+        default = {};
+      };
+
       nixOnDroidConfigurations = lib.mkOption {
         type = with lib.types; lazyAttrsOf raw;
         default = {};
@@ -43,35 +48,5 @@
         default = {};
       };
     };
-
-    perSystem = flake-parts-lib.mkPerSystemOption {
-      options.pkgs =
-        lib.pipe [
-          "default"
-          "nixOnDroid"
-          "nixos"
-          "wrappers"
-        ] [
-          (map (name: {
-            inherit name;
-            value = lib.mkOption {type = lib.types.pkgs;};
-          }))
-          builtins.listToAttrs
-        ];
-    };
-
-    substituters = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule {
-        options = {
-          keys = lib.mkOption {type = with lib.types; listOf str;};
-          urls = lib.mkOption {type = with lib.types; listOf str;};
-        };
-      });
-      default = {};
-    };
-  };
-
-  config.perSystem = {config, ...}: {
-    _module.args.pkgs = config.pkgs.default;
   };
 }

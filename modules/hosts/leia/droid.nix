@@ -1,5 +1,6 @@
 {
   inputs,
+  installWrappers,
   lib,
   self,
   ...
@@ -13,16 +14,16 @@
   }: {
     imports =
       [
-        (self.lib.mkInstallWrappers system {
-          method.variant = "nixOnDroid";
+        (installWrappers system {
+          method.nixOnDroid = true;
           wrappers = {
             inherit
               (self.wrappers)
               atuin
               direnv
-              fish
               git
               helix
+              nushell
               ;
           };
         })
@@ -53,6 +54,6 @@
 
     time.timeZone = "America/Sao_Paulo";
 
-    user.shell = lib.getExe config.wrappers.fish.wrapper;
+    user.shell = lib.getExe config.wrappers.nushell.wrapper;
   };
 }

@@ -1,5 +1,6 @@
 {
   inputs,
+  installWrappers,
   lib,
   self,
   ...
@@ -13,8 +14,8 @@
   }: {
     imports =
       [
-        (self.lib.mkInstallWrappers system {
-          method.variant = "nixos";
+        (installWrappers system {
+          method.nixos = true;
           wrappers = {
             inherit
               (self.wrappers)
@@ -24,7 +25,6 @@
         })
       ]
       ++ (with self.nixosModules; [
-        flatpak
         nix
         state
         waydroid
@@ -184,6 +184,7 @@
         };
       };
       blueman.enable = true;
+      flatpak.enable = true;
       lvm.enable = false;
       openssh.enable = true;
       pipewire = {
@@ -213,7 +214,5 @@
     users.users = {
       root.password = "123";
     };
-
-    virtualisation.podman.enable = true;
   };
 }

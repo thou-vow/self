@@ -3,20 +3,27 @@
   lib,
   self,
   ...
-}: {
-  flake.wrappers.direnv = {
-    module = lib.mkMerge [
-      ({
+}:
+lib.mkMerge [
+  {
+    flake.wrappers.direnv = {
+      module = {
         config,
         pkgs,
         ...
       }: let
         tomlFmt = pkgs.formats.toml {};
       in {
-        imports = [self.wrapperModules.eject];
+        imports = [self.wrapperModules.writeFiles];
 
         options = {
-          nix-direnv.enable = lib.mkEnableOption "nix-direnv integration";
+          nix-direnv = {
+            enable = lib.mkEnableOption "nix-direnv integration";
+            package = lib.mkOption {
+              type = lib.types.package;
+              default = pkgs.nix-direnv;
+            };
+          };
           settings = lib.mkOption {
             inherit (tomlFmt) type;
             default = {};
@@ -25,22 +32,7 @@
         };
 
         config = {
-          eject.entries.direnvConfig = pkgs.linkFarm "direnv-config" (
-            lib.optionals (config.settings != {}) [
-              {
-                name = "direnv.toml";
-                path = tomlFmt.generate "direnv.toml" config.settings;
-              }
-            ]
-            ++ lib.optionals config.nix-direnv.enable [
-              {
-                name = "lib/nix-direnv.sh";
-                path = "${pkgs.nix-direnv}/share/nix-direnv/direnvrc";
-              }
-            ]
-          );
-
-          env."DIRENV_CONFIG" = "${config.eject.directory}/${baseNameOf config.eject.entries.direnvConfig}";
+          envDefault."DIRENV_CONFIG" = config.writeFiles.direnvConfig.location;
 
           package = lib.mkDefault pkgs.direnv;
 
@@ -48,13 +40,30 @@
             log_format = "-";
             log_filter = "^$";
           };
-        };
-      })
 
-      {
+          writeFiles.direnvConfig = {
+            eject.enable = true;
+            entries = {
+              "direnv.toml" = lib.mkIf (config.settings != {}) {
+                subject.source =
+                  tomlFmt.generate "direnv.toml" config.settings;
+              };
+              "lib/nix-direnv.sh" = lib.mkIf config.nix-direnv.enable {
+                subject.source = "${config.nix-direnv.package}/share/nix-direnv/direnvrc";
+              };
+            };
+          };
+        };
+      };
+    };
+  }
+
+  {
+    flake.wrappers.direnv = {
+      module = {
         nix-direnv.enable = true;
         silent = true;
-      }
-    ];
-  };
-}
+      };
+    };
+  }
+]
