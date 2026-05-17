@@ -2,11 +2,14 @@
   inputs,
   lib,
   self,
+  withSystem,
   ...
 }:
 lib.mkMerge [
   {
     flake.wrappers.nushell = {
+      pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
+
       module = {
         config,
         pkgs,
@@ -39,7 +42,7 @@ lib.mkMerge [
 
         config = {
           configNu = lib.mkMerge [
-            (self.lib.mkNamedEntryBetween "STATIC" [] []
+            (self.lib.mkNamedEntryBetween [] "STATIC" []
               # nu
               ''
                 const NU_PLUGIN_DIRS = [($nu.config-path | path dirname | path join 'plugins')]
@@ -51,11 +54,13 @@ lib.mkMerge [
                   }
                 }
               '')
+
             (lib.pipe config.environmentVariables [
-              (vars: "load-env ${self.lib.toNushell {} vars}")
-              (self.lib.mkNamedEntryBetween "VARIABLES" [] ["STATIC"])
+              (vars: "\nload-env ${self.lib.toNushell {} vars}\n")
+              (self.lib.mkNamedEntryBetween ["STATIC"] "VARIABLES" [])
               (lib.mkIf (config.environmentVariables != {}))
             ])
+
             (lib.pipe config.settings [
               (let
                 flattenAttrs = prefix: attrs:
@@ -69,18 +74,17 @@ lib.mkMerge [
               in
                 flattenAttrs "")
               (lib.generators.toKeyValue {
-                mkKeyValue = key: value: ''
-                  $env.config.${key} = ${self.lib.toNushell {} value}
-                '';
+                mkKeyValue = key: value: "$env.config.${key} = ${self.lib.toNushell {} value}";
               })
-              (self.lib.mkNamedEntryBetween "SETTINGS" [] ["VARIABLES"])
+              (self.lib.mkNamedEntryBetween ["VARIABLES"] "SETTINGS" [])
               (lib.mkIf (config.settings != {}))
             ])
+
             (lib.pipe config.shellAliases [
               (lib.generators.toKeyValue {
                 mkKeyValue = k: v: "alias ${builtins.toJSON k} = ${v}";
               })
-              (self.lib.mkNamedEntryBetween "ALIASES" ["DEFAULT"] ["SETTINGS"])
+              (self.lib.mkNamedEntryBetween ["SETTINGS"] "ALIASES" ["DEFAULT"])
               (lib.mkIf (config.shellAliases != {}))
             ])
           ];
@@ -106,30 +110,29 @@ lib.mkMerge [
         };
       };
 
-      integrationModule = {
-        config,
-        pkgs,
-        ...
-      }: {
+      integrationModule = {config, ...}: let
+        inherit (config.nushell) pkgs;
+      in {
         nushell.configNu = lib.mkMerge [
-          (lib.mkIf (config.atuin or {} != {}) ''
-            source ${
-              pkgs.runCommand "atuin-init-nu.nu" {nativeBuildInputs = [pkgs.writableTmpDirAsHomeHook];} ''
-                ${lib.getExe config.atuin.wrapper} init nu ${lib.escapeShellArgs config.atuin.initFlags} > $out
-              ''
-            }
-          '')
-          (lib.mkIf (config.direnv or {} != {}) (self.lib.mkEntryAfter ["DEFAULT"]
+          (let
+            atuin-init-nu =
+              pkgs.runCommand "atuin-init-nu.nu" {nativeBuildInputs = [pkgs.writableTmpDirAsHomeHook];}
+              "${lib.getExe config.atuin.wrapper} init nu ${lib.escapeShellArgs config.atuin.initFlags} > $out";
+          in
+            lib.mkIf (config.atuin or {} != {}) "\nsource ${atuin-init-nu}\n")
+
+          (lib.mkIf (config.direnv or {} != {}) (self.lib.mkEntryBetween ["DEFAULT"] []
             # nu
             ''
-              $env.config.hooks.pre_prompt = $env.config.hooks.pre_prompt | append {||
+              $env.config.hooks.pre_prompt ++= [{||
                 let exports = ${lib.getExe config.direnv.wrapper} export json
                 | from json --strict
                 | default {}
                 if ($exports | is-empty) { return }
 
                 load-env $exports
-              }
+                $env.PATH = do $env.ENV_CONVERSIONS.PATH.from_string $env.PATH
+              }]
             ''))
         ];
       };
@@ -144,24 +147,52 @@ lib.mkMerge [
         ...
       }: {
         configNu = lib.mkMerge [
-          (self.lib.mkEntryBefore ["ALIASES"] ''
-            source ${pkgs.runCommand "zoxide-init-nushell.nu" {} ''
-              ${lib.getExe pkgs.zoxide} init nushell > $out
-            ''}
-          '')
-          ''
-            source ${pkgs.runCommand "carapace-nushell.nu" {} ''
-              ${lib.getExe pkgs.carapace} _carapace nushell | sed 's|"/homeless-shelter|$"($env.HOME)|g' > $out
-            ''}
-          ''
-          (self.lib.mkEntryAfter ["DEFAULT"] ''
-            source ($nu.config-path | path dirname | path join 'manual-config.nu')
-          '')
+          (self.lib.mkEntryBetween [] ["ALIASES"] (let
+            zoxide-init-nushell =
+              pkgs.runCommand "zoxide-init-nushell.nu" {}
+              "${lib.getExe pkgs.zoxide} init nushell > $out";
+          in "\nsource ${zoxide-init-nushell}\n"))
+
+          (self.lib.mkEntryBetween ["SETTINGS"] ["DEFAULT"]
+            # nu
+            ''
+              let carapace_completer = {|spans|
+                load-env {
+                 	CARAPACE_SHELL_BUILTINS:
+                 	  (help commands | where category != "" | get name | each { split row " " | first } | uniq  | str join "\n")
+                 	CARAPACE_SHELL_FUNCTIONS:
+                   	(help commands | where category == "" | get name | each { split row " " | first } | uniq  | str join "\n")
+                }
+                CARAPACE_LENIENT=1 carapace $spans.0 nushell ...$spans | from json
+              }
+
+              $env.config.completions.external.enable = true
+              $env.config.completions.external.completer = {|spans|
+                let expanded_alias = scope aliases | where name == $spans.0 | $in.0?.expansion?
+
+                let spans = if $expanded_alias != null {
+                  $spans | skip 1 | prepend ($expanded_alias | split row ' ' | take 1)
+                } else { $spans }
+
+                match $spans.0 {
+                  _ => $carapace_completer
+                } | do $in $spans
+              }
+              $env.config.completions.external.max_results = 9
+            '')
+
+          (self.lib.mkEntryBetween ["DEFAULT"] []
+            "\nsource ($nu.config-path | path dirname | path join 'manual-config.nu')\n")
         ];
         extraConfigFiles = {
           "manual-config.nu".subject.source = ./manual-config.nu;
         };
         extraPackages = with pkgs; [carapace pokeget-rs zoxide];
+        settings = {
+          auto_cd_implicit = true;
+          completions.algorithm = "fuzzy";
+          rm.always_trash = true;
+        };
         shellAliases = {
           "cd" = "z";
           "ci" = "zi";

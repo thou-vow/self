@@ -5,19 +5,6 @@
 }: {
   options = {
     flake = {
-      wrappers = lib.mkOption {
-        type = lib.types.lazyAttrsOf (lib.types.submodule {
-          options = {
-            integrationModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
-            module = lib.mkOption {type = lib.types.deferredModule;};
-            nixOnDroidModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
-            nixosModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
-            nixosUserModule = lib.mkOption {type = with lib.types; nullOr (functionTo deferredModule);};
-          };
-        });
-        default = {};
-      };
-
       lib = lib.mkOption {
         type = lib.types.attrs;
         default = {};
@@ -38,14 +25,47 @@
         default = {};
       };
 
-      wrapperModules = lib.mkOption {
-        type = with lib.types; lazyAttrsOf deferredModule;
-        default = {};
+      perSystem = flake-parts-lib.mkPerSystemOption {
+        options.wrappers = lib.mkOption {
+          type = lib.types.lazyAttrsOf (lib.types.submodule ({config, ...}: {
+            options = {
+              integrationModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
+              module = lib.mkOption {type = lib.types.deferredModule;};
+              nixOnDroidModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
+              nixosModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
+              nixosUserModule = lib.mkOption {type = with lib.types; nullOr (functionTo deferredModule);};
+              package = lib.mkOption {
+                readOnly = true;
+                type = lib.types.package;
+                default = config.module.wrap {inherit (config) pkgs;};
+              };
+              pkgs = lib.mkOption {type = lib.types.pkgs;};
+            };
+          }));
+        };
       };
 
       wrapperIntegrationModules = lib.mkOption {
         type = with lib.types; lazyAttrsOf deferredModule;
         default = {};
+      };
+
+      wrapperModules = lib.mkOption {
+        type = with lib.types; lazyAttrsOf deferredModule;
+        default = {};
+      };
+
+      wrappers = lib.mkOption {
+        type = lib.types.lazyAttrsOf (lib.types.submodule ({config, ...}: {
+          options = {
+            integrationModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
+            module = lib.mkOption {type = lib.types.deferredModule;};
+            nixOnDroidModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
+            nixosModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
+            nixosUserModule = lib.mkOption {type = with lib.types; nullOr (functionTo deferredModule);};
+            pkgsPerSystem = lib.mkOption {type = with lib.types; functionTo pkgs;};
+          };
+        }));
       };
     };
   };

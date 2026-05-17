@@ -2,11 +2,15 @@
   inputs,
   lib,
   self,
+  withSystem,
   ...
-}: {
-  flake.wrappers.prismlauncher = {
-    module = lib.mkMerge [
-      ({
+}:
+lib.mkMerge [
+  {
+    flake.wrappers.prismlauncher = {
+      pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
+
+      module = {
         config,
         pkgs,
         ...
@@ -21,9 +25,13 @@
 
           overrides = [(pkg: pkg.override {inherit (config) jdks;})];
         };
-      })
+      };
+    };
+  }
 
-      ({
+  {
+    flake.wrappers.prismlauncher = {
+      module = {
         inputs',
         pkgs,
         ...
@@ -39,7 +47,7 @@
             graalvm-oracle_21
             graalvm-oracle_25
           ]);
-      })
-    ];
-  };
-}
+      };
+    };
+  }
+]

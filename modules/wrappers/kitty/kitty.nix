@@ -2,11 +2,14 @@
   inputs,
   lib,
   self,
+  withSystem,
   ...
 }:
 lib.mkMerge [
   {
     flake.wrappers.kitty = {
+      pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
+
       module = {
         config,
         pkgs,
@@ -53,21 +56,23 @@ lib.mkMerge [
                     else toString value;
                 in "${key} ${value'}";
               })
-              (self.lib.mkNamedEntryBetween "SETTINGS" [] [])
+              (self.lib.mkNamedEntryBetween [] "SETTINGS" [])
               (lib.mkIf (config.settings != {}))
             ])
+
             (lib.pipe config.keybindings [
               (lib.generators.toKeyValue {
                 mkKeyValue = k: v: "map ${k} ${v}";
               })
-              (self.lib.mkNamedEntryBetween "KEYBINDINGS" [] ["SETTINGS"])
+              (self.lib.mkNamedEntryBetween ["SETTINGS"] "KEYBINDINGS" [])
               (lib.mkIf (config.keybindings != {}))
             ])
+
             (lib.pipe config.mouseBindings [
               (lib.generators.toKeyValue {
                 mkKeyValue = k: v: "mouse_map ${k} ${v}";
               })
-              (self.lib.mkNamedEntryBetween "MOUSE_BINDINGS" ["DEFAULT"] ["KEYBINDINGS"])
+              (self.lib.mkNamedEntryBetween ["KEYBINDINGS"] "MOUSE_BINDINGS" ["DEFAULT"])
               (lib.mkIf (config.mouseBindings != {}))
             ])
           ];
@@ -97,7 +102,7 @@ lib.mkMerge [
           "manual-kitty.conf".subject.source = ./manual-kitty.conf;
           "theme.conf".subject.source = ./theme.conf;
         };
-        kittyConf = self.lib.mkEntryAfter ["SETTINGS"] ''
+        kittyConf = self.lib.mkEntryBetween ["SETTINGS"] [] ''
           include ./manual-kitty.conf
         '';
         settings.clear_all_shortcuts = true;

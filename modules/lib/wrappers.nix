@@ -6,7 +6,7 @@
   ...
 }: {
   flake.lib = {
-    installWrappers = pkgs: {
+    installWrappers = system: {
       method,
       wrappers,
       extraIntegrationModules ? [],
@@ -53,20 +53,21 @@
           ]
           ++ [
             ({config, ...}: {
-              users.users.${method.nixosUser.user}.packages = lib.attrByPath (namespace ++ ["packages"]) [] config;
+              users.users.${method.nixosUser.user}.packages =
+                lib.attrByPath (namespace ++ ["packages"]) [] config;
             })
           ]
         else [];
 
       options = lib.setAttrByPath namespace (lib.mkOption {
         type = let
-          wrapperOptionModules =
+          optionModules =
             lib.mapAttrsToList (name: value: {
               options = lib.setAttrByPath [name] (lib.mkOption {
                 default = {};
                 type = inputs.nix-wrapper-modules.lib.types.subWrapperModule [
                   value.module
-                  {inherit pkgs;}
+                  {pkgs = value.pkgsPerSystem system;}
                   self.wrapperModules.core
                 ];
               });
@@ -86,11 +87,10 @@
             config.packages = map (name: config.${name}.wrapper) (builtins.attrNames wrappers);
           };
         in
-          lib.types.submodule (wrapperOptionModules
+          lib.types.submodule (optionModules
             ++ integrationModules
             ++ [
               packagesModule
-              {_module.args = {inherit pkgs;};}
               self.wrapperIntegrationModules.core
             ]
             ++ extraIntegrationModules);
@@ -100,17 +100,16 @@
     };
 
     mkWrappersPackage = pkgs: {
-      name,
       wrappers,
       extraIntegrationModules ? [],
     }:
       (eval:
         pkgs.symlinkJoin {
-          inherit name;
+          name = "wrappersPackage";
           paths = eval.config.wrappers.packages;
         }) (lib.evalModules {
         modules = [
-          (self.lib.installWrappers pkgs {
+          (self.lib.installWrappers pkgs.stdenv.hostPlatform.system {
             inherit extraIntegrationModules wrappers;
             method.direct.namespace = ["wrappers"];
           })

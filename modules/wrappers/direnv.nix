@@ -2,11 +2,14 @@
   inputs,
   lib,
   self,
+  withSystem,
   ...
 }:
 lib.mkMerge [
   {
     flake.wrappers.direnv = {
+      pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
+
       module = {
         config,
         pkgs,

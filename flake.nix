@@ -85,9 +85,6 @@ rec {
         ./parts.nix
       ];
 
-      _module.args.installWrappers = system:
-        self.lib.installWrappers (withSystem system ({pkgs, ...}: pkgs));
-
       perSystem = {system, ...}: {
         _module.args = {
           pkgs = import inputs.nixpkgs {

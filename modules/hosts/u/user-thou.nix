@@ -1,4 +1,8 @@
-{installWrappers, self, ...}: {
+{
+  lib,
+  self,
+  ...
+}: {
   flake.nixosModules.u = {
     config,
     inputs',
@@ -8,7 +12,7 @@
   }: {
     imports =
       [
-        (installWrappers system {
+        (self.lib.installWrappers system {
           method.nixosUser.user = "thou";
           wrappers = {
             inherit
@@ -83,7 +87,7 @@
           inputs'.nix-packages.packages.discord-rpc-lsp
         ];
       password = "123";
-      shell = config.wrappers.users.thou.nushell.wrapper;
+      shell = lib.getExe pkgs.bash;
     };
   };
 }

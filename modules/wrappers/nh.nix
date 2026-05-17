@@ -2,11 +2,14 @@
   inputs,
   lib,
   self,
+  withSystem,
   ...
 }:
 lib.mkMerge [
   {
     flake.wrappers.nh = {
+      pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
+
       module = {pkgs, ...}: {
         package = lib.mkDefault pkgs.nh;
       };

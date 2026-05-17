@@ -4,22 +4,12 @@
   self,
   withSystem,
   ...
-}: {
-  flake = {
-    nixOnDroidConfigurations.leia =
-      self.lib.nixOnDroidConfiguration
-      (withSystem "aarch64-linux" ({pkgs-nod, ...}: pkgs-nod)) {
-        modules = [self.nixOnDroidModules.leia];
-      };
-
-    nixosConfigurations.u =
-      self.lib.nixosSystem
-      (withSystem "x86_64-linux" ({pkgs, ...}: pkgs)) {
-        modules = [self.nixosModules.u];
-      };
-  };
-
-  perSystem = {pkgs, ...}: {
+} @ top: {
+  perSystem = {
+    pkgs,
+    system,
+    ...
+  }: {
     devShells.default = pkgs.mkShell {
       buildInputs = with pkgs; [alejandra kdlfmt schemat taplo];
     };
@@ -38,22 +28,30 @@
       };
     };
 
-    packages = {
-      all = self.lib.mkWrappersPackage pkgs {
-        inherit (self) wrappers;
-        name = "all";
-      };
+    packages = lib.mkMerge [
+      (lib.mapAttrs' (name: value: {
+          name = "wrapper-${name}";
+          value = self.lib.mkWrappersPackage pkgs {
+            wrappers = {${name} = value;};
+          };
+        })
+        top.config.flake.wrappers)
+      {
+        all = self.lib.mkWrappersPackage pkgs {inherit (self) wrappers;};
 
-      helix = self.lib.mkWrappersPackage pkgs {
-        name = "helix";
-        wrappers = {inherit (self.wrappers) helix;};
-      };
-
-      shell = self.lib.mkWrappersPackage pkgs {
-        name = "shell";
-        wrappers = {inherit (self.wrappers) atuin direnv helix nushell;};
-      };
-    };
+        shell = self.lib.mkWrappersPackage pkgs {
+          wrappers = {
+            inherit
+              (self.wrappers)
+              atuin
+              direnv
+              helix
+              nushell
+              ;
+          };
+        };
+      }
+    ];
   };
 
   systems = lib.systems.flakeExposed;

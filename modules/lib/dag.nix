@@ -82,10 +82,10 @@
       }
       else def // {before = def.before or [] ++ before;};
 
-    mkEntryBetween = before: after: def:
+    mkEntryBetween = after: before: def:
       self.lib.mkEntryBefore before (self.lib.mkEntryAfter after def);
 
-    mkEntryName = name: def:
+    mkNamedEntry = name: def:
       if builtins.isString def
       then {
         inherit name;
@@ -93,7 +93,7 @@
       }
       else def // {inherit name;};
 
-    mkNamedEntryBetween = name: before: after: def:
-      self.lib.mkEntryName name (self.lib.mkEntryBetween before after def);
+    mkNamedEntryBetween = after: name: before: def:
+      self.lib.mkNamedEntry name (self.lib.mkEntryBetween after before def);
   };
 }

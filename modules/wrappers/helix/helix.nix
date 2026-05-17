@@ -2,11 +2,14 @@
   inputs,
   lib,
   self,
+  withSystem,
   ...
 }:
 lib.mkMerge [
   {
     flake.wrappers.helix = {
+      pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
+
       module = {
         config,
         inputs',

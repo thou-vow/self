@@ -2,11 +2,14 @@
   inputs,
   lib,
   self,
+  withSystem,
   ...
 }:
 lib.mkMerge [
   {
     flake.wrappers.niri = {
+      pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
+
       module = {
         config,
         pkgs,
@@ -63,8 +66,8 @@ lib.mkMerge [
         pkgs,
         ...
       }: let
-          namespace = ["wrappers" "users" user];
-          cfg = lib.attrByPath (namespace ++ ["niri"]) {} config;
+        namespace = ["wrappers" "users" user];
+        cfg = lib.attrByPath (namespace ++ ["niri"]) {} config;
       in {
         xdg.portal = {
           enable = true;

@@ -2,11 +2,14 @@
   inputs,
   lib,
   self,
+  withSystem,
   ...
 }:
 lib.mkMerge [
   {
     flake.wrappers.git = {
+      pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
+
       module = {
         config,
         pkgs,
@@ -31,7 +34,7 @@ lib.mkMerge [
           gitconfig = lib.mkMerge [
             (lib.pipe config.settings [
               lib.generators.toGitINI
-              (self.lib.mkNamedEntryBetween "SETTINGS" ["DEFAULT"] [])
+              (self.lib.mkNamedEntryBetween [] "SETTINGS" ["DEFAULT"])
               (lib.mkIf (config.settings != {}))
             ])
           ];
