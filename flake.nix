@@ -15,11 +15,9 @@ rec {
   };
 
   inputs = {
+    nix-packages.url = "github:thou-vow/nix-packages";
+
     flake-parts.follows = "nix-packages/flake-parts";
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     impermanence = {
       url = "github:nix-community/impermanence";
       inputs = {
@@ -28,10 +26,6 @@ rec {
       };
     };
     import-tree.follows = "nix-packages/import-tree";
-    nix-index-database = {
-      url = "github:nix-community/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     nix-on-droid = {
       url = "github:nix-community/nix-on-droid";
       inputs = {
@@ -41,7 +35,6 @@ rec {
         nixpkgs-for-bootstrap.follows = "nixpkgs";
       };
     };
-    nix-packages.url = "github:thou-vow/nix-packages";
     nix-wrapper-modules = {
       url = "github:BirdeeHub/nix-wrapper-modules";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -51,6 +44,7 @@ rec {
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
     treefmt-nix.follows = "nix-packages/treefmt-nix";
 
+    # Packages
     determinate = {
       url = "github:DeterminateSystems/determinate";
       inputs = {
@@ -68,6 +62,16 @@ rec {
         # nixpkgs.follows breaks substituters
         home-manager.follows = "home-manager";
       };
+    };
+
+    # Unused/just for deduplication
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 

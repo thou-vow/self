@@ -46,9 +46,36 @@
 
     ext.users.thou = {
       prefs = {
-        environmentVariables = {};
+        environmentVariables = {
+          PERSIST_HOME = config.environment.variables.PERSIST + "/home/thou";
+        };
         shellAliases = {};
       };
+    };
+
+    systemd.user.tmpfiles = let
+      protonPackages = with inputs'.nix-packages.packages; {
+        "DW-Proton" = dwproton.steamcompattool;
+        "Proton-CachyOS" = proton-cachyos.steamcompattool;
+        "Proton-CachyOS-v3" = proton-cachyos-v3.steamcompattool;
+        "Proton-GE" = proton-ge.steamcompattool;
+      };
+      steaminstalldir = "%h/.local/share/Steam";
+      compatdir = "${steaminstalldir}/compatibilitytools.d";
+    in {
+      enable = true;
+      users.thou.rules =
+        [
+          "d ${compatdir} 0755 - - -"
+          "d %h/.steam 0755 - - -"
+        ]
+        ++ (lib.mapAttrsToList
+          (name: value: "L+ ${compatdir}/${name} - - - - ${value}")
+          protonPackages)
+        ++ [
+          "L %h/.steam/root  - - - - ${steaminstalldir}"
+          "L %h/.steam/steam - - - - ${steaminstalldir}"
+        ];
     };
 
     users.users.thou = {
@@ -63,6 +90,7 @@
           cemu
           distrobox
           dolphin-emu
+          faugus-launcher
           gcc
           geminicommit
           imagemagick
@@ -73,12 +101,12 @@
           melonds
           mgba
           pcsx2
-          protonplus
           qbittorrent
           rclone
           ripgrep
           typst
           vlc
+          winetricks
           xdg-utils
           yazi
           zathura
@@ -88,6 +116,12 @@
         ];
       password = "123";
       shell = lib.getExe pkgs.bash;
+    };
+  };
+
+  flake.nixosModules.u-attuned-specialisation = {inputs', ...}: {
+    specialisation.attuned.configuration = {
+      wrappers.users.thou.niri.package = inputs'.nix-packages.packages.niri-pr-attuned;
     };
   };
 }

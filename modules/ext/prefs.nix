@@ -3,10 +3,8 @@
   inputs,
   ...
 }: {
-  flake.nixosUserModules.prefs = user: let
-    namespace = ["ext" "users" user];
-  in {
-    options = lib.setAttrByPath namespace (lib.mkOption {
+  flake.nixosUserModules.prefs = user: {
+    options.ext.users.${user} = lib.mkOption {
       type = lib.types.submodule {
         options.prefs = {
           environmentVariables = lib.mkOption {
@@ -20,6 +18,6 @@
         };
       };
       default = {};
-    });
+    };
   };
 }
