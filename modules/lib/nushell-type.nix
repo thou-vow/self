@@ -1,4 +1,8 @@
-{lib, self,...}: {
+{
+  lib,
+  self,
+  ...
+}: {
   flake.lib = {
     isNushellRaw = lib.isType "nushellRaw";
 

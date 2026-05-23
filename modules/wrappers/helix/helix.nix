@@ -3,6 +3,7 @@
   lib,
   self,
   withSystem,
+  wlib,
   ...
 }:
 lib.mkMerge [
@@ -15,7 +16,9 @@ lib.mkMerge [
       pkgs,
       ...
     }: {
-      imports = [self.wrapperModules.writeFiles];
+      imports = [
+        self.wrapperModules.writeFiles
+      ];
 
       options.steel = {
         cogs = lib.mkOption {
@@ -27,12 +30,12 @@ lib.mkMerge [
           default = {};
         };
         initScm = lib.mkOption {
-          type = self.lib.dagLinesType;
-          default = "";
+          type = wlib.types.dagOf lib.types.str;
+          default = {};
         };
         helixScm = lib.mkOption {
-          type = self.lib.dagLinesType;
-          default = "";
+          type = wlib.types.dagOf lib.types.str;
+          default = {};
         };
       };
 
@@ -50,10 +53,10 @@ lib.mkMerge [
             entries = lib.mkMerge [
               {
                 "helix.scm" = lib.mkIf (config.steel.helixScm != "") {
-                  subject.text = config.steel.helixScm;
+                  subject.text = self.lib.convertDagOfStrToLines config.steel.helixScm;
                 };
                 "init.scm" = lib.mkIf (config.steel.initScm != "") {
-                  subject.text = config.steel.initScm;
+                  subject.text = self.lib.convertDagOfStrToLines config.steel.initScm;
                 };
               }
               config.steel.extraConfigFiles
@@ -87,7 +90,8 @@ lib.mkMerge [
           "init".subject.source = ./init;
           "manual-init.scm".subject.source = ./manual-init.scm;
         };
-        initScm =
+        initScm.manual =
+          wlib.dag.entryAnywhere
           # scm
           ''
             (require "manual-init.scm")

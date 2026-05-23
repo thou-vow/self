@@ -3,6 +3,7 @@
   lib,
   self,
   withSystem,
+  wlib,
   ...
 }:
 lib.mkMerge [
@@ -10,6 +11,10 @@ lib.mkMerge [
     flake.wrappers.nh.pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
 
     flake.wrappers.nh.module = {pkgs, ...}: {
+      imports = [
+        wlib.modules.makeWrapper
+      ];
+
       package = lib.mkDefault pkgs.nh;
     };
 

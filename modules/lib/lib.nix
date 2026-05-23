@@ -6,6 +6,10 @@
   ...
 }: {
   flake.lib = {
+    convertDagOfStrToLines = dag:
+      lib.concatMapStringsSep "\n" (x: x.data)
+      (inputs.nix-wrapper-modules.lib.dag.unwrapSort "convertDagOfStrToLines" dag);
+
     emptyDir = pkgs: pkgs.runCommandCC "empty-dir" {} ''mkdir -p $out '';
 
     makeExecutable = pkgs: name: path:
@@ -13,25 +17,5 @@
         cp -R ${path} $out
         chmod -R +x $out
       '';
-
-    nixOnDroidConfiguration = pkgs: {modules, ...} @ attrs:
-      inputs.nix-on-droid.lib.nixOnDroidConfiguration (
-        attrs
-        // {
-          inherit pkgs;
-          modules = modules ++ [self.nixOnDroidModules.core];
-        }
-      );
-
-    nixosSystem = pkgs: {modules, ...} @ attrs:
-      lib.nixosSystem (attrs
-        // {
-          modules =
-            modules
-            ++ [
-              {nixpkgs = {inherit pkgs;};}
-              self.nixosModules.core
-            ];
-        });
   };
 }

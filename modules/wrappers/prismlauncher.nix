@@ -3,6 +3,7 @@
   lib,
   self,
   withSystem,
+  wlib,
   ...
 }:
 lib.mkMerge [
@@ -14,6 +15,10 @@ lib.mkMerge [
       pkgs,
       ...
     }: {
+      imports = [
+        wlib.modules.makeWrapper
+      ];
+
       options.jdks = lib.mkOption {
         type = with lib.types; listOf package;
         default = [];

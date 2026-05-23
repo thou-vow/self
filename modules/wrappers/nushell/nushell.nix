@@ -3,6 +3,7 @@
   lib,
   self,
   withSystem,
+  wlib,
   ...
 }:
 lib.mkMerge [
@@ -14,12 +15,14 @@ lib.mkMerge [
       pkgs,
       ...
     }: {
-      imports = [self.wrapperModules.writeFiles];
+      imports = [
+        self.wrapperModules.writeFiles
+      ];
 
       options = {
         configNu = lib.mkOption {
-          type = self.lib.dagLinesType;
-          default = "";
+          type = wlib.types.dagOf lib.types.str;
+          default = {};
         };
         environmentVariables = lib.mkOption {
           type = lib.types.attrsOf self.lib.nushellValueType;
@@ -40,8 +43,9 @@ lib.mkMerge [
       };
 
       config = {
-        configNu = lib.mkMerge [
-          (self.lib.mkNamedEntryBetween [] "STATIC" []
+        configNu = {
+          static =
+            wlib.dag.entryBefore ["variables"]
             # nu
             ''
               const NU_PLUGIN_DIRS = [($nu.config-path | path dirname | path join 'plugins')]
@@ -52,15 +56,15 @@ lib.mkMerge [
                   to_string: {|v| $v | path expand --no-symlink | str join (char esep) }
                 }
               }
-            '')
+            '';
 
-          (lib.pipe config.environmentVariables [
+          variables = lib.pipe config.environmentVariables [
             (vars: "\nload-env ${self.lib.toNushell {} vars}\n")
-            (self.lib.mkNamedEntryBetween ["STATIC"] "VARIABLES" [])
+            wlib.dag.entryAnywhere
             (lib.mkIf (config.environmentVariables != {}))
-          ])
+          ];
 
-          (lib.pipe config.settings [
+          settings = lib.pipe config.settings [
             (let
               flattenAttrs = prefix: attrs:
                 lib.concatMapAttrs (
@@ -75,18 +79,18 @@ lib.mkMerge [
             (lib.generators.toKeyValue {
               mkKeyValue = key: value: "$env.config.${key} = ${self.lib.toNushell {} value}";
             })
-            (self.lib.mkNamedEntryBetween ["VARIABLES"] "SETTINGS" [])
+            wlib.dag.entryAnywhere
             (lib.mkIf (config.settings != {}))
-          ])
+          ];
 
-          (lib.pipe config.shellAliases [
+          aliases = lib.pipe config.shellAliases [
             (lib.generators.toKeyValue {
               mkKeyValue = k: v: "alias ${builtins.toJSON k} = ${v}";
             })
-            (self.lib.mkNamedEntryBetween ["SETTINGS"] "ALIASES" ["DEFAULT"])
+            wlib.dag.entryAnywhere
             (lib.mkIf (config.shellAliases != {}))
-          ])
-        ];
+          ];
+        };
 
         flags = {
           "--config" = "${config.writeFiles.nushellConfig.location}/config.nu";
@@ -100,7 +104,7 @@ lib.mkMerge [
           eject.enable = true;
           entries = lib.mkMerge [
             {
-              "config.nu".subject.text = config.configNu;
+              "config.nu".subject.text = self.lib.convertDagOfStrToLines config.configNu;
               "plugins".subject.emptyDir = true;
             }
             config.extraConfigFiles
@@ -112,15 +116,13 @@ lib.mkMerge [
     flake.wrappers.nushell.integrationModule = {config, ...}: let
       inherit (config.nushell) pkgs;
     in {
-      nushell.configNu = lib.mkMerge [
-        (let
-          atuin-init-nu =
-            pkgs.runCommand "atuin-init-nu.nu" {nativeBuildInputs = [pkgs.writableTmpDirAsHomeHook];}
-            "${lib.getExe config.atuin.wrapper} init nu ${lib.escapeShellArgs config.atuin.initFlags} > $out";
-        in
-          lib.mkIf (config.atuin or {} != {}) "\nsource ${atuin-init-nu}\n")
+      nushell.configNu = {
+        atuinIntegration = lib.mkIf (config.atuin or {} != {}) (wlib.dag.entryAnywhere "\nsource ${
+          pkgs.runCommand "atuin-init-nu.nu" {nativeBuildInputs = [pkgs.writableTmpDirAsHomeHook];}
+          "${lib.getExe config.atuin.wrapper} init nu ${lib.escapeShellArgs config.atuin.initFlags} > $out"
+        }\n");
 
-        (lib.mkIf (config.direnv or {} != {}) (self.lib.mkEntryBetween ["DEFAULT"] []
+        direnvIntegration = lib.mkIf (config.direnv or {} != {}) (wlib.dag.entryAfter ["static"]
           # nu
           ''
             $env.config.hooks.pre_prompt ++= [{||
@@ -132,8 +134,8 @@ lib.mkMerge [
               load-env $exports
               $env.PATH = do $env.ENV_CONVERSIONS.PATH.from_string $env.PATH
             }]
-          ''))
-      ];
+          '');
+      };
     };
   }
 
@@ -143,14 +145,9 @@ lib.mkMerge [
       pkgs,
       ...
     }: {
-      configNu = lib.mkMerge [
-        (self.lib.mkEntryBetween [] ["ALIASES"] (let
-          zoxide-init-nushell =
-            pkgs.runCommand "zoxide-init-nushell.nu" {}
-            "${lib.getExe pkgs.zoxide} init nushell > $out";
-        in "\nsource ${zoxide-init-nushell}\n"))
-
-        (self.lib.mkEntryBetween ["SETTINGS"] ["DEFAULT"]
+      configNu = {
+        completions =
+          wlib.dag.entryAnywhere
           # nu
           ''
             let carapace_completer = {|spans|
@@ -176,20 +173,27 @@ lib.mkMerge [
               } | do $in $spans
             }
             $env.config.completions.external.max_results = 9
-          '')
+          '';
 
-        (self.lib.mkEntryBetween ["DEFAULT"] []
-          "\nsource ($nu.config-path | path dirname | path join 'manual-config.nu')\n")
-      ];
+        zoxideIntegration =
+          wlib.dag.entryBefore ["aliases"] "\nsource ${pkgs.runCommand "zoxide-init-nushell.nu" {}
+            "${lib.getExe pkgs.zoxide} init nushell > $out"}\n";
+
+        manual = wlib.dag.entryAfter ["settings"] "\nsource ($nu.config-path | path dirname | path join 'manual-config.nu')\n";
+      };
+
       extraConfigFiles = {
         "manual-config.nu".subject.source = ./manual-config.nu;
       };
+
       runtimePkgs = with pkgs; [carapace pokeget-rs zoxide];
+
       settings = {
         auto_cd_implicit = true;
         completions.algorithm = "fuzzy";
         rm.always_trash = true;
       };
+
       shellAliases = {
         "cd" = "z";
         "ci" = "zi";

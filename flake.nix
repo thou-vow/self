@@ -18,6 +18,14 @@ rec {
     nix-packages.url = "github:thou-vow/nix-packages";
 
     flake-parts.follows = "nix-packages/flake-parts";
+    flake-schemas.url = "github:DeterminateSystems/flake-schemas";
+    hjem = {
+      url = "github:feel-co/hjem";
+      inputs = {
+        nix-darwin.follows = "nix-darwin";
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
     impermanence = {
       url = "github:nix-community/impermanence";
       inputs = {
@@ -69,6 +77,10 @@ rec {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -78,7 +90,10 @@ rec {
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake {
       inherit inputs;
-      specialArgs = {inherit nixConfig;};
+      specialArgs = {
+        inherit nixConfig;
+        wlib = inputs.nix-wrapper-modules.lib;
+      };
     } ({
       self,
       withSystem,

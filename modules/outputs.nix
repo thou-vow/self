@@ -31,15 +31,20 @@
     packages = lib.mkMerge [
       (lib.mapAttrs' (name: value: {
           name = "wrapper-${name}";
-          value = self.lib.mkWrappersPackage pkgs {
-            wrappers = {${name} = value;};
+          value = self.lib.mkWrapperPackage {
+            inherit system;
+            wrapper = value;
           };
         })
         top.config.flake.wrappers)
       {
-        all = self.lib.mkWrappersPackage pkgs {inherit (self) wrappers;};
+        all = self.lib.mkWrapperSetPackage {
+          inherit (self) wrappers;
+          inherit system;
+        };
 
-        shell = self.lib.mkWrappersPackage pkgs {
+        shell = self.lib.mkWrapperSetPackage {
+          inherit system;
           wrappers = {
             inherit
               (self.wrappers)

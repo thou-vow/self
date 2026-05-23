@@ -2,6 +2,7 @@
   lib,
   self,
   withSystem,
+  wlib,
   ...
 }:
 lib.mkMerge [
@@ -15,7 +16,9 @@ lib.mkMerge [
     }: let
       tomlFmt = pkgs.formats.toml {};
     in {
-      imports = [self.wrapperModules.writeFiles];
+      imports = [
+        self.wrapperModules.writeFiles
+      ];
 
       options = {
         daemon.enable = lib.mkEnableOption "Atuin daemon";
@@ -53,47 +56,39 @@ lib.mkMerge [
       };
     };
 
-    flake.wrappers.atuin.nixosUserModule = user: {config, ...}: {
-      options.wrappers.users.${user}.atuin.daemon.systemd.enable = lib.mkEnableOption "Atuin systemd units";
+    flake.wrappers.atuin.hjemModule = {config, ...}: {
+      options.wrappers.atuin.daemon.systemd.enable = lib.mkEnableOption "Atuin systemd units";
 
       config = {
-        systemd.user =
-          lib.mkIf
-          (config.wrappers.users.${user}.atuin.daemon.enable && config.wrappers.users.${user}.atuin.daemon.systemd.enable) {
-            services = {
-              "${user}-atuin-daemon" = {
-                enable = true;
-                description = "Atuin daemon";
-                after = ["${user}-atuin-daemon.socket"];
-                requires = ["${user}-atuin-daemon.socket"];
-                environment.ATUIN_LOG = "info";
-                serviceConfig = {
-                  ExecStart = "${lib.getExe config.wrappers.users.${user}.atuin.wrapper} daemon start";
-                  Restart = "on-failure";
-                  RestartSteps = 3;
-                  RestartMaxDelaySec = 6;
-                };
-                unitConfig.ConditionUser = user;
-              };
-            };
-            sockets = {
-              "${user}-atuin-daemon" = {
-                enable = true;
-                description = "Atuin daemon socket";
-                wantedBy = ["sockets.target"];
-                socketConfig = {
-                  ListenStream = "%t/atuin.sock";
-                  SocketMode = "0600";
-                  RemoveOnStop = true;
-                };
-                unitConfig.ConditionUser = user;
-              };
+        systemd = lib.mkIf (config.wrappers.atuin.daemon.enable && config.wrappers.atuin.daemon.systemd.enable) {
+          services.atuin-daemon = {
+            enable = true;
+            description = "Atuin daemon";
+            after = ["atuin-daemon.socket"];
+            requires = ["atuin-daemon.socket"];
+            environment.ATUIN_LOG = "info";
+            serviceConfig = {
+              ExecStart = "${lib.getExe config.wrappers.atuin.wrapper} daemon start";
+              Restart = "on-failure";
+              RestartSteps = 3;
+              RestartMaxDelaySec = 6;
             };
           };
+          sockets.atuin-daemon = {
+            enable = true;
+            description = "Atuin daemon socket";
+            wantedBy = ["sockets.target"];
+            socketConfig = {
+              ListenStream = "%t/atuin.sock";
+              SocketMode = "0600";
+              RemoveOnStop = true;
+            };
+          };
+        };
 
-        wrappers.users.${user}.atuin.settings =
+        wrappers.atuin.settings =
           lib.mkIf
-          (config.wrappers.users.${user}.atuin.daemon.enable && config.wrappers.users.${user}.atuin.daemon.systemd.enable) {
+          (config.wrappers.atuin.daemon.enable && config.wrappers.atuin.daemon.systemd.enable) {
             autostart = lib.mkOverride 99 false;
             systemd_socket = true;
           };

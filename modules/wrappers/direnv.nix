@@ -3,6 +3,7 @@
   lib,
   self,
   withSystem,
+  wlib,
   ...
 }:
 lib.mkMerge [
@@ -16,7 +17,9 @@ lib.mkMerge [
     }: let
       tomlFmt = pkgs.formats.toml {};
     in {
-      imports = [self.wrapperModules.writeFiles];
+      imports = [
+        self.wrapperModules.writeFiles
+      ];
 
       options = {
         nix-direnv = {

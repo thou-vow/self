@@ -6,12 +6,21 @@
   ...
 }: {
   flake.nixosConfigurations.u =
-    self.lib.nixosSystem
-    (withSystem "x86_64-linux" ({pkgs, ...}: pkgs)) {
+    self.lib.nixosSystem {
+      inherit (withSystem "x86_64-linux" (args: args)) pkgs;
+      hjem = true;
+    } {
       modules = [
         self.nixosModules.u
-        self.nixosModules.u-attuned-specialisation
-        self.nixosModules.u-default-specialisation
+        ({
+          config,
+          specialisation,
+          ...
+        }: {
+          _module.args.specialisation = lib.mkIf (config.specialisation != {}) null;
+          hjem.specialArgs = {inherit specialisation;};
+          specialisation.attuned.configuration._module.args.specialisation = "attuned";
+        })
       ];
     };
 
@@ -19,12 +28,13 @@
     config,
     inputs',
     pkgs,
+    specialisation,
     system,
     ...
   }: {
     imports =
       [
-        (self.lib.installWrappers system {
+        (self.lib.installWrappers {
           method.nixos = true;
           wrappers = {
             inherit
@@ -61,13 +71,14 @@
         "vm.dirty_bytes" = 67108864;
         "vm.max_map_count" = 1048576;
       };
-      kernelPackages = inputs'.nyx-loner.legacyPackages.linuxPackages_cachyos-lto;
+      kernelPackages = pkgs.linuxPackages_xanmod_latest;
       kernelParams = ["mitigations=off"];
     };
 
     console.useXkbConfig = true;
 
     environment = {
+      etc."specialisation" = lib.mkIf (specialisation != null) {text = specialisation;};
       systemPackages = with pkgs; [
         btop
         cabextract
@@ -229,71 +240,22 @@
       timeZone = "America/Sao_Paulo";
     };
 
-    users.users.root.password = "123";
-  };
-
-  flake.nixosModules.u-default-specialisation = {
-    config,
-    inputs',
-    pkgs,
-    ...
-  }:
-    lib.mkIf (config.specialisation != {}) {
-      hardware = {
-        cpu.amd.updateMicrocode = true;
-        enableAllFirmware = true;
-        enableAllHardware = true;
-      };
-
-      networking.nameservers = [
-        "8.8.4.4"
-        "8.8.8.8"
-      ];
-
-      zramSwap = {
-        enable = true;
-        memoryPercent = 80;
-        priority = 1;
+    users.users = {
+      root.password = "123";
+      thou = {
+        uid = 1000;
+        isNormalUser = true;
+        description = "thou";
+        extraGroups = ["networkmanager" "wheel"];
+        password = "123";
+        shell = lib.getExe pkgs.bash;
       };
     };
 
-  flake.nixosModules.u-attuned-specialisation = {
-    inputs',
-    pkgs,
-    ...
-  }: {
-    specialisation.attuned.configuration = {
-      boot.kernelParams = [
-        "ath9k_core.nohwcrypt=1"
-        "pcie_aspm=off"
-        "zswap.enabled=1"
-        "zswap.max_pool_percent=80"
-        "zswap.shrinker_enabled=0"
-      ];
-
-      environment.etc."specialisation".text = "attuned";
-
-      hardware = {
-        graphics.package = inputs'.nix-packages.packages.mesa-attuned;
-        enableRedistributableFirmware = true;
-      };
-
-      systemd.services.disable-i915-mitigations = {
-        description = "Set i915 (Intel Graphics) mitigations off at runtime";
-        before = ["graphical.target"];
-        wantedBy = ["multi-user.target"];
-        serviceConfig = {
-          ExecStart = let
-            script = pkgs.writeShellScript "disable-i915-mitigations" ''
-              if [ -w /sys/module/i915/parameters/mitigations ]; then
-                echo off > /sys/module/i915/parameters/mitigations
-              fi
-            '';
-          in "${script}";
-          Type = "oneshot";
-          RemainAfterExit = "yes";
-        };
-      };
+    xdg.portal = {
+      enable = true;
+      configPackages = [config.hjem.users.thou.wrappers.niri.wrapper];
+      extraPortals = with pkgs; [xdg-desktop-portal-gnome];
     };
   };
 }

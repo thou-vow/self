@@ -4,11 +4,13 @@
   self,
   ...
 }: let
+  attunedInternalDrive = "0x50014ee6b2ede306";
   mainId = "0x500003988168a3bd";
 in {
   flake.nixosModules.u = {
     config,
     pkgs,
+    specialisation,
     ...
   }: {
     imports = [
@@ -77,6 +79,7 @@ in {
           "/root/.cache/nix"
           "/root/.local/share/nix"
           "/var/lib/flatpak"
+          "/var/lib/hjem"
           "/var/lib/machines"
           "/var/lib/nixos"
           "/var/lib/nixos-containers"
@@ -140,6 +143,16 @@ in {
         fsType = "vfat";
         options = ["fmask=0077" "dmask=0077"];
       };
+      "/" = {
+        device = "/dev/disk/by-id/wwn-${mainId}-part4";
+        fsType = "btrfs";
+        options = ["subvol=@" "commit=60" "compress=zstd:11" "noatime"];
+      };
+      "/mnt/attuned-internal" = lib.mkIf (specialisation == "attuned") {
+        device = "/dev/disk/by-id/wwn-${attunedInternalDrive}-part5";
+        fsType = "btrfs";
+        options = ["commit=60" "compress=zstd:11" "noatime"];
+      };
       "/mnt/main" = {
         device = "/dev/disk/by-id/wwn-${mainId}-part4";
         fsType = "btrfs";
@@ -159,75 +172,36 @@ in {
     };
 
     services = {
-      beesd.filesystems."main" = {
-        spec = "/dev/disk/by-id/wwn-${mainId}-part4";
-        hashTableSizeMB = 128;
-        verbosity = "crit";
-        extraOptions = ["--loadavg-target" "2.0"];
+      beesd.filesystems = {
+        "attuned-internal" = lib.mkIf (specialisation == "attuned") {
+          spec = "/dev/disk/by-id/wwn-${attunedInternalDrive}-part5";
+          hashTableSizeMB = 128;
+          verbosity = "crit";
+          extraOptions = ["--loadavg-target" "2.0"];
+        };
+        "main" = {
+          spec = "/dev/disk/by-id/wwn-${mainId}-part4";
+          hashTableSizeMB = 128;
+          verbosity = "crit";
+          extraOptions = ["--loadavg-target" "2.0"];
+        };
       };
     };
 
     swapDevices = [
+      (lib.mkIf (specialisation == "attuned") {
+        device = "/dev/disk/by-id/wwn-${attunedInternalDrive}-part4";
+        priority = 1;
+      })
       {
         device = "/dev/disk/by-id/wwn-${mainId}-part3";
         priority = 0;
       }
     ];
 
-    systemd.services."beesd@main".wantedBy = lib.mkForce [];
+    systemd.services = {
+      "beesd@attuned-internal" = lib.mkIf (specialisation == "attuned") {wantedBy = lib.mkForce [];};
+      "beesd@main".wantedBy = lib.mkForce [];
+    };
   };
-
-  flake.nixosModules.u-default-specialisation = {config, ...}:
-    lib.mkIf (config.specialisation != {}) {
-      fileSystems = {
-        "/" = {
-          device = "/dev/disk/by-id/wwn-${mainId}-part4";
-          fsType = "btrfs";
-          options = ["subvol=@" "commit=60" "compress=zstd:11" "noatime"];
-        };
-      };
-    };
-
-  flake.nixosModules.u-attuned-specialisation = let
-    attunedInternalDrive = "0x50014ee6b2ede306";
-  in
-    {...}: {
-      specialisation.attuned.configuration = {
-        fileSystems = {
-          # "/" = {
-          #   device = "/dev/disk/by-id/wwn-${attunedInternalDrive}-part5";
-          #   fsType = "btrfs";
-          #   options = ["subvol=@" "commit=60" "compress=zstd:11" "noatime"];
-          # };
-          "/" = {
-            device = "/dev/disk/by-id/wwn-${mainId}-part4";
-            fsType = "btrfs";
-            options = ["subvol=@" "commit=60" "compress=zstd:11" "noatime"];
-          };
-          "/mnt/attuned-internal" = {
-            device = "/dev/disk/by-id/wwn-${attunedInternalDrive}-part5";
-            fsType = "btrfs";
-            options = ["commit=60" "compress=zstd:11" "noatime"];
-          };
-        };
-
-        services = {
-          beesd.filesystems."attuned-internal" = {
-            spec = "/dev/disk/by-id/wwn-${attunedInternalDrive}-part5";
-            hashTableSizeMB = 128;
-            verbosity = "crit";
-            extraOptions = ["--loadavg-target" "2.0"];
-          };
-        };
-
-        swapDevices = [
-          {
-            device = "/dev/disk/by-id/wwn-${attunedInternalDrive}-part4";
-            priority = 1;
-          }
-        ];
-
-        systemd.services."beesd@attuned-internal".wantedBy = lib.mkForce [];
-      };
-    };
 }

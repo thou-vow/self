@@ -2,14 +2,18 @@
   inputs,
   lib,
   self,
+  wlib,
   ...
 }: {
   flake.wrapperModules.writeFiles = {
     config,
     pkgs,
-    wlib,
     ...
   }: {
+    imports = [
+      wlib.modules.makeWrapper
+    ];
+
     options.writeFiles = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule ({name, ...} @ farmArgs: {
         options = {

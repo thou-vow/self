@@ -3,6 +3,7 @@
   lib,
   self,
   withSystem,
+  wlib,
   ...
 }:
 lib.mkMerge [
@@ -15,12 +16,15 @@ lib.mkMerge [
       pkgs,
       ...
     }: {
-      imports = [self.wrapperModules.writeFiles];
+      imports = [
+        self.wrapperModules.writeFiles
+        wlib.modules.symlinkScript
+      ];
 
       options = {
         configKdl = lib.mkOption {
-          type = self.lib.dagLinesType;
-          default = "";
+          type = wlib.types.dagOf lib.types.str;
+          default = {};
         };
         extraConfigFiles = lib.mkOption {
           type = self.lib.filesType pkgs;
@@ -52,7 +56,7 @@ lib.mkMerge [
           entries = lib.mkMerge [
             {
               "config.kdl" = lib.mkIf (config.configKdl != "") {
-                subject.text = config.configKdl;
+                subject.text = self.lib.convertDagOfStrToLines config.configKdl;
               };
             }
             config.extraConfigFiles
@@ -61,15 +65,12 @@ lib.mkMerge [
       };
     };
 
-    flake.wrappers.niri.nixosUserModule = user: {
-      pkgs,
-      ...
-    }: {
-      xdg.portal = {
-        enable = true;
-        configPackages = [config.wrappers.users.${user}.niri.wrapper];
-        extraPortals = with pkgs; [xdg-desktop-portal-gnome];
-      };
+    flake.wrappers.niri.hjemModule = {pkgs, ...}: {
+      # xdg.portal = {
+      #   enable = true;
+      #   # configPackages = [config.wrappers.users.${user}.niri.wrapper];
+      #   extraPortals = with pkgs; [xdg-desktop-portal-gnome];
+      # };
     };
   }
 
@@ -79,7 +80,7 @@ lib.mkMerge [
       pkgs,
       ...
     }: {
-      configKdl = ''
+      configKdl.manual = wlib.dag.entryAnywhere ''
         include "manual-config.kdl"
       '';
       extraConfigFiles = {

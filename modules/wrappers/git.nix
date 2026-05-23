@@ -3,6 +3,7 @@
   lib,
   self,
   withSystem,
+  wlib,
   ...
 }:
 lib.mkMerge [
@@ -14,12 +15,15 @@ lib.mkMerge [
       pkgs,
       ...
     }: {
-      imports = [self.wrapperModules.writeFiles];
+      imports = [
+        self.wrapperModules.writeFiles
+        wlib.modules.symlinkScript
+      ];
 
       options = {
         gitconfig = lib.mkOption {
-          type = self.lib.dagLinesType;
-          default = "";
+          type = wlib.types.dagOf lib.types.str;
+          default = {};
         };
         settings = lib.mkOption {
           inherit (pkgs.formats.gitIni {}) type;
@@ -30,20 +34,20 @@ lib.mkMerge [
       config = {
         envDefault."GIT_CONFIG_GLOBAL" = "${config.writeFiles.gitConfig.location}/gitconfig";
 
-        gitconfig = lib.mkMerge [
-          (lib.pipe config.settings [
+        gitconfig = {
+          settings = lib.pipe config.settings [
             lib.generators.toGitINI
-            (self.lib.mkNamedEntryBetween [] "SETTINGS" ["DEFAULT"])
+            wlib.dag.entryAnywhere
             (lib.mkIf (config.settings != {}))
-          ])
-        ];
+          ];
+        };
 
         package = lib.mkDefault pkgs.git;
 
         writeFiles.gitConfig = {
           eject.enable = true;
           entries."gitconfig" = lib.mkIf (config.gitconfig != "") {
-            subject.text = config.gitconfig;
+            subject.text = self.lib.convertDagOfStrToLines config.gitconfig;
           };
         };
       };
