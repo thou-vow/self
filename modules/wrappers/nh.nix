@@ -1,7 +1,5 @@
 {
-  inputs,
   lib,
-  self,
   withSystem,
   wlib,
   ...
@@ -19,8 +17,8 @@ lib.mkMerge [
     };
 
     flake.wrappers.nh.nixosModule = {config, ...}: {
-      wrappers.nh.envDefault = lib.mkIf (config.ext.state.flakePath or null != null) {
-        NH_FLAKE = config.ext.state.flakePath;
+      wrappers.nh.envDefault = lib.mkIf (config.support.mapState.flakePath or null != null) {
+        NH_FLAKE = config.support.mapState.flakePath;
       };
     };
   }

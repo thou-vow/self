@@ -1,8 +1,6 @@
 {
-  inputs,
   lib,
   self,
-  withSystem,
   ...
 }: {
   flake.lib = let

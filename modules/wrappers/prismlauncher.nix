@@ -1,7 +1,5 @@
 {
-  inputs,
   lib,
-  self,
   withSystem,
   wlib,
   ...

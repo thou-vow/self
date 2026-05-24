@@ -2,13 +2,11 @@ rec {
   nixConfig = {
     extra-substituters = [
       "https://thou-vow.cachix.org"
-      "https://cache.garnix.io" # nyx-loner
       "https://nix-on-droid.cachix.org"
       "https://nix-community.cachix.org"
     ];
     extra-trusted-public-keys = [
       "thou-vow.cachix.org-1:n6zUvWYOI7kh0jgd+ghWhxeMd9tVdYF2KdOvufJ/Qy4="
-      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=" # nyx-loner
       "nix-on-droid.cachix.org-1:56snoMJTXmDRC1Ei24CmKoUqvHJ9XCp+nidK7qkMQrU="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
@@ -23,13 +21,6 @@ rec {
       url = "github:feel-co/hjem";
       inputs = {
         nix-darwin.follows = "nix-darwin";
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
-    impermanence = {
-      url = "github:nix-community/impermanence";
-      inputs = {
-        home-manager.follows = "home-manager";
         nixpkgs.follows = "nixpkgs";
       };
     };
@@ -50,6 +41,7 @@ rec {
     nixpkgs.follows = "nix-packages/nixpkgs";
     nixpkgs-nod.url = "github:NixOS/nixpkgs/88d3861acdd3d2f0e361767018218e51810df8a1";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
+    preservation.url = "github:nix-community/preservation";
     treefmt-nix.follows = "nix-packages/treefmt-nix";
 
     # Packages
@@ -62,13 +54,6 @@ rec {
           nixpkgs-regression.follows = "nixpkgs";
         };
         # nixpkgs.follows breaks substituters
-      };
-    };
-    nyx-loner = {
-      url = "github:lonerOrz/nyx-loner";
-      inputs = {
-        # nixpkgs.follows breaks substituters
-        home-manager.follows = "home-manager";
       };
     };
 
@@ -94,11 +79,7 @@ rec {
         inherit nixConfig;
         wlib = inputs.nix-wrapper-modules.lib;
       };
-    } ({
-      self,
-      withSystem,
-      ...
-    }: {
+    } {
       imports = [
         (inputs.import-tree ./modules)
         ./parts.nix
@@ -120,5 +101,5 @@ rec {
           };
         };
       };
-    });
+    };
 }

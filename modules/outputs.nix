@@ -2,7 +2,6 @@
   inputs,
   lib,
   self,
-  withSystem,
   ...
 } @ top: {
   perSystem = {

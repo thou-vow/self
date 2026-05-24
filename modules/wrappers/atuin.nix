@@ -2,7 +2,6 @@
   lib,
   self,
   withSystem,
-  wlib,
   ...
 }:
 lib.mkMerge [

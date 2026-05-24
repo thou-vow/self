@@ -1,12 +1,5 @@
-{
-  inputs,
-  lib,
-  self,
-  withSystem,
-  ...
-}: {
+{lib, ...}: {
   flake.nixosModules.u = {
-    config,
     inputs',
     pkgs,
     specialisation,

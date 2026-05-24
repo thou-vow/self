@@ -14,11 +14,11 @@ in {
     ...
   }: {
     imports = [
-      self.nixosModules.state
-      inputs.impermanence.nixosModules.impermanence
+      self.nixosModules.mapState
+      inputs.preservation.nixosModules.preservation
     ];
 
-    ext.state.flakePath = "/self";
+    support.mapState.flakePath = "/self";
 
     boot = {
       initrd.systemd = {
@@ -30,7 +30,7 @@ in {
           stat = "${pkgs.coreutils}/bin/stat";
         };
 
-        services.impermanence-btrfs-rolling = {
+        services.btrfs-rolling = {
           description = "Archiving existing Btrfs @ subvolume and creating a fresh one";
 
           after = ["initrd-root-device.target" "local-fs-pre.target"];
@@ -56,6 +56,8 @@ in {
           serviceConfig.Type = "oneshot";
           unitConfig.DefaultDependencies = false;
         };
+
+        tmpfiles.settings.preservation."/sysroot/persist/etc/machine-id".f.argument = "uninitialized";
       };
       loader = {
         efi.efiSysMountPoint = "/boot";
@@ -70,84 +72,24 @@ in {
       };
     };
 
-    environment.persistence = {
-      "/persist" = {
-        enable = true;
-        directories = [
-          config.ext.state.flakePath
-          "/etc/NetworkManager/system-connections"
-          "/root/.cache/nix"
-          "/root/.local/share/nix"
-          "/var/lib/flatpak"
-          "/var/lib/hjem"
-          "/var/lib/machines"
-          "/var/lib/nixos"
-          "/var/lib/nixos-containers"
-          "/var/lib/portables"
-          "/var/lib/waydroid"
-          "/var/log"
-          "/var/tmp"
-        ];
-        users.thou = {
-          directories = [
-            ".bwrap"
-            ".cache/nix"
-            ".cargo"
-            ".config/Cemu"
-            ".config/BraveSoftware"
-            ".config/discord"
-            ".config/faugus-launcher"
-            ".config/PCSX2"
-            ".local/bin"
-            ".local/share/atuin"
-            ".local/share/Cemu"
-            ".local/share/containers"
-            ".local/share/direnv"
-            ".local/share/dolphin-emu"
-            ".local/share/faugus-launcher"
-            ".local/share/flatpak"
-            ".local/share/helix"
-            ".local/share/nix"
-            ".local/share/qBittorrent"
-            ".local/share/Steam"
-            ".local/share/steel"
-            ".local/share/umu"
-            ".local/share/waydroid"
-            ".local/share/yawl"
-            ".local/share/zoxide"
-            ".m2"
-            ".ssh"
-            ".var"
-            "Desktop"
-            "Documents"
-            "Downloads"
-            "Games"
-            "Music"
-            "Pictures"
-            "Projects"
-            "Public"
-            "Templates"
-            "Videos"
-          ];
-          files = [
-            ".config/nushell/history.txt"
-            ".env"
-          ];
-        };
-      };
-    };
-
     fileSystems = {
       ${config.boot.loader.efi.efiSysMountPoint} = {
         device = "/dev/disk/by-id/wwn-${mainId}-part2";
         fsType = "vfat";
         options = ["fmask=0077" "dmask=0077"];
       };
-      "/" = {
-        device = "/dev/disk/by-id/wwn-${mainId}-part4";
-        fsType = "btrfs";
-        options = ["subvol=@" "commit=60" "compress=zstd:11" "noatime"];
-      };
+      "/" =
+        if specialisation == "attuned"
+        then {
+          device = "/dev/disk/by-id/wwn-${attunedInternalDrive}-part5";
+          fsType = "btrfs";
+          options = ["subvol=@" "commit=60" "compress=zstd:11" "noatime"];
+        }
+        else {
+          device = "/dev/disk/by-id/wwn-${mainId}-part4";
+          fsType = "btrfs";
+          options = ["subvol=@" "commit=60" "compress=zstd:11" "noatime"];
+        };
       "/mnt/attuned-internal" = lib.mkIf (specialisation == "attuned") {
         device = "/dev/disk/by-id/wwn-${attunedInternalDrive}-part5";
         fsType = "btrfs";
@@ -168,6 +110,87 @@ in {
         fsType = "btrfs";
         neededForBoot = true;
         options = ["subvol=@persist" "commit=60" "compress=zstd:11" "noatime"];
+      };
+    };
+
+    preservation = {
+      enable = true;
+      preserveAt."/persist" = {
+        directories = [
+          {
+            directory = config.support.mapState.flakePath;
+            user = "thou";
+          }
+          "/etc/NetworkManager/system-connections"
+          "/root/.cache/nix"
+          "/root/.local/share/nix"
+          "/var/lib/flatpak"
+          "/var/lib/hjem"
+          "/var/lib/machines"
+          "/var/lib/nixos"
+          "/var/lib/nixos-containers"
+          "/var/lib/portables"
+          "/var/lib/systemd/coredump"
+          "/var/lib/systemd/rfkill"
+          "/var/lib/systemd/timers"
+          "/var/lib/waydroid"
+          "/var/log"
+        ];
+        files = [
+          {
+            file = "/etc/machine-id";
+            inInitrd = true;
+          }
+          {
+            file = "/var/lib/systemd/random-seed";
+            how = "symlink";
+            inInitrd = true;
+            configureParent = true;
+          }
+        ];
+        users.thou = {
+          directories = [
+            ".bwrap"
+            ".cache/nix"
+            ".cargo"
+            ".config/Cemu"
+            ".config/BraveSoftware"
+            ".config/PCSX2"
+            ".config/vermouth"
+            ".eject"
+            ".local/bin"
+            ".local/share/atuin"
+            ".local/share/containers"
+            ".local/share/direnv"
+            ".local/share/flatpak"
+            ".local/share/helix"
+            ".local/share/nix"
+            ".local/share/qBittorrent"
+            ".local/share/waydroid"
+            ".local/share/vermouth"
+            ".local/share/zoxide"
+            ".local/state/wireplumber"
+            ".ssh"
+            ".var"
+            "Desktop"
+            "Documents"
+            "Downloads"
+            "Games"
+            "Music"
+            "Pictures"
+            "Projects"
+            "Public"
+            "Templates"
+            "Videos"
+          ];
+          files = [
+            ".config/nushell/history.txt"
+            {
+              file = ".env";
+              mode = "0600";
+            }
+          ];
+        };
       };
     };
 
@@ -202,6 +225,7 @@ in {
     systemd.services = {
       "beesd@attuned-internal" = lib.mkIf (specialisation == "attuned") {wantedBy = lib.mkForce [];};
       "beesd@main".wantedBy = lib.mkForce [];
+      systemd-machine-id-commit.unitConfig.ConditionFirstBoot = true;
     };
   };
 }

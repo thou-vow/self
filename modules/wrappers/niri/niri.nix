@@ -1,5 +1,4 @@
 {
-  inputs,
   lib,
   self,
   withSystem,
@@ -49,7 +48,9 @@ lib.mkMerge [
 
         package = lib.mkDefault inputs'.nix-packages.packages.niri-pr;
 
-        runtimePkgs = [config.xwayland-satellite.package];
+        runtimePkgs = [
+          config.xwayland-satellite.package
+        ];
 
         writeFiles.niriConfig = {
           eject.enable = true;
@@ -63,14 +64,6 @@ lib.mkMerge [
           ];
         };
       };
-    };
-
-    flake.wrappers.niri.hjemModule = {pkgs, ...}: {
-      # xdg.portal = {
-      #   enable = true;
-      #   # configPackages = [config.wrappers.users.${user}.niri.wrapper];
-      #   extraPortals = with pkgs; [xdg-desktop-portal-gnome];
-      # };
     };
   }
 

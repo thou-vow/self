@@ -4,16 +4,7 @@
   self,
   withSystem,
   ...
-}: let
-  commonModuleArgs = system: {
-    inherit
-      (withSystem system (args: args))
-      inputs'
-      self'
-      ;
-    inherit system;
-  };
-in {
+}: {
   flake.lib = {
     installWrappers = {
       method,
@@ -77,9 +68,10 @@ in {
                   type = inputs.nix-wrapper-modules.lib.types.subWrapperModuleWith {
                     modules = [
                       value.module
+                      self.wrapperModules.base
                       {pkgs = value.pkgsPerSystem system;}
                     ];
-                    specialArgs = commonModuleArgs system;
+                    specialArgs = {inherit system;};
                   };
                 });
               })
@@ -102,9 +94,12 @@ in {
               modules =
                 optionModules
                 ++ integrationModules
-                ++ [packagesModule]
+                ++ [
+                  packagesModule
+                  self.wrapperIntegrationModules.base
+                ]
                 ++ extraIntegrationModules;
-              specialArgs = commonModuleArgs system;
+              specialArgs = {inherit system;};
             };
 
           default = {};
@@ -120,10 +115,11 @@ in {
         modules =
           [
             wrapper.module
+            self.wrapperModules.base
             {pkgs = wrapper.pkgsPerSystem system;}
           ]
           ++ extraWrapperModules;
-        specialArgs = commonModuleArgs system;
+        specialArgs = {inherit system;};
       };
     in
       eval.config.wrapper;
@@ -148,31 +144,40 @@ in {
         paths = eval.config.wrappers.packages;
       };
 
-    nixOnDroidConfiguration = {pkgs}: primaryAttrs:
+    nixOnDroidConfiguration = {pkgs}: primaryAttrs: let
+      system = pkgs.stdenv.hostPlatform.system;
+    in
       inputs.nix-on-droid.lib.nixOnDroidConfiguration (primaryAttrs
         // {
           inherit pkgs;
-          extraSpecialArgs =
-            commonModuleArgs pkgs.stdenv.hostPlatform.system
-            // primaryAttrs.extraSpecialArgs or {};
+          extraSpecialArgs = {inherit system;} // primaryAttrs.extraSpecialArgs or {};
+          modules = [self.nixOnDroidModules.base] ++ primaryAttrs.modules or [];
         });
 
     nixosSystem = {
       pkgs,
       hjem ? false,
-    }: primaryAttrs:
+    }: primaryAttrs: let
+      system = pkgs.stdenv.hostPlatform.system;
+    in
       lib.nixosSystem (primaryAttrs
         // {
           modules =
-            [{nixpkgs = {inherit pkgs;};}]
+            [
+              self.nixosModules.base
+              {nixpkgs = {inherit pkgs;};}
+            ]
             ++ lib.optionals hjem [
               inputs.hjem.nixosModules.default
-              {hjem.specialArgs = commonModuleArgs pkgs.stdenv.hostPlatform.system;}
+              {
+                hjem = {
+                  extraModules = [self.hjemModules.base];
+                  specialArgs = {inherit system;};
+                };
+              }
             ]
             ++ primaryAttrs.modules or [];
-          specialArgs =
-            commonModuleArgs pkgs.stdenv.hostPlatform.system
-            // primaryAttrs.specialArgs or {};
+          specialArgs = {inherit system;} // primaryAttrs.specialArgs or {};
         });
   };
 }

@@ -1,5 +1,4 @@
 {
-  flake-parts-lib,
   inputs,
   lib,
   ...
@@ -37,7 +36,7 @@
       };
 
       wrappers = lib.mkOption {
-        type = lib.types.lazyAttrsOf (lib.types.submodule ({config, ...}: {
+        type = lib.types.lazyAttrsOf (lib.types.submodule {
           options = {
             hjemModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
             integrationModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
@@ -46,7 +45,7 @@
             nixosModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
             pkgsPerSystem = lib.mkOption {type = with lib.types; functionTo pkgs;};
           };
-        }));
+        });
       };
     };
   };

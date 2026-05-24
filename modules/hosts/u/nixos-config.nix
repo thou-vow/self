@@ -25,11 +25,8 @@
     };
 
   flake.nixosModules.u = {
-    config,
-    inputs',
     pkgs,
     specialisation,
-    system,
     ...
   }: {
     imports =
@@ -45,13 +42,12 @@
         })
       ]
       ++ (with self.nixosModules; [
-        nix
+        # flatpak
         waydroid
-      ]);
-
-    ext = {
-      nix.determinate.enable = true;
-    };
+      ])
+      ++ [
+        inputs.determinate.nixosModules.default
+      ];
 
     boot = {
       initrd.availableKernelModules = [
@@ -116,6 +112,7 @@
         zip
       ];
       variables = {
+        DETSYS_IDS_TELEMETRY = "disabled";
         MESA_SHADER_CACHE_MAX_SIZE = "10G";
         NIXPKGS_ALLOW_UNFREE = "1";
         PERSIST = "/persist";
@@ -178,11 +175,22 @@
       useNetworkd = true;
     };
 
+    nix = {
+      daemonCPUSchedPolicy = "idle";
+      daemonIOSchedClass = "idle";
+    };
+
     programs = {
       appimage = {
         enable = true;
         binfmt = true;
       };
+    };
+
+    qt = {
+      enable = true;
+      platformTheme = "qt5ct";
+      style = "breeze";
     };
 
     security = {
@@ -254,8 +262,8 @@
 
     xdg.portal = {
       enable = true;
-      configPackages = [config.hjem.users.thou.wrappers.niri.wrapper];
-      extraPortals = with pkgs; [xdg-desktop-portal-gnome];
+      config.common.default = ["kde"];
+      extraPortals = with pkgs; [kdePackages.xdg-desktop-portal-kde];
     };
   };
 }

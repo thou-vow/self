@@ -1,5 +1,4 @@
 {
-  inputs,
   lib,
   self,
   wlib,
@@ -38,7 +37,7 @@
           };
           name = lib.mkOption {
             type = lib.types.nonEmptyStr;
-            default = farmArgs.name;
+            default = name;
           };
         };
 

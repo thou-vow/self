@@ -1,5 +1,4 @@
 {
-  inputs,
   lib,
   self,
   withSystem,
@@ -20,26 +19,21 @@
     pkgs,
     ...
   }: {
-    imports =
-      [
-        (self.lib.installWrappers {
-          method.nixOnDroid = true;
-          wrappers = {
-            inherit
-              (self.wrappers)
-              atuin
-              direnv
-              git
-              helix
-              nushell
-              ;
-          };
-        })
-      ]
-      ++ (with self.nixOnDroidModules; [
-        nix
-        state
-      ]);
+    imports = [
+      (self.lib.installWrappers {
+        method.nixOnDroid = true;
+        wrappers = {
+          inherit
+            (self.wrappers)
+            atuin
+            direnv
+            git
+            helix
+            nushell
+            ;
+        };
+      })
+    ];
 
     wrappers = {
       git.settings.user = {

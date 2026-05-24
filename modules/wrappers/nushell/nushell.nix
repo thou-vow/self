@@ -1,5 +1,4 @@
 {
-  inputs,
   lib,
   self,
   withSystem,
@@ -52,6 +51,10 @@ lib.mkMerge [
 
               $env.ENV_CONVERSIONS = $env.ENV_CONVERSIONS | merge {
                 PATH: {
+                  from_string: {|s| $s | split row (char esep) | path expand --no-symlink }
+                  to_string: {|v| $v | path expand --no-symlink | str join (char esep) }
+                }
+                XDG_DATA_DIRS: {
                   from_string: {|s| $s | split row (char esep) | path expand --no-symlink }
                   to_string: {|v| $v | path expand --no-symlink | str join (char esep) }
                 }
@@ -140,11 +143,7 @@ lib.mkMerge [
   }
 
   {
-    flake.wrappers.nushell.module = {
-      config,
-      pkgs,
-      ...
-    }: {
+    flake.wrappers.nushell.module = {pkgs, ...}: {
       configNu = {
         completions =
           wlib.dag.entryAnywhere

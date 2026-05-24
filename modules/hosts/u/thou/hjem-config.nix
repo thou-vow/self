@@ -1,8 +1,6 @@
 {
-  inputs,
   lib,
   self,
-  withSystem,
   ...
 }: {
   flake.nixosModules.u = {...}: {
@@ -66,8 +64,6 @@
     in
       lib.mkMerge (lib.mapAttrsToList (name: value: {
           ".local/share/Steam/compatibilitytools.d/${name}".source = "${value}";
-          ".steam/root/compatibilitytools.d/${name}".source = "${value}";
-          ".steam/steam/compatibilitytools.d/${name}".source = "${value}";
         })
         protonPackages);
 
@@ -78,7 +74,6 @@
         cemu
         distrobox
         dolphin-emu
-        faugus-launcher
         gcc
         geminicommit
         imagemagick
@@ -94,15 +89,17 @@
         rclone
         ripgrep
         typst
+        umu-launcher
         vlc
         winetricks
         xdg-utils
         yazi
         zathura
       ])
-      ++ [
-        inputs'.nix-packages.packages.discord-rpc-lsp
-      ];
+      ++ (with inputs'.nix-packages.packages; [
+        discord-rpc-lsp
+        vermouth
+      ]);
 
     user = "thou";
   };
