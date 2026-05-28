@@ -98,7 +98,6 @@
       ])
       ++ (with inputs'.nix-packages.packages; [
         discord-rpc-lsp
-        vermouth
       ]);
 
     user = "thou";

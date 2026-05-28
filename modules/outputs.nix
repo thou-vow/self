@@ -37,11 +37,6 @@
         })
         top.config.flake.wrappers)
       {
-        all = self.lib.mkWrapperSetPackage {
-          inherit (self) wrappers;
-          inherit system;
-        };
-
         shell = self.lib.mkWrapperSetPackage {
           inherit system;
           wrappers = {

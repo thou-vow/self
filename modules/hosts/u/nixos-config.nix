@@ -65,7 +65,7 @@
         "vm.swappiness" = 1;
         "vm.dirty_background_bytes" = 16777216;
         "vm.dirty_bytes" = 67108864;
-        "vm.max_map_count" = 1048576;
+        "vm.max_map_count" = 2147483642;
       };
       kernelPackages = pkgs.linuxPackages_xanmod_latest;
       kernelParams = ["mitigations=off"];
@@ -185,12 +185,6 @@
         enable = true;
         binfmt = true;
       };
-    };
-
-    qt = {
-      enable = true;
-      platformTheme = "qt5ct";
-      style = "breeze";
     };
 
     security = {
