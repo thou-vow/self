@@ -81,7 +81,7 @@ rec {
       };
     } {
       imports = [
-        (inputs.import-tree ./modules)
+        (inputs.import-tree ./flake)
         ./parts.nix
       ];
 

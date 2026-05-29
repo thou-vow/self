@@ -1,0 +1,112 @@
+{
+  lib,
+  self,
+  withSystem,
+  wlib,
+  ...
+}: {
+  flake.wrappers.kitty.pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
+
+  flake.wrappers.kitty.module = {
+    config,
+    pkgs,
+    ...
+  }: {
+    imports = [
+      self.wrapperModules.writeFiles
+      wlib.modules.symlinkScript
+    ];
+
+    options = {
+      environmentVariables = lib.mkOption {
+        type = self.lib.types.environmentVariables;
+        default = {};
+      };
+      extraConfigFiles = lib.mkOption {
+        type = self.lib.types.files pkgs;
+        default = {};
+      };
+      keybindings = lib.mkOption {
+        type = lib.types.attrsOf lib.types.str;
+        default = {};
+      };
+      kittyConf = lib.mkOption {
+        type = wlib.types.dagOf lib.types.str;
+        default = {};
+      };
+      mouseBindings = lib.mkOption {
+        type = lib.types.attrsOf lib.types.str;
+        default = {};
+      };
+      settings = lib.mkOption {
+        type = with lib.types; attrsOf (oneOf [bool float int str]);
+        default = {};
+      };
+    };
+
+    config = {
+      envDefault."KITTY_CONFIG_DIRECTORY" = config.writeFiles.kittyConfig.location;
+
+      kittyConf = {
+        environmentVariables = lib.pipe config.environmentVariables [
+          (lib.generators.toKeyValue {
+            mkKeyValue = k: v: "env ${k}=${wlib.escapeShellArgWithEnv (toString v)}";
+          })
+          wlib.dag.entryAnywhere
+          (lib.mkIf (config.environmentVariables != {}))
+        ];
+
+        settings = lib.pipe config.settings [
+          (lib.generators.toKeyValue {
+            mkKeyValue = key: value: let
+              value' =
+                if builtins.isBool value
+                then
+                  if value
+                  then "yes"
+                  else "no"
+                else toString value;
+            in "${key} ${value'}";
+          })
+          (wlib.dag.entryAfter ["environmentVariables"])
+          (lib.mkIf (config.settings != {}))
+        ];
+
+        keybindings = lib.pipe config.keybindings [
+          (lib.generators.toKeyValue {
+            mkKeyValue = k: v: "map ${k} ${v}";
+          })
+          (wlib.dag.entryAfter ["settings"])
+          (lib.mkIf (config.keybindings != {}))
+        ];
+
+        mouseBindings = lib.pipe config.mouseBindings [
+          (lib.generators.toKeyValue {
+            mkKeyValue = k: v: "mouse_map ${k} ${v}";
+          })
+          (wlib.dag.entryAfter ["keybindings"])
+          (lib.mkIf (config.mouseBindings != {}))
+        ];
+      };
+
+      package = lib.mkDefault pkgs.kitty;
+
+      writeFiles = {
+        kittyConfig.entries = lib.mkMerge [
+          {
+            "kitty.conf" = lib.mkIf (config.kittyConf != {}) {
+              subject.text = self.lib.convertDagOfStrToLines config.kittyConf;
+            };
+          }
+          config.extraConfigFiles
+        ];
+      };
+    };
+  };
+
+  flake.wrappers.kitty.integrationModule = {config, ...}: {
+    kitty.environmentVariables =
+      lib.mkIf (config.preferences or {} != {})
+      config.preferences.environmentVariables;
+  };
+}

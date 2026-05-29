@@ -1,6 +1,7 @@
 {
   inputs,
   lib,
+  wlib,
   ...
 }: {
   options = {
@@ -11,7 +12,15 @@
       };
 
       lib = lib.mkOption {
-        type = lib.types.attrs;
+        type = lib.types.submodule {
+          freeformType = lib.types.lazyAttrsOf lib.types.raw;
+          options = {
+            types = lib.mkOption {
+              type = lib.types.attrsOf lib.types.raw;
+              default = {};
+            };
+          };
+        };
         default = {};
       };
 
