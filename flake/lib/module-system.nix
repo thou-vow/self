@@ -3,6 +3,7 @@
   lib,
   self,
   withSystem,
+  wlib,
   ...
 }: {
   flake.lib = {
@@ -65,7 +66,7 @@
               lib.mapAttrsToList (name: value: {
                 options = lib.setAttrByPath [name] (lib.mkOption {
                   default = {};
-                  type = inputs.nix-wrapper-modules.lib.types.subWrapperModuleWith {
+                  type = wlib.types.subWrapperModuleWith {
                     modules = [
                       value.module
                       self.wrapperModules.base
@@ -111,7 +112,7 @@
       wrapper,
       extraWrapperModules ? [],
     }: let
-      eval = inputs.nix-wrapper-modules.lib.evalModules {
+      eval = wlib.evalModules {
         modules =
           [
             wrapper.module

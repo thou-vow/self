@@ -30,7 +30,5 @@
       ++ (with inputs'.nix-packages.packages; [
         brave-latest
       ]);
-
-    writeFiles.niriConfig.eject.enable = true;
   };
 }

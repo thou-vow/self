@@ -45,15 +45,16 @@
     };
 
     config = {
-      envDefault."KITTY_CONFIG_DIRECTORY" = config.writeFiles.kittyConfig.location;
+      envDefault."KITTY_CONFIG_DIRECTORY" =
+        self.lib.disableEntryEscapeFn
+        (self.lib.potentiallyWritableShellInline config.writeFiles.kittyConfig.drv);
 
       kittyConf = {
         environmentVariables = lib.pipe config.environmentVariables [
           (lib.generators.toKeyValue {
-            mkKeyValue = k: v: "env ${k}=${wlib.escapeShellArgWithEnv (toString v)}";
+            mkKeyValue = k: v: "env ${k}=${toString v}";
           })
           wlib.dag.entryAnywhere
-          (lib.mkIf (config.environmentVariables != {}))
         ];
 
         settings = lib.pipe config.settings [
@@ -69,7 +70,6 @@
             in "${key} ${value'}";
           })
           (wlib.dag.entryAfter ["environmentVariables"])
-          (lib.mkIf (config.settings != {}))
         ];
 
         keybindings = lib.pipe config.keybindings [
@@ -77,7 +77,6 @@
             mkKeyValue = k: v: "map ${k} ${v}";
           })
           (wlib.dag.entryAfter ["settings"])
-          (lib.mkIf (config.keybindings != {}))
         ];
 
         mouseBindings = lib.pipe config.mouseBindings [
@@ -85,7 +84,6 @@
             mkKeyValue = k: v: "mouse_map ${k} ${v}";
           })
           (wlib.dag.entryAfter ["keybindings"])
-          (lib.mkIf (config.mouseBindings != {}))
         ];
       };
 
@@ -94,9 +92,7 @@
       writeFiles = {
         kittyConfig.entries = lib.mkMerge [
           {
-            "kitty.conf" = lib.mkIf (config.kittyConf != {}) {
-              subject.text = self.lib.convertDagOfStrToLines config.kittyConf;
-            };
+            "kitty.conf".subject.text = self.lib.convertDagOfStrToLines config.kittyConf;
           }
           config.extraConfigFiles
         ];

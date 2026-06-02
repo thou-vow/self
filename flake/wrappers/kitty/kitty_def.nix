@@ -21,7 +21,5 @@
     '';
 
     settings.clear_all_shortcuts = true;
-
-    writeFiles.kittyConfig.eject.enable = true;
   };
 }

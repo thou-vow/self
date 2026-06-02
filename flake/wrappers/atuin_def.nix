@@ -12,8 +12,6 @@
       show_tabs = false;
       workspaces = true;
     };
-
-    writeFiles.atuinConfig.eject.enable = true;
   };
 
   flake.wrappers.atuin.integrationModule = {config, ...}: {

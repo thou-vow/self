@@ -40,8 +40,12 @@
 
     config = {
       envDefault = {
-        "HELIX_STEEL_CONFIG" = config.writeFiles.helixSteelConfig.location;
-        "STEEL_SEARCH_PATHS" = config.writeFiles.helixSteelSearchPaths.location;
+        "HELIX_STEEL_CONFIG" =
+          self.lib.disableEntryEscapeFn
+          (self.lib.potentiallyWritableShellInline config.writeFiles.helixSteelConfig.drv);
+        "STEEL_SEARCH_PATHS" =
+          self.lib.disableEntryEscapeFn
+          (self.lib.potentiallyWritableShellInline config.writeFiles.helixSteelSearchPaths.drv);
       };
 
       package = lib.mkDefault inputs'.nix-packages.packages.helix-steel;
@@ -49,12 +53,8 @@
       writeFiles = {
         helixSteelConfig.entries = lib.mkMerge [
           {
-            "helix.scm" = lib.mkIf (config.steel.helixScm != {}) {
-              subject.text = self.lib.convertDagOfStrToLines config.steel.helixScm;
-            };
-            "init.scm" = lib.mkIf (config.steel.initScm != {}) {
-              subject.text = self.lib.convertDagOfStrToLines config.steel.initScm;
-            };
+            "helix.scm".subject.text = self.lib.convertDagOfStrToLines config.steel.helixScm;
+            "init.scm".subject.text = self.lib.convertDagOfStrToLines config.steel.initScm;
           }
           config.steel.extraConfigFiles
         ];

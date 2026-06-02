@@ -35,7 +35,9 @@
     };
 
     config = {
-      envDefault."DIRENV_CONFIG" = config.writeFiles.direnvConfig.location;
+      envDefault."DIRENV_CONFIG" =
+        self.lib.disableEntryEscapeFn
+        (self.lib.potentiallyWritableShellInline config.writeFiles.direnvConfig.drv);
 
       package = lib.mkDefault pkgs.direnv;
 
@@ -45,10 +47,7 @@
       };
 
       writeFiles.direnvConfig.entries = {
-        "direnv.toml" = lib.mkIf (config.settings != {}) {
-          subject.source =
-            tomlFmt.generate "direnv.toml" config.settings;
-        };
+        "direnv.toml".subject.source = tomlFmt.generate "direnv.toml" config.settings;
         "lib/nix-direnv.sh" = lib.mkIf config.nix-direnv.enable {
           subject.source = "${config.nix-direnv.package}/share/nix-direnv/direnvrc";
         };

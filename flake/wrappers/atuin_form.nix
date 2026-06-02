@@ -26,7 +26,9 @@
     };
 
     config = {
-      envDefault."ATUIN_CONFIG_DIR" = config.writeFiles.atuinConfig.location;
+      envDefault."ATUIN_CONFIG_DIR" =
+        self.lib.disableEntryEscapeFn
+        (self.lib.potentiallyWritableShellInline config.writeFiles.atuinConfig.drv);
 
       package = lib.mkDefault pkgs.atuin;
 
@@ -36,9 +38,7 @@
       };
 
       writeFiles.atuinConfig.entries = {
-        "config.toml" = lib.mkIf (config.settings != {}) {
-          subject.source = tomlFmt.generate "config.toml" config.settings;
-        };
+        "config.toml".subject.source = tomlFmt.generate "config.toml" config.settings;
       };
     };
   };

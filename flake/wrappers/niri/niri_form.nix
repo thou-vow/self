@@ -42,17 +42,18 @@
         settings = lib.pipe config.settings [
           wlib.toKdl
           wlib.dag.entryAnywhere
-          (lib.mkIf (config.settings != {}))
         ];
       };
 
-      drv.installPhase = lib.mkIf (config.configKdl != {}) ''
+      drv.installPhase = ''
         runHook preInstall
         ${lib.getExe config.package} validate -c "${config.writeFiles.niriConfig.drv}/config.kdl"
         runHook postInstall
       '';
 
-      envDefault."NIRI_CONFIG" = "${config.writeFiles.niriConfig.location}/config.kdl";
+      envDefault."NIRI_CONFIG" =
+        self.lib.disableEntryEscapeFn
+        "${self.lib.potentiallyWritableShellInline config.writeFiles.niriConfig.drv}/config.kdl";
 
       filesToPatch = ["share/systemd/user/niri.service"];
 
@@ -64,9 +65,7 @@
 
       writeFiles.niriConfig.entries = lib.mkMerge [
         {
-          "config.kdl" = lib.mkIf (config.configKdl != {}) {
-            subject.text = self.lib.convertDagOfStrToLines config.configKdl;
-          };
+          "config.kdl".subject.text = self.lib.convertDagOfStrToLines config.configKdl;
         }
         config.extraConfigFiles
       ];

@@ -31,15 +31,11 @@ in {
         lib.mkMerge [
           ''
             extra-experimental-features = flakes nix-command
+            extra-substituters = ${toString extra-substituters}
+            extra-trusted-public-keys = ${toString extra-trusted-public-keys}
             keep-derivations = true
             keep-outputs = true
           ''
-          (lib.mkIf (extra-substituters != []) ''
-            extra-substituters = ${toString extra-substituters}
-          '')
-          (lib.mkIf (extra-trusted-public-keys != []) ''
-            extra-trusted-public-keys = ${toString extra-trusted-public-keys}
-          '')
         ];
 
       nixPath = lib.mapAttrsToList (k: _: "${k}=flake:${k}") config.nix.registry;

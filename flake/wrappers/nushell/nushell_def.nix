@@ -40,31 +40,33 @@
           $env.config.completions.external.max_results = 9
         '';
 
-      zoxideIntegration =
-        wlib.dag.entryBefore ["shellAliases"] "\nsource ${pkgs.runCommand "zoxide-init-nushell.nu" {}
-          "${lib.getExe pkgs.zoxide} init nushell > $out"}\n";
+      zoxideIntegration = wlib.dag.entryBefore ["shellAliases"] ''
+        source ${pkgs.runCommand "zoxide-init-nushell.nu" {}
+          "${lib.getExe pkgs.zoxide} init nushell > $out"}
+      '';
 
-      manual = wlib.dag.entryAfter ["settings"] "\nsource ($nu.config-path | path dirname | path join 'manual-config.nu')\n";
+      manual =
+        wlib.dag.entryAfter ["settings"]
+        # nu
+        ''
+          source ($nu.config-path | path dirname | path join 'manual-config.nu')
+        '';
     };
 
     extraConfigFiles = {
       "manual-config.nu".subject.source = ./manual-config.nu;
     };
 
-    runtimePkgs = with pkgs; [carapace pokeget-rs zoxide];
-
-    settings = {
-      auto_cd_implicit = true;
-      completions.algorithm = "fuzzy";
-      rm.always_trash = true;
-    };
+    runtimePkgs = with pkgs; [
+      carapace
+      pokeget-rs
+      zoxide
+    ];
 
     shellAliases = {
       "cd" = "z";
       "ci" = "zi";
       "e" = "exit";
     };
-
-    writeFiles.nushellConfig.eject.enable = true;
   };
 }

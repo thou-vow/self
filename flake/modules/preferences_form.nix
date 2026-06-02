@@ -32,10 +32,10 @@
 
     config.preferences = {
       environmentVariables = {
-        BROWSER = lib.mkIf (config.preferences.map.browser != null) config.preferences.map.browser;
-        EDITOR = lib.mkIf (config.preferences.map.editor != null) config.preferences.map.editor;
-        SHELL = lib.mkIf (config.preferences.map.shell != null) config.preferences.map.shell;
-        TERMINAL = lib.mkIf (config.preferences.map.terminal != null) config.preferences.map.terminal;
+        BROWSER = config.preferences.map.browser;
+        EDITOR = config.preferences.map.editor;
+        SHELL = config.preferences.map.shell;
+        TERMINAL = config.preferences.map.terminal;
       };
     };
   };

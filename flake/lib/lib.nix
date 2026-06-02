@@ -2,14 +2,23 @@
   inputs,
   lib,
   self,
+  wlib,
   ...
 }: {
   flake.lib = {
     convertDagOfStrToLines = dag:
       lib.concatMapStringsSep "\n" (x: x.data)
-      (inputs.nix-wrapper-modules.lib.dag.unwrapSort "convertDagOfStrToLines" dag);
+      (wlib.dag.unwrapSort "convertDagOfStrToLines" dag);
 
-    emptyDir = pkgs: pkgs.runCommandCC "empty-dir" {} ''mkdir -p $out '';
+    disableEntryEscapeFn = entry:
+      if builtins.isString entry
+      then {
+        data = entry;
+        esc-fn = str: str;
+      }
+      else entry // {esc-fn = str: str;};
+
+    emptyDir = pkgs: pkgs.runCommand "empty-dir" {} ''mkdir -p $out'';
 
     makeExecutable = pkgs: name: path:
       pkgs.runCommand name {} ''
@@ -32,5 +41,14 @@
 
       environmentVariables = lib.types.attrsOf self.lib.types.environmentVariable;
     };
+
+    potentiallyWritableShellInline = source: let
+      wSource = "$WRITABLE_STORE/${baseNameOf source}";
+      wInit =
+        # sh
+        ''if [ ! -e ${wSource} ]; then mkdir -p ${wSource}; cp -R --no-preserve=mode,ownership ${source} "$WRITABLE_STORE/"; fi'';
+    in
+      # sh
+      ''$(if [ -n "$WRITABLE_STORE" ]; then ${wInit}; echo ${wSource}; else echo ${source}; fi)'';
   };
 }

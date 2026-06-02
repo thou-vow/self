@@ -29,20 +29,21 @@
     };
 
     config = {
-      envDefault."GIT_CONFIG_GLOBAL" = "${config.writeFiles.gitConfig.location}/gitconfig";
+      envDefault."GIT_CONFIG_GLOBAL" =
+        self.lib.disableEntryEscapeFn
+        "${self.lib.potentiallyWritableShellInline config.writeFiles.gitConfig.drv}/gitconfig";
 
       gitconfig = {
         settings = lib.pipe config.settings [
           lib.generators.toGitINI
           wlib.dag.entryAnywhere
-          (lib.mkIf (config.settings != {}))
         ];
       };
 
       package = lib.mkDefault pkgs.git;
 
-      writeFiles.gitConfig.entries."gitconfig" = lib.mkIf (config.gitconfig != {}) {
-        subject.text = self.lib.convertDagOfStrToLines config.gitconfig;
+      writeFiles.gitConfig.entries = {
+        "gitconfig".subject.text = self.lib.convertDagOfStrToLines config.gitconfig;
       };
     };
   };

@@ -206,17 +206,20 @@ in {
           extraOptions = ["--loadavg-target" "2.0"];
         };
       };
+      zram-generator = {
+        enable = true;
+        settings.zram0 = {
+          compression-algorithm = "zstd(level=2) zstd(level=6) (type=idle)";
+          writeback-device =
+            lib.mkIf (specialisation == "attuned")
+            "/dev/disk/by-id/wwn-${attunedInternalDrive}-part4";
+          zram-size = "4 / 5 * ram";
+        };
+      };
     };
 
     swapDevices = [
-      (lib.mkIf (specialisation == "attuned") {
-        device = "/dev/disk/by-id/wwn-${attunedInternalDrive}-part4";
-        priority = 1;
-      })
-      {
-        device = "/dev/disk/by-id/wwn-${mainId}-part3";
-        priority = 0;
-      }
+      {device = "/dev/disk/by-id/wwn-${mainId}-part3";}
     ];
 
     systemd.services = {

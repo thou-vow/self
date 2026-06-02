@@ -17,21 +17,16 @@
           "8.8.4.4"
           "8.8.8.8"
         ];
-
-        zramSwap = {
-          enable = true;
-          memoryPercent = 80;
-          priority = 1;
-        };
       })
       (lib.mkIf (specialisation == "attuned") {
         boot.kernelParams = [
           "ath9k_core.nohwcrypt=1"
           "pcie_aspm=off"
-          "zswap.enabled=1"
-          "zswap.max_pool_percent=80"
-          "zswap.shrinker_enabled=0"
         ];
+
+        environment.sessionVariables = {
+          GSK_RENDERER = "gl";
+        };
 
         hardware = {
           graphics.package = inputs'.nix-packages.packages.mesa-attuned;

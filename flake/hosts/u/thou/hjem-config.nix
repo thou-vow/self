@@ -31,6 +31,7 @@
             niri
             nushell
             prismlauncher
+            starship
             ;
         };
         extraIntegrationModules = with self.wrapperIntegrationModules; [

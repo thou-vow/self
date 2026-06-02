@@ -33,6 +33,7 @@
               direnv
               helix
               nushell
+              starship
               ;
           };
         };

@@ -63,10 +63,14 @@
       kernel.sysctl = {
         "kernel.nmi_watchdog" = 0;
         "kernel.split_lock_mitigate" = 0;
-        "vm.swappiness" = 1;
         "vm.dirty_background_bytes" = 16777216;
         "vm.dirty_bytes" = 67108864;
         "vm.max_map_count" = 2147483642;
+        "vm.page-cluster" = 0;
+        "vm.swappiness" = 200;
+        "vm.vfs_cache_pressure" = 25;
+        "vm.watermark_boost_factor" = 0;
+        "vm.watermark_scale_factor" = 125;
       };
       kernelPackages = pkgs.linuxPackages_xanmod_latest;
       kernelParams = ["mitigations=off"];
@@ -76,6 +80,13 @@
 
     environment = {
       etc."specialisation" = lib.mkIf (specialisation != null) {text = specialisation;};
+      sessionVariables = {
+        DETSYS_IDS_TELEMETRY = "disabled";
+        MESA_SHADER_CACHE_MAX_SIZE = "10G";
+        NIXPKGS_ALLOW_UNFREE = "1";
+        PERSIST = "/persist";
+        WRITABLE_STORE = "/tmp/store";
+      };
       systemPackages =
         (with pkgs; [
           btop
@@ -116,12 +127,6 @@
         ++ (with self'.packages; [
           steam-run
         ]);
-      variables = {
-        DETSYS_IDS_TELEMETRY = "disabled";
-        MESA_SHADER_CACHE_MAX_SIZE = "10G";
-        NIXPKGS_ALLOW_UNFREE = "1";
-        PERSIST = "/persist";
-      };
     };
 
     fonts = {

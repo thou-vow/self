@@ -37,10 +37,5 @@
           (require "manual-init.scm")
         '';
     };
-
-    writeFiles = {
-      helixSteelConfig.eject.enable = true;
-      helixSteelSearchPaths.eject.enable = true;
-    };
   };
 }
