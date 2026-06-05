@@ -29,9 +29,7 @@
     };
 
     config = {
-      envDefault."GIT_CONFIG_GLOBAL" =
-        self.lib.disableEntryEscapeFn
-        "${self.lib.potentiallyWritableShellInline config.writeFiles.gitConfig.drv}/gitconfig";
+      envDefault."GIT_CONFIG_GLOBAL" = "${self.lib.potentiallyWritableShellInline config.writeFiles.gitConfig.drv}/gitconfig";
 
       gitconfig = {
         settings = lib.pipe config.settings [

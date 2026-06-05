@@ -40,12 +40,8 @@
 
     config = {
       envDefault = {
-        "HELIX_STEEL_CONFIG" =
-          self.lib.disableEntryEscapeFn
-          (self.lib.potentiallyWritableShellInline config.writeFiles.helixSteelConfig.drv);
-        "STEEL_SEARCH_PATHS" =
-          self.lib.disableEntryEscapeFn
-          (self.lib.potentiallyWritableShellInline config.writeFiles.helixSteelSearchPaths.drv);
+        "HELIX_STEEL_CONFIG" = self.lib.potentiallyWritableShellInline config.writeFiles.helixSteelConfig.drv;
+        "STEEL_SEARCH_PATHS" = self.lib.potentiallyWritableShellInline config.writeFiles.helixSteelSearchPaths.drv;
       };
 
       package = lib.mkDefault inputs'.nix-packages.packages.helix-steel;

@@ -4,17 +4,8 @@
   nixConfig,
   withSystem,
   ...
-}: let
-  commonModuleArgs = system: {
-    inherit
-      (withSystem system (args: args))
-      inputs'
-      self'
-      ;
-  };
-in {
+}: {
   flake.hjemModules.base = {system, ...}: {
-    _module.args = commonModuleArgs system;
   };
 
   flake.nixOnDroidModules.base = {
@@ -22,15 +13,13 @@ in {
     system,
     ...
   }: {
-    _module.args = commonModuleArgs system;
-
     nix = {
       extraOptions = let
         inherit (nixConfig) extra-substituters extra-trusted-public-keys;
       in
         lib.mkMerge [
           ''
-            extra-experimental-features = flakes nix-command
+            extra-experimental-features = ${toString ["flakes" "nix-command"]}
             extra-substituters = ${toString extra-substituters}
             extra-trusted-public-keys = ${toString extra-trusted-public-keys}
             keep-derivations = true
@@ -52,8 +41,6 @@ in {
     system,
     ...
   }: {
-    _module.args = commonModuleArgs system;
-
     nix = {
       nixPath = lib.mapAttrsToList (k: _: "${k}=flake:${k}") config.nix.registry;
 
@@ -64,6 +51,7 @@ in {
 
       settings = {
         inherit (nixConfig) extra-substituters extra-trusted-public-keys;
+        download-buffer-size = 4194304;
         extra-experimental-features = ["flakes" "nix-command"];
         keep-derivations = true;
         keep-outputs = true;
@@ -73,10 +61,9 @@ in {
   };
 
   flake.wrapperIntegrationModules.base = {system, ...}: {
-    _module.args = commonModuleArgs system;
   };
 
   flake.wrapperModules.base = {system, ...}: {
-    _module.args = commonModuleArgs system;
+    escapingFunction = str: str;
   };
 }

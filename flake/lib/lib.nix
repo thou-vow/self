@@ -10,14 +10,6 @@
       lib.concatMapStringsSep "\n" (x: x.data)
       (wlib.dag.unwrapSort "convertDagOfStrToLines" dag);
 
-    disableEntryEscapeFn = entry:
-      if builtins.isString entry
-      then {
-        data = entry;
-        esc-fn = str: str;
-      }
-      else entry // {esc-fn = str: str;};
-
     emptyDir = pkgs: pkgs.runCommand "empty-dir" {} ''mkdir -p $out'';
 
     makeExecutable = pkgs: name: path:

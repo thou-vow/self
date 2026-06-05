@@ -27,8 +27,7 @@
 
     config = {
       envDefault."ATUIN_CONFIG_DIR" =
-        self.lib.disableEntryEscapeFn
-        (self.lib.potentiallyWritableShellInline config.writeFiles.atuinConfig.drv);
+        self.lib.potentiallyWritableShellInline config.writeFiles.atuinConfig.drv;
 
       package = lib.mkDefault pkgs.atuin;
 

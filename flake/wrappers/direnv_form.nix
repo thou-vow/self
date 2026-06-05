@@ -36,8 +36,7 @@
 
     config = {
       envDefault."DIRENV_CONFIG" =
-        self.lib.disableEntryEscapeFn
-        (self.lib.potentiallyWritableShellInline config.writeFiles.direnvConfig.drv);
+        self.lib.potentiallyWritableShellInline config.writeFiles.direnvConfig.drv;
 
       package = lib.mkDefault pkgs.direnv;
 

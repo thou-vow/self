@@ -47,7 +47,9 @@
           email = "thou.vow.etoile@gmail.com";
           name = "thou-vow";
         };
-        niri.package = lib.mkIf (specialisation == "attuned") inputs'.nix-packages.packages.niri-pr-attuned;
+        niri.package =
+          lib.mkIf (specialisation == "attuned")
+          inputs'.nix-packages.packages.niri-attuned;
       }
       {
         preferences = {

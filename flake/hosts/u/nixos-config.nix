@@ -25,6 +25,8 @@
     };
 
   flake.nixosModules.u = {
+    nvfetcherFlakes,
+    nvfetcherSources,
     pkgs,
     self',
     specialisation,
@@ -43,11 +45,10 @@
         })
       ]
       ++ (with self.nixosModules; [
-        # flatpak
         waydroid
       ])
       ++ [
-        inputs.determinate.nixosModules.default
+        nvfetcherFlakes.determinate.nixosModules.default
       ];
 
     boot = {
@@ -188,6 +189,7 @@
     nix = {
       daemonCPUSchedPolicy = "idle";
       daemonIOSchedClass = "idle";
+      settings.download-buffer-size = 4194304;
     };
 
     programs = {

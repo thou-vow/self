@@ -51,13 +51,11 @@
         runHook postInstall
       '';
 
-      envDefault."NIRI_CONFIG" =
-        self.lib.disableEntryEscapeFn
-        "${self.lib.potentiallyWritableShellInline config.writeFiles.niriConfig.drv}/config.kdl";
+      envDefault."NIRI_CONFIG" = "${self.lib.potentiallyWritableShellInline config.writeFiles.niriConfig.drv}/config.kdl";
 
       filesToPatch = ["share/systemd/user/niri.service"];
 
-      package = lib.mkDefault inputs'.nix-packages.packages.niri-pr;
+      package = lib.mkDefault pkgs.niri;
 
       runtimePkgs = [
         config.xwayland-satellite.package

@@ -32,7 +32,6 @@
 
     config = {
       envDefault."STARSHIP_CONFIG" =
-        self.lib.disableEntryEscapeFn
         "${self.lib.potentiallyWritableShellInline config.writeFiles.starshipConfig.drv}/starship.toml";
 
       package = lib.mkDefault pkgs.starship;

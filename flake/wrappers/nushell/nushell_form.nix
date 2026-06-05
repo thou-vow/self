@@ -95,12 +95,8 @@
       };
 
       flags = {
-        "--config" =
-          self.lib.disableEntryEscapeFn
-          "${self.lib.potentiallyWritableShellInline config.writeFiles.nushellConfig.drv}/config.nu";
-        "--plugin-config" =
-          self.lib.disableEntryEscapeFn
-          "${self.lib.potentiallyWritableShellInline config.writeFiles.nushellConfig.drv}/plugin.msgpackz";
+        "--config" = "${self.lib.potentiallyWritableShellInline config.writeFiles.nushellConfig.drv}/config.nu";
+        "--plugin-config" = "${self.lib.potentiallyWritableShellInline config.writeFiles.nushellConfig.drv}/plugin.msgpackz";
       };
 
       package = lib.mkDefault pkgs.nushell;

@@ -46,8 +46,7 @@
 
     config = {
       envDefault."KITTY_CONFIG_DIRECTORY" =
-        self.lib.disableEntryEscapeFn
-        (self.lib.potentiallyWritableShellInline config.writeFiles.kittyConfig.drv);
+        self.lib.potentiallyWritableShellInline config.writeFiles.kittyConfig.drv;
 
       kittyConf = {
         environmentVariables = lib.pipe config.environmentVariables [

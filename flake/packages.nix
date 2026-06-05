@@ -5,6 +5,7 @@
   ...
 } @ top: {
   perSystem = {
+    jailInit,
     pkgs,
     system,
     ...
@@ -49,6 +50,4 @@
       }
     ];
   };
-
-  systems = lib.systems.flakeExposed;
 }

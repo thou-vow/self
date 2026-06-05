@@ -1,3 +1,4 @@
+
 {
   inputs,
   lib,
@@ -5,7 +6,18 @@
   withSystem,
   wlib,
   ...
-}: {
+}: let
+  commonModuleArgs = system: {
+    inherit
+      (withSystem system (args: args))
+      inputs'
+      nvfetcherFlakes
+      nvfetcherSources
+      self'
+      system
+      ;
+  };
+in {
   flake.lib = {
     installWrappers = {
       method,
@@ -72,7 +84,7 @@
                       self.wrapperModules.base
                       {pkgs = value.pkgsPerSystem system;}
                     ];
-                    specialArgs = {inherit system;};
+                    specialArgs = commonModuleArgs system;
                   };
                 });
               })
@@ -100,7 +112,7 @@
                   self.wrapperIntegrationModules.base
                 ]
                 ++ extraIntegrationModules;
-              specialArgs = {inherit system;};
+              specialArgs = commonModuleArgs system;
             };
 
           default = {};
@@ -120,7 +132,7 @@
             {pkgs = wrapper.pkgsPerSystem system;}
           ]
           ++ extraWrapperModules;
-        specialArgs = {inherit system;};
+        specialArgs = commonModuleArgs system;
       };
     in
       eval.config.wrapper;
@@ -151,7 +163,7 @@
       inputs.nix-on-droid.lib.nixOnDroidConfiguration (primaryAttrs
         // {
           inherit pkgs;
-          extraSpecialArgs = {inherit system;} // primaryAttrs.extraSpecialArgs or {};
+          extraSpecialArgs = commonModuleArgs system // primaryAttrs.extraSpecialArgs or {};
           modules = [self.nixOnDroidModules.base] ++ primaryAttrs.modules or [];
         });
 
@@ -173,12 +185,12 @@
               {
                 hjem = {
                   extraModules = [self.hjemModules.base];
-                  specialArgs = {inherit system;};
+                  specialArgs = commonModuleArgs system;
                 };
               }
             ]
             ++ primaryAttrs.modules or [];
-          specialArgs = {inherit system;} // primaryAttrs.specialArgs or {};
+          specialArgs = commonModuleArgs system // primaryAttrs.specialArgs or {};
         });
   };
 }

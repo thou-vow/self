@@ -1,0 +1,85 @@
+{
+    "determinate": {
+        "cargoLock": null,
+        "date": "2026-05-29",
+        "extract": null,
+        "name": "determinate",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "DeterminateSystems",
+            "repo": "determinate",
+            "rev": "efa5aa3cc1a40cf3dab8c07bfbc07f5edd44d4a6",
+            "sha256": "sha256-hhPxK9t1ofQnId9vcrtW2C7sC+fB6EJx6Q7RtqUAtKo=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "efa5aa3cc1a40cf3dab8c07bfbc07f5edd44d4a6"
+    },
+    "jail-nix": {
+        "cargoLock": null,
+        "date": "2026-02-26",
+        "extract": null,
+        "name": "jail-nix",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "42b355c38ca63dab4904acc5c0d95f17954a8c9b",
+            "sha256": "sha256-h4MGNbOo7L3RHi4uNFmsg5g17/DHXEfnv/xiG6BrNFQ=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://git.sr.ht/~alexdavid/jail.nix"
+        },
+        "version": "42b355c38ca63dab4904acc5c0d95f17954a8c9b"
+    },
+    "preservation": {
+        "cargoLock": null,
+        "date": "2025-09-09",
+        "extract": null,
+        "name": "preservation",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "nix-community",
+            "repo": "preservation",
+            "rev": "93416f4614ad2dfed5b0dcf12f27e57d27a5ab11",
+            "sha256": "sha256-mMI9IanU+Xw+pVogD2oT0I2kTmvz2Un/Apc5+CwUpEY=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "93416f4614ad2dfed5b0dcf12f27e57d27a5ab11"
+    },
+    "treefmt-nix": {
+        "cargoLock": null,
+        "date": "2026-05-31",
+        "extract": null,
+        "name": "treefmt-nix",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "numtide",
+            "repo": "treefmt-nix",
+            "rev": "db947814a175b7ca6ded66e21383d938df01c227",
+            "sha256": "sha256-eynAfOmbmxJnkp7YewvCEbShNnnYJ9gLLqkzsYtBPeM=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "db947814a175b7ca6ded66e21383d938df01c227"
+    }
+}

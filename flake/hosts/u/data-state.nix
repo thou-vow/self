@@ -9,13 +9,14 @@
 in {
   flake.nixosModules.u = {
     config,
+    nvfetcherSources,
     pkgs,
     specialisation,
     ...
   }: {
     imports = [
       self.nixosModules.mapState
-      inputs.preservation.nixosModules.preservation
+      "${nvfetcherSources.preservation.src}/module.nix"
     ];
 
     modules.mapState.flakePath = "/self";
