@@ -5,9 +5,7 @@
   wlib,
   ...
 }: {
-  flake.wrappers.nh.pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
-
-  flake.wrappers.nh.module = {pkgs, ...}: {
+  flake.wrapperModules.nh = {pkgs, ...}: {
     imports = [
       wlib.modules.makeWrapper
     ];
@@ -17,7 +15,7 @@
     };
   };
 
-  flake.wrappers.nh.nixosModule = {config, ...}: {
+  flake.nixosModules.nh = {config, ...}: {
     wrappers.nh.envDefault = lib.mkIf (config.modules.mapState.flakePath or null != null) {
       NH_FLAKE = config.modules.mapState.flakePath;
     };

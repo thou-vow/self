@@ -1,4 +1,3 @@
-
 {
   inputs,
   lib,
@@ -11,8 +10,6 @@
     inherit
       (withSystem system (args: args))
       inputs'
-      nvfetcherFlakes
-      nvfetcherSources
       self'
       system
       ;

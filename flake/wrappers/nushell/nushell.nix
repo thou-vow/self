@@ -1,11 +1,18 @@
 {
+  inputs,
   lib,
   self,
   withSystem,
   wlib,
   ...
 }: {
-  flake.wrappers.nushell.module = {
+  flake.wrappers.nushell = {
+    pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
+    module = self.wrapperModules.nushell;
+    integrationModule = self.wrapperIntegrationModules.nushell;
+  };
+
+  flake.wrapperModules.nushell = {
     config,
     pkgs,
     ...

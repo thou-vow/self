@@ -1,11 +1,17 @@
 {
+  inputs,
   lib,
   self,
   withSystem,
   wlib,
   ...
 }: {
-  flake.wrappers.helix.module = {
+  flake.wrappers.helix = {
+    pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
+    module = self.wrapperModules.helix;
+  };
+
+  flake.wrapperModules.helix = {
     config,
     pkgs,
     ...

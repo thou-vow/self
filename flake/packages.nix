@@ -5,7 +5,8 @@
   ...
 } @ top: {
   perSystem = {
-    jailInit,
+    bwrapperLib,
+    inputs',
     pkgs,
     system,
     ...
@@ -21,8 +22,8 @@
         top.config.flake.wrappers)
       {
         all-set = self.lib.mkWrappersEnv {
+          inherit (self) wrappers;
           inherit system;
-          wrappers = self.wrappers;
         };
 
         shell-set = self.lib.mkWrappersEnv {
@@ -47,6 +48,27 @@
                 nss
               ];
           }).run-free;
+
+        faugus-launcher = bwrapperLib.mkBwrapper {
+          app.package = inputs'.nix-packages.packages.faugus-launcher;
+          mounts = {
+            read = [
+              "$HOME/.local/share/Steam"
+              "/sys"
+            ];
+            readWrite = [
+              {
+                from = "$HOME/.bwrap/home/bwrap";
+                to = "$HOME";
+              }
+            ];
+          };
+          sockets = {
+            pipewire = true;
+            pulseaudio = true;
+            wayland = true;
+          };
+        };
       }
     ];
   };

@@ -5,9 +5,7 @@
   wlib,
   ...
 }: {
-  flake.wrappers.prismlauncher.pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
-
-  flake.wrappers.prismlauncher.module = {
+  flake.wrapperModules.prismlauncher = {
     config,
     pkgs,
     ...

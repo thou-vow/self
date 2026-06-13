@@ -5,9 +5,7 @@
   wlib,
   ...
 }: {
-  flake.wrappers.niri.pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
-
-  flake.wrappers.niri.module = {
+  flake.wrapperModules.niri = {
     config,
     inputs',
     pkgs,
@@ -70,11 +68,9 @@
     };
   };
 
-  flake.wrappers.niri.integrationModule = {config, ...}: {
-    niri = {
-      settings = {
-        environment = lib.mkIf (config.preferences or {} != {}) config.preferences.environmentVariables;
-      };
+  flake.wrapperIntegrationModules.niri = {config, ...}: {
+    niri.settings = {
+      environment = lib.mkIf (config.preferences or {} != {}) config.preferences.environmentVariables;
     };
   };
 }

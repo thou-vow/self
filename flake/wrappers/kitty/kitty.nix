@@ -1,11 +1,18 @@
 {
+  inputs,
   lib,
   self,
   withSystem,
   wlib,
   ...
 }: {
-  flake.wrappers.kitty.module = {
+  flake.wrappers.kitty = {
+    pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
+    module = self.wrapperModules.kitty;
+    integrationModule = self.wrapperIntegrationModules.kitty;
+  };
+
+  flake.wrapperModules.kitty = {
     config,
     wlib,
     ...

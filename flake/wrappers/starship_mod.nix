@@ -6,9 +6,7 @@
   wlib,
   ...
 }: {
-  flake.wrappers.starship.pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
-
-  flake.wrappers.starship.module = {
+  flake.wrapperModules.starship = {
     config,
     pkgs,
     ...

@@ -6,9 +6,7 @@
   wlib,
   ...
 }: {
-  flake.wrappers.direnv.pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
-
-  flake.wrappers.direnv.module = {
+  flake.wrapperModules.direnv = {
     config,
     pkgs,
     ...

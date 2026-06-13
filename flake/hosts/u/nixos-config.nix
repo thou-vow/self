@@ -25,11 +25,11 @@
     };
 
   flake.nixosModules.u = {
-    nvfetcherFlakes,
-    nvfetcherSources,
+    inputs',
     pkgs,
     self',
     specialisation,
+    system,
     ...
   }: {
     imports =
@@ -46,10 +46,7 @@
       ]
       ++ (with self.nixosModules; [
         waydroid
-      ])
-      ++ [
-        nvfetcherFlakes.determinate.nixosModules.default
-      ];
+      ]);
 
     boot = {
       initrd.availableKernelModules = [
@@ -73,7 +70,7 @@
         "vm.watermark_boost_factor" = 0;
         "vm.watermark_scale_factor" = 125;
       };
-      kernelPackages = pkgs.linuxPackages_xanmod_latest;
+      kernelPackages = inputs'.chaotic-nyx.legacyPackages.linuxPackages_cachyos-lto;
       kernelParams = ["mitigations=off"];
     };
 
@@ -82,7 +79,6 @@
     environment = {
       etc."specialisation" = lib.mkIf (specialisation != null) {text = specialisation;};
       sessionVariables = {
-        DETSYS_IDS_TELEMETRY = "disabled";
         MESA_SHADER_CACHE_MAX_SIZE = "10G";
         NIXPKGS_ALLOW_UNFREE = "1";
         PERSIST = "/persist";
@@ -90,6 +86,7 @@
       };
       systemPackages =
         (with pkgs; [
+          android-tools
           btop
           cabextract
           cachix
@@ -189,7 +186,14 @@
     nix = {
       daemonCPUSchedPolicy = "idle";
       daemonIOSchedClass = "idle";
-      settings.download-buffer-size = 4194304;
+
+      package = pkgs.lix;
+
+      settings = {
+        max-jobs = "auto";
+        max-substitution-jobs = 2;
+        tarball-ttl = 604800;
+      };
     };
 
     programs = {
@@ -268,8 +272,17 @@
 
     xdg.portal = {
       enable = true;
-      config.common.default = ["kde"];
-      extraPortals = with pkgs; [kdePackages.xdg-desktop-portal-kde];
+      config.common = {
+        "default" = ["gnome" "gtk" "kde"];
+        "org.freedesktop.impl.portal.Access" = "gtk";
+        "org.freedesktop.impl.portal.FileChooser" = "kde";
+        "org.freedesktop.impl.portal.Notification" = "gtk";
+      };
+      extraPortals = with pkgs; [
+        kdePackages.xdg-desktop-portal-kde
+        xdg-desktop-portal-gnome
+        xdg-desktop-portal-gtk
+      ];
     };
   };
 }

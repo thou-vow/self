@@ -5,9 +5,7 @@
   wlib,
   ...
 }: {
-  flake.wrappers.kitty.pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
-
-  flake.wrappers.kitty.module = {
+  flake.wrapperModules.kitty = {
     config,
     pkgs,
     ...
@@ -99,7 +97,7 @@
     };
   };
 
-  flake.wrappers.kitty.integrationModule = {config, ...}: {
+  flake.wrapperIntegrationModules.kitty = {config, ...}: {
     kitty.environmentVariables =
       lib.mkIf (config.preferences or {} != {})
       config.preferences.environmentVariables;

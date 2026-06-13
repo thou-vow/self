@@ -1,11 +1,18 @@
 {
+  inputs,
   lib,
   self,
   withSystem,
   wlib,
   ...
 }: {
-  flake.wrappers.niri.module = {
+  flake.wrappers.niri = {
+    pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
+    module = self.wrapperModules.niri;
+    integrationModule = self.wrapperIntegrationModules.niri;
+  };
+
+  flake.wrapperModules.niri = {
     config,
     inputs',
     pkgs,

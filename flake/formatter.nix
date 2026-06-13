@@ -5,12 +5,11 @@
   ...
 } @ top: {
   perSystem = {
-    nvfetcherSources,
     pkgs,
     system,
     ...
   }: {
-    formatter = (import nvfetcherSources.treefmt-nix.src).mkWrapper pkgs {
+    formatter = (import inputs.treefmt-nix).mkWrapper pkgs {
       projectRootFile = "flake.nix";
       programs = {
         alejandra.enable = true;

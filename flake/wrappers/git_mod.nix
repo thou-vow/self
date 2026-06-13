@@ -5,9 +5,7 @@
   wlib,
   ...
 }: {
-  flake.wrappers.git.pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
-
-  flake.wrappers.git.module = {
+  flake.wrapperModules.git = {
     config,
     pkgs,
     ...
@@ -29,7 +27,9 @@
     };
 
     config = {
-      envDefault."GIT_CONFIG_GLOBAL" = "${self.lib.potentiallyWritableShellInline config.writeFiles.gitConfig.drv}/gitconfig";
+      envDefault."GIT_CONFIG_GLOBAL" = "${
+        self.lib.potentiallyWritableShellInline config.writeFiles.gitConfig.drv
+      }/gitconfig";
 
       gitconfig = {
         settings = lib.pipe config.settings [

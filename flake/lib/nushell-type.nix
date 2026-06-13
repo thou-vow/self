@@ -8,7 +8,7 @@
 
     mkNushellRaw = value: lib.setType "nushellRaw" {inherit value;};
 
-    toNushell = {...}: expr:
+    toNushell = _: expr:
       if expr == null
       then "null"
       else if builtins.isInt expr || builtins.isFloat expr || builtins.isString expr || lib.isBool expr
@@ -45,7 +45,7 @@
 
       nushellValue = let
         valueType = lib.types.nullOr (lib.types.oneOf [
-          (self.lib.types.nushellRaw)
+          self.lib.types.nushellRaw
           lib.types.bool
           lib.types.float
           lib.types.int

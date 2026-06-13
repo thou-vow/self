@@ -9,14 +9,13 @@
 in {
   flake.nixosModules.u = {
     config,
-    nvfetcherSources,
     pkgs,
     specialisation,
     ...
   }: {
     imports = [
       self.nixosModules.mapState
-      "${nvfetcherSources.preservation.src}/module.nix"
+      inputs.preservation.nixosModules.default
     ];
 
     modules.mapState.flakePath = "/self";
@@ -210,7 +209,7 @@ in {
       zram-generator = {
         enable = true;
         settings.zram0 = {
-          compression-algorithm = "zstd(level=2) zstd(level=6) (type=idle)";
+          compression-algorithm = "lz4 zstd(level=3) (type=idle)";
           writeback-device =
             lib.mkIf (specialisation == "attuned")
             "/dev/disk/by-id/wwn-${attunedInternalDrive}-part4";

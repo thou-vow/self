@@ -1,11 +1,17 @@
 {
+  inputs,
   lib,
   self,
   withSystem,
   wlib,
   ...
 }: {
-  flake.wrappers.prismlauncher.module = {
+  flake.wrappers.prismlauncher = {
+    pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
+    module = self.wrapperModules.prismlauncher;
+  };
+
+  flake.wrapperModules.prismlauncher = {
     config,
     inputs',
     pkgs,

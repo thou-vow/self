@@ -1,9 +1,10 @@
 {
+  inputs,
   lib,
   self,
   ...
 }: {
-  flake.nixosModules.u = {...}: {
+  flake.nixosModules.u = _: {
     hjem.users.thou = lib.mkMerge [
       self.hjemModules.thou-u
     ];
@@ -103,6 +104,7 @@
         qbittorrent
         rclone
         ripgrep
+        termdown
         typst
         umu-launcher
         vlc

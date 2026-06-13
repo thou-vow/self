@@ -5,9 +5,7 @@
   wlib,
   ...
 }: {
-  flake.wrappers.nushell.pkgsPerSystem = system: (withSystem system ({pkgs, ...}: pkgs));
-
-  flake.wrappers.nushell.module = {
+  flake.wrapperModules.nushell = {
     config,
     pkgs,
     ...
@@ -126,7 +124,7 @@
     };
   };
 
-  flake.wrappers.nushell.integrationModule = {config, ...}: let
+  flake.wrapperIntegrationModules.nushell = {config, ...}: let
     inherit (config.nushell) pkgs;
   in {
     nushell = {

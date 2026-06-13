@@ -14,18 +14,13 @@
     ...
   }: {
     nix = {
-      extraOptions = let
-        inherit (nixConfig) extra-substituters extra-trusted-public-keys;
-      in
-        lib.mkMerge [
-          ''
-            extra-experimental-features = ${toString ["flakes" "nix-command"]}
-            extra-substituters = ${toString extra-substituters}
-            extra-trusted-public-keys = ${toString extra-trusted-public-keys}
-            keep-derivations = true
-            keep-outputs = true
-          ''
-        ];
+      extraOptions = ''
+        extra-experimental-features = ${toString ["flakes" "nix-command"]}
+        extra-substituters = ${toString nixConfig.extra-substituters}
+        extra-trusted-public-keys = ${toString nixConfig.extra-trusted-public-keys}
+        keep-derivations = true
+        keep-outputs = true
+      '';
 
       nixPath = lib.mapAttrsToList (k: _: "${k}=flake:${k}") config.nix.registry;
 
@@ -51,7 +46,6 @@
 
       settings = {
         inherit (nixConfig) extra-substituters extra-trusted-public-keys;
-        download-buffer-size = 4194304;
         extra-experimental-features = ["flakes" "nix-command"];
         keep-derivations = true;
         keep-outputs = true;
