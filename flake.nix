@@ -42,13 +42,9 @@ rec {
       url = "github:denful/import-tree";
       flake = false;
     };
-    nix-bwrapper = {
-      url = "github:Naxdy/nix-bwrapper";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        nuschtosSearch.follows = "";
-        treefmt-nix.follows = "";
-      };
+    jail-nix = {
+      url = "sourcehut:~alexdavid/jail.nix";
+      flake = false;
     };
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
@@ -96,7 +92,7 @@ rec {
         ...
       }: {
         _module.args = {
-          bwrapperLib = inputs.nix-bwrapper.lib.mkNixBwrapper pkgs;
+          jail = (import inputs.jail-nix {}).init pkgs;
 
           pkgs = import inputs.nixpkgs {
             inherit system;
