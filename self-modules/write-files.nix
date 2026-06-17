@@ -28,9 +28,15 @@
           };
 
           config.drv = lib.pipe farmArgs.config.entries [
-            (lib.mapAttrsToList (name: value: ''
-              cp -R ${value.drv} $out/${name} || true
-            ''))
+            (lib.mapAttrsToList (name: value: let
+              splitPath = lib.splitString "/" name;
+            in
+              lib.optionalString (builtins.length splitPath > 1) ''
+                mkdir -p $out/${lib.concatStringsSep "/" (lib.init splitPath)}
+              ''
+              + ''
+                cp -R ${value.drv} $out/${name} || true
+              ''))
             (lib.concatStringsSep "")
             (cmds:
               pkgs.runCommand farmArgs.config.name {} ''

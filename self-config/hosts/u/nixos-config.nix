@@ -113,6 +113,7 @@
           smartmontools
           strace
           sysstat
+          tree
           unrar
           unzip
           usbutils
@@ -267,6 +268,8 @@
         shell = lib.getExe pkgs.bash;
       };
     };
+
+    virtualisation.waydroid.package = pkgs.waydroid-nftables;
 
     xdg.portal = {
       enable = true;

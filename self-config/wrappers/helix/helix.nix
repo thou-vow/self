@@ -1,4 +1,5 @@
 {
+  lib,
   self,
   withSystem,
   wlib,
@@ -7,6 +8,7 @@
   flake.wrappers.helix = {
     pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
     module = self.wrapperModules.helix;
+    integrationModule = self.wrapperIntegrationModules.helix;
   };
 
   flake.wrapperModules.helix = {pkgs, ...}: {
@@ -35,6 +37,28 @@
         # scm
         ''
           (require "manual-init.scm")
+        '';
+    };
+  };
+
+  flake.wrapperIntegrationModules.helix = {config, ...}: {
+    helix.steel = lib.mkIf (config.preferences or {} != {}) {
+      extraConfigFiles."init-theme.scm".subject.text = let
+        theme = import ./_helix-theme.nix config.preferences.style;
+      in
+        # scm
+        ''
+          (require (prefix-in hx.cmd. "helix/commands.scm"))
+          (require (prefix-in hx.theme. "helix/themes.scm"))
+          (hx.theme.register-theme (hx.theme.hashmap->theme "self" ${self.lib.toSteel theme}))
+          (hx.cmd.theme "self")
+        '';
+
+      initScm.theme =
+        wlib.dag.entryAnywhere
+        # scm
+        ''
+          (require "init-theme.scm")
         '';
     };
   };

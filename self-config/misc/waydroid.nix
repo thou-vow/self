@@ -14,9 +14,6 @@
 
     systemd.services."waydroid-container".wantedBy = lib.mkForce [];
 
-    virtualisation.waydroid = {
-      enable = true;
-      package = pkgs.waydroid-nftables;
-    };
+    virtualisation.waydroid.enable = true;
   };
 }

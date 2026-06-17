@@ -1,6 +1,6 @@
 (require (prefix-in hx.cfg. "helix/configuration.scm"))
+(require (prefix-in hx.cmd. "helix/commands.scm"))
 (require "init/keybindings.scm")
-(require "init/theme.scm")
 (require "self/utils.scm")
 
 (hx.cfg.set-option! 'bufferline "always")

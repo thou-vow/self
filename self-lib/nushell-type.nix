@@ -8,17 +8,17 @@
 
     mkNushellRaw = value: lib.setType "nushellRaw" {inherit value;};
 
-    toNushell = _: expr:
+    toNushell = expr:
       if expr == null
       then "null"
-      else if builtins.isInt expr || builtins.isFloat expr || builtins.isString expr || lib.isBool expr
+      else if lib.isBool expr || builtins.isFloat expr || builtins.isInt expr || builtins.isString expr
       then builtins.toJSON expr
       else if builtins.isList expr
       then
         if expr == []
         then "[]"
         else "[ ${lib.pipe expr [
-          (map (value: "${self.lib.toNushell {} value}"))
+          (map (value: "${self.lib.toNushell value}"))
           (lib.concatStringsSep " ")
         ]} ]"
       else if builtins.isAttrs expr
@@ -30,7 +30,7 @@
         else if expr == {}
         then "{}"
         else "{ ${lib.pipe expr [
-          (lib.mapAttrsToList (key: value: "${builtins.toJSON key}: ${self.lib.toNushell {} value}"))
+          (lib.mapAttrsToList (key: value: "${builtins.toJSON key}: ${self.lib.toNushell value}"))
           (lib.concatStringsSep " ")
         ]} }"
       else throw "Unexpected type in toNushell: ${lib.typeOf expr}";
@@ -40,7 +40,7 @@
         name = "nushellRaw";
         description = "raw Nushell expression";
         descriptionClass = "name";
-        check = lib.isType "nushellRaw";
+        check = self.lib.isNushellRaw;
       };
 
       nushellValue = let

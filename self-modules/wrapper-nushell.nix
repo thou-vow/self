@@ -61,7 +61,7 @@
           '';
 
         environmentVariables = lib.pipe config.environmentVariables [
-          (vars: "\nload-env ${self.lib.toNushell {} vars}\n")
+          (vars: "\nload-env ${self.lib.toNushell vars}\n")
           wlib.dag.entryAnywhere
         ];
 
@@ -78,7 +78,7 @@
           in
             flattenAttrs "")
           (lib.generators.toKeyValue {
-            mkKeyValue = key: value: "$env.config.${key} = ${self.lib.toNushell {} value}";
+            mkKeyValue = key: value: "$env.config.${key} = ${self.lib.toNushell value}";
           })
           wlib.dag.entryAnywhere
         ];

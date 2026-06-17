@@ -54,17 +54,7 @@
         ];
 
         settings = lib.pipe config.settings [
-          (lib.generators.toKeyValue {
-            mkKeyValue = key: value: let
-              value' =
-                if builtins.isBool value
-                then
-                  if value
-                  then "yes"
-                  else "no"
-                else toString value;
-            in "${key} ${value'}";
-          })
+          self.lib.toKittyConf
           (wlib.dag.entryAfter ["environmentVariables"])
         ];
 
