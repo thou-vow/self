@@ -1,7 +1,6 @@
 {
   inputs,
   lib,
-  wlib,
   ...
 }: {
   options = {

@@ -76,17 +76,13 @@ rec {
 
   outputs = inputs: let
     wlib = inputs.nix-wrapper-modules.lib;
-
-    import-tree = import inputs.import-tree;
   in
     inputs.flake-parts.lib.mkFlake {
       inherit inputs;
       specialArgs = {inherit nixConfig wlib;};
     } ({lib, ...}: {
       imports = [
-        (import-tree ./self-config)
-        (import-tree ./self-lib)
-        (import-tree ./self-modules)
+        (import inputs.import-tree ./self)
         ./parts.nix
       ];
 

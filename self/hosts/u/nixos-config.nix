@@ -10,7 +10,7 @@
       hjem = true;
     } {
       modules = [
-        self.nixosModules.u
+        self.nixosModules."@u"
         ({
           config,
           specialisation,
@@ -23,7 +23,7 @@
       ];
     };
 
-  flake.nixosModules.u = {
+  flake.nixosModules."@u" = {
     inputs',
     pkgs,
     self',

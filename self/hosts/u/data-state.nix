@@ -7,7 +7,7 @@
   attunedInternalDrive = "0x50014ee6b2ede306";
   mainId = "0x500003988168a3bd";
 in {
-  flake.nixosModules.u = {
+  flake.nixosModules."@u" = {
     config,
     pkgs,
     specialisation,

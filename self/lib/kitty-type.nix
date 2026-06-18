@@ -1,8 +1,4 @@
-{
-  lib,
-  self,
-  ...
-}: {
+{lib, ...}: {
   flake.lib = {
     toKittyAssignments = attrs:
       lib.generators.toKeyValue {

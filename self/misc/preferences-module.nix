@@ -3,7 +3,7 @@
   self,
   ...
 }: {
-  flake.wrapperIntegrationModules.preferences = {config, ...}: {
+  flake.wrapperIntegrationModules.preferences = _: {
     options.preferences = lib.mkOption {
       type = lib.types.submodule {
         options = {
@@ -41,35 +41,49 @@
                     "foreground"
 
                     "red"
+                    "orange"
                     "yellow"
                     "green"
+                    "aqua"
                     "cyan"
                     "blue"
+                    "violet"
                     "magenta"
+
                     "bright-red"
+                    "bright-orange"
                     "bright-yellow"
                     "bright-green"
+                    "bright-aqua"
                     "bright-cyan"
                     "bright-blue"
+                    "bright-violet"
                     "bright-magenta"
 
-                    "escape"
-                    "parameter"
+                    "boolean"
                     "class"
                     "constant"
+                    "escape"
                     "function"
                     "keyword"
-                    "boolean"
-                    "string"
-                    "number"
-                    "variable"
                     "namespace"
+                    "number"
                     "operator"
+                    "parameter"
                     "path"
+                    "string"
+                    "variable"
+
+                    "rainbow"
                   ] [
                     (map (name: {
                       inherit name;
-                      value = lib.mkOption {type = lib.types.nullOr lib.types.str;};
+                      value = lib.mkOption {
+                        type = lib.types.nullOr (lib.types.oneOf [
+                          lib.types.str
+                          (lib.types.listOf lib.types.str)
+                        ]);
+                      };
                     }))
                     builtins.listToAttrs
                   ];

@@ -3,13 +3,13 @@
   self,
   ...
 }: {
-  flake.nixosModules.u = _: {
+  flake.nixosModules."@u" = _: {
     hjem.users.thou = lib.mkMerge [
-      self.hjemModules.thou-u
+      self.hjemModules."thou@u"
     ];
   };
 
-  flake.hjemModules.thou-u = {
+  flake.hjemModules."thou@u" = {
     config,
     inputs',
     osConfig,

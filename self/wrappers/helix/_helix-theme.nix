@@ -199,4 +199,6 @@ with style.palette; {
     };
   };
   "markup.raw" = {fg = constant;};
+
+  "rainbow" = rainbow;
 }

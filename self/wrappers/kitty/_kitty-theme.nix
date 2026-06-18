@@ -3,12 +3,12 @@ with style.palette; {
   cursor = main-cursor;
   cursor_text_color = "background";
 
-  url_color = bright-magenta;
+  url_color = bright-violet;
   url_style = "dotted";
 
   active_border_color = main-cursor;
   inactive_border_color = background;
-  bell_border_color = bright-yellow;
+  bell_border_color = bright-orange;
 
   active_tab_foreground = main-cursor;
   active_tab_background = background;
