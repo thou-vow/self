@@ -36,7 +36,7 @@
         default = {};
       };
       settings = lib.mkOption {
-        type = with lib.types; attrsOf (oneOf [bool float int str]);
+        type = lib.types.attrsOf self.lib.types.kittyValue;
         default = {};
       };
     };
@@ -54,7 +54,7 @@
         ];
 
         settings = lib.pipe config.settings [
-          self.lib.toKittyConf
+          self.lib.toKittyAssignments
           (wlib.dag.entryAfter ["environmentVariables"])
         ];
 

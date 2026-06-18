@@ -1,6 +1,8 @@
 {
+  lib,
   self,
   withSystem,
+  wlib,
   ...
 }: {
   flake.wrappers.kitty = {
@@ -13,7 +15,6 @@
     extraConfigFiles = {
       "kittens".subject.source = ./kittens;
       "manual-kitty.conf".subject.source = ./manual-kitty.conf;
-      "theme.conf".subject.source = ./theme.conf;
     };
 
     kittyConf.manual = wlib.dag.entryAfter ["settings"] ''
@@ -21,5 +22,18 @@
     '';
 
     settings.clear_all_shortcuts = true;
+  };
+
+  flake.wrapperIntegrationModules.kitty = {config, ...}: {
+    kitty = lib.mkIf (config.preferences or {} != {}) {
+      extraConfigFiles."theme.conf".subject.text = let
+        theme = import ./_kitty-theme.nix config.preferences.style;
+      in
+        self.lib.toKittyAssignments theme;
+
+      kittyConf.theme = wlib.dag.entryAnywhere ''
+        include ./theme.conf
+      '';
+    };
   };
 }

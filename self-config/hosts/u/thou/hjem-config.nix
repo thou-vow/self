@@ -133,7 +133,6 @@
         gcc
         geminicommit
         imagemagick
-        kdePackages.kdenlive
         krita
         libreoffice
         mame

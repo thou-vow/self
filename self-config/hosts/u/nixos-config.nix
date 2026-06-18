@@ -189,7 +189,7 @@
       package = pkgs.lix;
 
       settings = {
-        max-jobs = "auto";
+        max-jobs = 8;
         max-substitution-jobs = 2;
         tarball-ttl = 604800;
       };

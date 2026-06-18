@@ -14,26 +14,37 @@
       else if lib.isBool expr || builtins.isFloat expr || builtins.isInt expr || builtins.isString expr
       then builtins.toJSON expr
       else if builtins.isList expr
-      then
-        if expr == []
-        then "[]"
-        else "[ ${lib.pipe expr [
-          (map (value: "${self.lib.toNushell value}"))
-          (lib.concatStringsSep " ")
-        ]} ]"
+      then "[${lib.pipe expr [
+        (map self.lib.toNushell)
+        (lib.concatStringsSep " ")
+      ]}]"
       else if builtins.isAttrs expr
       then
         if self.lib.isNushellRaw expr
         then "(${expr.value})"
         else if lib.isDerivation expr
         then toString expr
-        else if expr == {}
-        then "{}"
-        else "{ ${lib.pipe expr [
+        else "{${lib.pipe expr [
           (lib.mapAttrsToList (key: value: "${builtins.toJSON key}: ${self.lib.toNushell value}"))
           (lib.concatStringsSep " ")
-        ]} }"
+        ]}}"
       else throw "Unexpected type in toNushell: ${lib.typeOf expr}";
+
+    toNushellAssignments = attrs: let
+      flattenAttrs = pre: attrs:
+        lib.concatMapAttrs (
+          name: value:
+            if
+              builtins.isAttrs value
+              && !(self.lib.isNushellRaw value || lib.isDerivation value)
+            then flattenAttrs (pre + name + ".") value
+            else {${pre + name} = value;}
+        )
+        attrs;
+    in
+      (lib.generators.toKeyValue {
+        mkKeyValue = key: value: "$$${key} = ${self.lib.toNushell value}";
+      }) (flattenAttrs "" attrs);
 
     types = {
       nushellRaw = lib.mkOptionType {
@@ -43,27 +54,24 @@
         check = self.lib.isNushellRaw;
       };
 
-      nushellValue = let
-        valueType = lib.types.nullOr (lib.types.oneOf [
-          self.lib.types.nushellRaw
-          lib.types.bool
-          lib.types.float
-          lib.types.int
-          lib.types.str
-          lib.types.path
-          (lib.types.attrsOf valueType
-            // {
-              description = "attribute set of Nushell values";
-              descriptionClass = "name";
-            })
-          (lib.types.listOf valueType
-            // {
-              description = "list of Nushell values";
-              descriptionClass = "name";
-            })
-        ]);
-      in
-        valueType;
+      nushellValue = lib.types.nullOr (lib.types.oneOf [
+        self.lib.types.nushellRaw
+        lib.types.bool
+        lib.types.float
+        lib.types.int
+        lib.types.str
+        lib.types.path
+        (lib.types.attrsOf self.lib.types.nushellValue
+          // {
+            description = "attribute set of Nushell values";
+            descriptionClass = "name";
+          })
+        (lib.types.listOf self.lib.types.nushellValue
+          // {
+            description = "list of Nushell values";
+            descriptionClass = "name";
+          })
+      ]);
     };
   };
 }

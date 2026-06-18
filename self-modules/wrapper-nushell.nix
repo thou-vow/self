@@ -66,20 +66,8 @@
         ];
 
         settings = lib.pipe config.settings [
-          (let
-            flattenAttrs = prefix: attrs:
-              lib.concatMapAttrs (
-                name: value:
-                  if builtins.isAttrs value
-                  then flattenAttrs (prefix + name + ".") value
-                  else {${prefix + name} = value;}
-              )
-              attrs;
-          in
-            flattenAttrs "")
-          (lib.generators.toKeyValue {
-            mkKeyValue = key: value: "$env.config.${key} = ${self.lib.toNushell value}";
-          })
+          (s: {env.config = s;})
+          self.lib.toNushellAssignments
           wlib.dag.entryAnywhere
         ];
 
