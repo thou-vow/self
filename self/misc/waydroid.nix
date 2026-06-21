@@ -1,5 +1,5 @@
 {lib, ...}: {
-  flake.nixosModules.waydroid = _: {
+  flake.nixosPresets.waydroid = _: {
     # https://github.com/pioner14/Waydroid_on_NixOS
     boot.kernel.sysctl = {
       "net.ipv4.conf.all.forwarding" = 1;

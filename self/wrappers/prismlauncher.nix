@@ -4,11 +4,12 @@
   ...
 }: {
   flake.wrappers.prismlauncher = {
+    autoDiscoverModules = "prismlauncher";
+    autoDiscoverPresets = "prismlauncher";
     pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
-    module = self.wrapperModules.prismlauncher;
   };
 
-  flake.wrapperModules.prismlauncher = {
+  flake.wrapperPresets.prismlauncher = {
     inputs',
     pkgs,
     ...

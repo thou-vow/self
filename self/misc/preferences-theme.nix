@@ -1,56 +1,56 @@
 _: {
-  flake.wrapperIntegrationModules.preferences = _: {
+  flake.wrapperIntegrationPresets.preferencesTheme = _: {
     preferences.style.palette = sub:
       with sub.config; {
         main-cursor = "#f4dbe2"; # 0 50 90
-        other-cursor = "#e9b7c5"; # 0 50 80
+        other-cursor = "#e8b7c5"; # 0 50 80
 
-        dark-background = "#08080b"; # 280 10 5
-        background = "#101114"; # 280 10 8
-        other-highlight = "#18181d"; # 280 10 11
-        main-highlight = "#212227"; # 280 10 15
-        other-selection = "#34353c"; # 280 10 23
-        main-selection = "#44454e"; # 280 10 30
-        invisible = "#8e909d"; # 280 10 60
-        comment = "#a9aab6"; # 280 10 70
-        dark-foreground = "#c5c6cf"; # 280 10 80
-        foreground = "#e2e2e7"; # 280 10 90
+        dark-background = "#060810"; # 270 30 5
+        background = "#0d111b"; # 270 30 8
+        other-highlight = "#161b29"; # 270 30 12
+        main-highlight = "#202638"; # 270 30 17
+        other-selection = "#37405a"; # 270 30 28
+        main-selection = "#46516f"; # 270 30 35
+        invisible = "#7683a8"; # 270 30 55
+        comment = "#919dbf"; # 270 30 65
+        dark-foreground = "#aeb8d4"; # 270 30 75
+        foreground = "#ced4e6"; # 270 30 85
 
-        red = "#eda2a1"; # 20 65 75
-        orange = "#e8aa76"; # 60 65 75
-        yellow = "#c9bb62"; # 100 65 75
-        green = "#8ccd7e"; # 140 65 75
-        aqua = "#69cebb"; # 180 65 75
-        cyan = "#70c7e2"; # 220 65 75
-        blue = "#9bbaed"; # 260 65 75
-        violet = "#c2acec"; # 300 65 75
-        magenta = "#e69fce"; # 340 65 75
+        red = "#f0a396"; # 30 70 75
+        orange = "#eca870"; # 60 70 75
+        yellow = "#d7b659"; # 90 70 75
+        green = "#75d18b"; # 150 70 75
+        aqua = "#5fd0bc"; # 180 70 75
+        cyan = "#60cbdd"; # 210 70 75
+        blue = "#a4b7f0"; # 270 70 75
+        violet = "#c3abf0"; # 300 70 75
+        magenta = "#e39edc"; # 330 70 75
 
-        bright-red = "#f2b5b4"; # 20 65 80
-        bright-orange = "#efbb91"; # 60 65 80
-        bright-yellow = "#d7c972"; # 100 65 80
-        bright-green = "#9bdb8d"; # 140 65 80
-        bright-aqua = "#79dcc9"; # 180 65 80
-        bright-cyan = "#88d4ec"; # 220 65 80
-        bright-blue = "#afc8f1"; # 260 65 80
-        bright-violet = "#cebcf0"; # 300 65 80
-        bright-magenta = "#ebb2d7"; # 340 65 80
+        bright-red = "#f6c9c1"; # 30 70 85
+        bright-orange = "#f6cba9"; # 60 70 85
+        bright-yellow = "#efd387"; # 90 70 85
+        bright-green = "#99ecaa"; # 150 70 85
+        bright-aqua = "#84ebd7"; # 180 70 85
+        bright-cyan = "#95e4f2"; # 210 75 85
+        bright-blue = "#c8d4f6"; # 270 70 85
+        bright-violet = "#daccf6"; # 300 70 85
+        bright-magenta = "#eec6e9"; # 330 70 85
 
         boolean = bright-red;
-        class = bright-violet;
-        constant = violet;
-        escape = bright-aqua;
-        function = bright-green;
+        class = bright-green;
+        constant = bright-violet;
+        escape = bright-red;
+        function = bright-magenta;
         keyword = bright-magenta;
-        namespace = blue;
-        number = bright-orange;
-        operator = green;
-        parameter = bright-cyan;
-        path = bright-magenta;
+        namespace = bright-blue;
+        number = bright-green;
+        operator = bright-blue;
+        parameter = bright-orange;
+        path = bright-violet;
         string = bright-yellow;
-        variable = bright-blue;
+        variable = bright-cyan;
 
-        rainbow = [red yellow cyan violet];
+        rainbow = [green magenta aqua red cyan orange blue yellow violet];
       };
   };
 }

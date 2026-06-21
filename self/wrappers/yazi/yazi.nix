@@ -4,7 +4,8 @@
   ...
 }: {
   flake.wrappers.yazi = {
+    autoDiscoverModules = "yazi";
+    autoDiscoverPresets = "yazi";
     pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
-    module = self.wrapperModules.yazi;
   };
 }

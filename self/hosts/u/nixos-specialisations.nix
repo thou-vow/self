@@ -1,5 +1,5 @@
 {lib, ...}: {
-  flake.nixosModules.u = {
+  flake.nixosPresets."!u" = {
     inputs',
     pkgs,
     specialisation,

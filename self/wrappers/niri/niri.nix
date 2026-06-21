@@ -1,16 +1,15 @@
 {
-  self,
   withSystem,
   wlib,
   ...
 }: {
   flake.wrappers.niri = {
+    autoDiscoverModules = "niri";
+    autoDiscoverPresets = "niri";
     pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
-    module = self.wrapperModules.niri;
-    integrationModule = self.wrapperIntegrationModules.niri;
   };
 
-  flake.wrapperModules.niri = {
+  flake.wrapperPresets.niri = {
     inputs',
     pkgs,
     ...

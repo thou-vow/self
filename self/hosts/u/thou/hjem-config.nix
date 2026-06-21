@@ -3,13 +3,13 @@
   self,
   ...
 }: {
-  flake.nixosModules."@u" = _: {
+  flake.nixosPresets."!u" = _: {
     hjem.users.thou = lib.mkMerge [
-      self.hjemModules."thou@u"
+      self.hjemPresets."!thou@u"
     ];
   };
 
-  flake.hjemModules."thou@u" = {
+  flake.hjemPresets."!thou@u" = {
     config,
     inputs',
     osConfig,
@@ -34,9 +34,13 @@
             starship
             ;
         };
-        extraIntegrationModules = with self.wrapperIntegrationModules; [
-          preferences
-        ];
+        extraWrapperIntegrations =
+          (with self.wrapperIntegrationModules; [
+            preferences
+          ])
+          ++ (with self.wrapperIntegrationPresets; [
+            preferencesTheme
+          ]);
       })
     ];
 
@@ -60,51 +64,6 @@
           PERSIST_HOME = osConfig.environment.variables.PERSIST + config.directory;
         };
         shellAliases = {};
-        style = {
-          palette = sub:
-            with sub.config; {
-              main-cursor = "#f4dbe2";
-              other-cursor = "#e8b7c5";
-
-              dark-background = "#060810";
-              background = "#121622";
-              other-highlight = "#1c2232";
-              main-highlight = "#272d41";
-              other-selection = "#313950";
-              main-selection = "#46516f";
-              invisible = "#7683a8";
-              comment = "#919dbf";
-              dark-foreground = "#aeb8d4";
-              foreground = "#ced4e6";
-
-              red = "#f0a396";
-              yellow = "#d7b659";
-              green = "#75d18b";
-              cyan = "#60cbdd";
-              blue = "#a4b7f0";
-              magenta = "#e39edc";
-              bright-red = "#f6c9c1";
-              bright-yellow = "#efd387";
-              bright-green = "#99ecaa";
-              bright-cyan = "#95e4f2";
-              bright-blue = "#c8d4f6";
-              bright-magenta = "#eec6e9";
-
-              escape = red;
-              parameter = yellow;
-              class = green;
-              constant = cyan;
-              function = blue;
-              keyword = magenta;
-              boolean = bright-red;
-              string = bright-yellow;
-              number = bright-green;
-              variable = bright-cyan;
-              namespace = bright-blue;
-              operator = bright-blue;
-              path = bright-magenta;
-            };
-        };
       };
     };
 

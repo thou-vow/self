@@ -4,11 +4,12 @@
   ...
 }: {
   flake.wrappers.direnv = {
+    autoDiscoverModules = "direnv";
+    autoDiscoverPresets = "direnv";
     pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
-    module = self.wrapperModules.direnv;
   };
 
-  flake.wrapperModules.direnv = _: {
+  flake.wrapperPresets.direnv = _: {
     nix-direnv.enable = true;
     silent = true;
   };

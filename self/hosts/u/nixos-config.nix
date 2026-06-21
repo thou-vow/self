@@ -10,7 +10,7 @@
       hjem = true;
     } {
       modules = [
-        self.nixosModules."@u"
+        self.nixosPresets."!u"
         ({
           config,
           specialisation,
@@ -23,7 +23,7 @@
       ];
     };
 
-  flake.nixosModules."@u" = {
+  flake.nixosPresets."!u" = {
     inputs',
     pkgs,
     self',
@@ -42,7 +42,7 @@
           };
         })
       ]
-      ++ (with self.nixosModules; [
+      ++ (with self.nixosPresets; [
         waydroid
       ]);
 
@@ -63,10 +63,8 @@
         "vm.dirty_bytes" = 67108864;
         "vm.max_map_count" = 2147483642;
         "vm.page-cluster" = 0;
-        "vm.swappiness" = 200;
-        "vm.vfs_cache_pressure" = 25;
-        "vm.watermark_boost_factor" = 0;
-        "vm.watermark_scale_factor" = 125;
+        "vm.swappiness" = 1;
+        "vm.vfs_cache_pressure" = 10;
       };
       kernelPackages = inputs'.chaotic-nyx.legacyPackages.linuxPackages_cachyos-lto;
       kernelParams = ["mitigations=off"];

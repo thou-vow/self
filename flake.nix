@@ -22,15 +22,11 @@ rec {
     chaotic-nyx = {
       url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
       inputs = {
-        flake-schemas.follows = "flake-schemas";
+        flake-schemas.follows = "";
         home-manager.follows = "";
-        jovian.follows = "";
-        niks3.follows = "";
         # nixpkgs.follows breaks substituters
-        # rust-overlay.follows breaks substituters
       };
     };
-    flake-schemas.url = "github:DeterminateSystems/flake-schemas";
     hjem = {
       url = "github:feel-co/hjem";
       inputs = {

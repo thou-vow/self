@@ -1,16 +1,14 @@
 {
-  self,
   withSystem,
   ...
 }: {
   flake.wrappers.atuin = {
+    autoDiscoverModules = "atuin";
+    autoDiscoverPresets = "atuin";
     pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
-    module = self.wrapperModules.atuin;
-    integrationModule = self.wrapperIntegrationModules.atuin;
-    hjemModule = self.hjemModules.atuin;
   };
 
-  flake.wrapperModules.atuin = _: {
+  flake.wrapperPresets.atuin = _: {
     settings = {
       inline_height = 9;
       prefers_reduced_motion = true;
@@ -20,7 +18,7 @@
     };
   };
 
-  flake.wrapperIntegrationModules.atuin = _: {
+  flake.wrapperIntegrationPresets.atuin = _: {
     atuin.initFlags = ["--disable-up-arrow"];
   };
 }

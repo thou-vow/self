@@ -79,7 +79,10 @@ with style.palette; {
   };
   "ui.text.inactive" = {fg = dark-foreground;};
   "ui.text.directory" = {fg = blue;};
-  "ui.virtual" = {fg = invisible;};
+  "ui.virtual" = {
+    fg = invisible;
+    modifiers = ["italic"];
+  };
   "ui.virtual.ruler" = {bg = other-highlight;};
   "ui.virtual.jump-label" = {
     fg = main-cursor;
@@ -165,7 +168,10 @@ with style.palette; {
   "variable.builtin" = {fg = keyword;};
   "variable.parameter" = {fg = parameter;};
   "label" = {fg = namespace;};
-  "punctuation" = {fg = dark-foreground;};
+  "punctuation" = {
+    fg = dark-foreground;
+    # modifiers = ["dim"];
+  };
   "keyword" = {fg = keyword;};
   "operator" = {fg = operator;};
   "function" = {fg = function;};

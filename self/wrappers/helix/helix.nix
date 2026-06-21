@@ -6,12 +6,12 @@
   ...
 }: {
   flake.wrappers.helix = {
+    autoDiscoverModules = "helix";
+    autoDiscoverPresets = "helix";
     pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
-    module = self.wrapperModules.helix;
-    integrationModule = self.wrapperIntegrationModules.helix;
   };
 
-  flake.wrapperModules.helix = {pkgs, ...}: {
+  flake.wrapperPresets.helix = {pkgs, ...}: {
     steel = {
       cogs = {
         "mattwparas-helix-package".subject.source = pkgs.fetchFromGitHub {
@@ -41,7 +41,7 @@
     };
   };
 
-  flake.wrapperIntegrationModules.helix = {config, ...}: {
+  flake.wrapperIntegrationPresets.helix = {config, ...}: {
     helix.steel = lib.mkIf (config.preferences or {} != {}) {
       extraConfigFiles."init-theme.scm".subject.text = let
         theme = import ./_helix-theme.nix config.preferences.style;

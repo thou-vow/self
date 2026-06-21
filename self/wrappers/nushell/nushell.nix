@@ -6,12 +6,12 @@
   ...
 }: {
   flake.wrappers.nushell = {
+    autoDiscoverModules = "nushell";
+    autoDiscoverPresets = "nushell";
     pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
-    module = self.wrapperModules.nushell;
-    integrationModule = self.wrapperIntegrationModules.nushell;
   };
 
-  flake.wrapperModules.nushell = {pkgs, ...}: {
+  flake.wrapperPresets.nushell = {pkgs, ...}: {
     configNu = {
       completions =
         wlib.dag.entryAnywhere

@@ -6,12 +6,12 @@
   ...
 }: {
   flake.wrappers.kitty = {
+    autoDiscoverModules = "kitty";
+    autoDiscoverPresets = "kitty";
     pkgsPerSystem = system: withSystem system ({pkgs, ...}: pkgs);
-    module = self.wrapperModules.kitty;
-    integrationModule = self.wrapperIntegrationModules.kitty;
   };
 
-  flake.wrapperModules.kitty = {wlib, ...}: {
+  flake.wrapperPresets.kitty = {wlib, ...}: {
     extraConfigFiles = {
       "kittens".subject.source = ./kittens;
       "manual-kitty.conf".subject.source = ./manual-kitty.conf;
@@ -24,7 +24,7 @@
     settings.clear_all_shortcuts = true;
   };
 
-  flake.wrapperIntegrationModules.kitty = {config, ...}: {
+  flake.wrapperIntegrationPresets.kitty = {config, ...}: {
     kitty = lib.mkIf (config.preferences or {} != {}) {
       extraConfigFiles."theme.conf".subject.text = let
         theme = import ./_kitty-theme.nix config.preferences.style;

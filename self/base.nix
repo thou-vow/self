@@ -4,10 +4,10 @@
   nixConfig,
   ...
 }: {
-  flake.hjemModules.base = _: {
+  flake.hjemPresets.base = _: {
   };
 
-  flake.nixOnDroidModules.base = {config, ...}: {
+  flake.nixOnDroidPresets.base = {config, ...}: {
     nix = {
       extraOptions = ''
         extra-experimental-features = ${toString ["flakes" "nix-command"]}
@@ -26,7 +26,7 @@
     };
   };
 
-  flake.nixosModules.base = {config, ...}: {
+  flake.nixosPresets.base = {config, ...}: {
     nix = {
       nixPath = lib.mapAttrsToList (k: _: "${k}=flake:${k}") config.nix.registry;
 
@@ -45,10 +45,10 @@
     };
   };
 
-  flake.wrapperIntegrationModules.base = _: {
+  flake.wrapperIntegrationPresets.base = _: {
   };
 
-  flake.wrapperModules.base = _: {
+  flake.wrapperPresets.base = _: {
     escapingFunction = str: str;
   };
 }

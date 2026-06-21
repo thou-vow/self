@@ -20,13 +20,16 @@
         })
         top.config.flake.wrappers)
       {
-        all-set = self.lib.mkWrappersEnv {
+        all-set = self.lib.mkWrappersSet {
           inherit (self) wrappers;
           inherit system;
-          extraIntegrationModules = [self.wrapperIntegrationModules.preferences];
+          extraWrapperIntegrations = [
+            self.wrapperIntegrationModules.preferences
+            self.wrapperIntegrationPresets.preferencesTheme
+          ];
         };
 
-        shell-set = self.lib.mkWrappersEnv {
+        shell-set = self.lib.mkWrappersSet {
           inherit system;
           wrappers = {
             inherit
@@ -38,7 +41,10 @@
               starship
               ;
           };
-          extraIntegrationModules = [self.wrapperIntegrationModules.preferences];
+          extraWrapperIntegrations = [
+            self.wrapperIntegrationModules.preferences
+            self.wrapperIntegrationPresets.preferencesTheme
+          ];
         };
 
         steam-run =

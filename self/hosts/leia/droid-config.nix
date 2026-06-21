@@ -9,11 +9,11 @@
       pkgs = withSystem "aarch64-linux" ({pkgs-nod, ...}: pkgs-nod);
     } {
       modules = [
-        self.nixOnDroidModules.leia
+        self.nixOnDroidPresets."!leia"
       ];
     };
 
-  flake.nixOnDroidModules.leia = {
+  flake.nixOnDroidPresets."!leia" = {
     config,
     inputs',
     pkgs,

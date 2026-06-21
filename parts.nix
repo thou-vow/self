@@ -2,10 +2,15 @@
   inputs,
   lib,
   ...
-}: {
+} @ top: {
   options = {
     flake = {
       hjemModules = lib.mkOption {
+        type = with lib.types; lazyAttrsOf deferredModule;
+        default = {};
+      };
+
+      hjemPresets = lib.mkOption {
         type = with lib.types; lazyAttrsOf deferredModule;
         default = {};
       };
@@ -33,7 +38,22 @@
         default = {};
       };
 
+      nixOnDroidPresets = lib.mkOption {
+        type = with lib.types; lazyAttrsOf deferredModule;
+        default = {};
+      };
+
+      nixosPresets = lib.mkOption {
+        type = with lib.types; lazyAttrsOf deferredModule;
+        default = {};
+      };
+
       wrapperIntegrationModules = lib.mkOption {
+        type = with lib.types; lazyAttrsOf deferredModule;
+        default = {};
+      };
+
+      wrapperIntegrationPresets = lib.mkOption {
         type = with lib.types; lazyAttrsOf deferredModule;
         default = {};
       };
@@ -43,38 +63,42 @@
         default = {};
       };
 
+      wrapperPresets = lib.mkOption {
+        type = with lib.types; lazyAttrsOf deferredModule;
+        default = {};
+      };
+
       wrappers = lib.mkOption {
-        type = lib.types.lazyAttrsOf (lib.types.submodule {
+        type = lib.types.lazyAttrsOf (lib.types.submodule ({config, ...}: {
           options = {
-            hjemModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
-            integrationModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
-            module = lib.mkOption {type = lib.types.deferredModule;};
-            nixOnDroidModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
-            nixosModule = lib.mkOption {type = with lib.types; nullOr deferredModule;};
+            autoDiscoverModules = lib.mkOption {type = with lib.types; nullOr str;};
+            autoDiscoverPresets = lib.mkOption {type = with lib.types; nullOr str;};
+            hjem = lib.mkOption {type = with lib.types; nullOr deferredModule;};
+            nixOnDroid = lib.mkOption {type = with lib.types; nullOr deferredModule;};
+            nixos = lib.mkOption {type = with lib.types; nullOr deferredModule;};
             pkgsPerSystem = lib.mkOption {type = with lib.types; functionTo pkgs;};
+            wrapper = lib.mkOption {type = lib.types.deferredModule;};
+            wrapperIntegration = lib.mkOption {type = with lib.types; nullOr deferredModule;};
           };
-        });
+
+          config = lib.mkMerge [
+            (lib.mkIf (config.autoDiscoverModules != null) {
+              hjem = top.config.flake.hjemModules.${config.autoDiscoverModules} or {};
+              nixOnDroid = top.config.flake.nixOnDroidModules.${config.autoDiscoverModules} or {};
+              nixos = top.config.flake.nixosModules.${config.autoDiscoverModules} or {};
+              wrapper = top.config.flake.wrapperModules.${config.autoDiscoverModules} or {};
+              wrapperIntegration = top.config.flake.wrapperIntegrationModules.${config.autoDiscoverModules} or {};
+            })
+            (lib.mkIf (config.autoDiscoverPresets != null) {
+              hjem = top.config.flake.hjemPresets.${config.autoDiscoverPresets} or {};
+              nixOnDroid = top.config.flake.nixOnDroidPresets.${config.autoDiscoverPresets} or {};
+              nixos = top.config.flake.nixosPresets.${config.autoDiscoverPresets} or {};
+              wrapper = top.config.flake.wrapperPresets.${config.autoDiscoverPresets} or {};
+              wrapperIntegration = top.config.flake.wrapperIntegrationPresets.${config.autoDiscoverPresets} or {};
+            })
+          ];
+        }));
       };
     };
   };
-
-  config.flake.schemas =
-    inputs.flake-schemas.schemas
-    // {
-      nixOnDroidConfigurations = {
-        version = 1;
-        doc = ''
-          The `nixOnDroidConfigurations` flake output defines [Nix-on-Droid configurations](https://github.com/nix-community/nix-on-droid).
-        '';
-        inventory = output:
-          inputs.flake-schemas.lib.mkChildren (
-            builtins.mapAttrs (configName: device: {
-              what = "Nix-on-Droid configuration";
-              derivationAttrPath = ["config" "build" "activationPackage"];
-              forSystems = [device.pkgs.stdenv.system];
-            })
-            output
-          );
-      };
-    };
 }
