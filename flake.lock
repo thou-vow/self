@@ -7,11 +7,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1781936469,
-        "narHash": "sha256-2jlTK3IlBg7Ifi52Bj5y2SSmf3QtvkKl+PSyyTcYe4Q=",
+        "lastModified": 1782057056,
+        "narHash": "sha256-NE0ZIgSKHWbXeQaWg+6QSRHEL3FGFee8crwIg2zVhEs=",
         "owner": "chaotic-cx",
         "repo": "nyx",
-        "rev": "dd75f823f33b25ef2619b538a7a26f6faea138d9",
+        "rev": "1df8ce301f49085f5d26e4c46a02dffed3507b44",
         "type": "github"
       },
       "original": {
@@ -44,17 +44,16 @@
     },
     "hjem": {
       "inputs": {
-        "nix-darwin": [],
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1781430841,
-        "narHash": "sha256-5uEX8TEZ5kI+bnil/T2jtRlxiADcyeD9mX8gOwQIEVs=",
+        "lastModified": 1782071069,
+        "narHash": "sha256-1cMArpPnPvjKYNMsMRwtAxQ6ngPnIg/Wt3ohS95fbwY=",
         "owner": "feel-co",
         "repo": "hjem",
-        "rev": "89d0beea9068903aeb9998f52b741c69d4e32aa1",
+        "rev": "3b110d0e7c07a5652019223bd7f7b872b86f06a4",
         "type": "github"
       },
       "original": {
@@ -102,11 +101,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1781422160,
-        "narHash": "sha256-W7S8O86bVrw2gaomEwkHStOzmPpnFIHQ6lS4Q2HffJ0=",
+        "lastModified": 1782030356,
+        "narHash": "sha256-h4WpMr455AfRub0FXBaon6Vcpe0waUyJ4GivIW6oyd4=",
         "owner": "nix-community",
         "repo": "nix-index-database",
-        "rev": "854d04e2368fb2e9c328a36b3c0a04cd713bfae1",
+        "rev": "3017088b49efd404f78e3b104f553b97e4af786b",
         "type": "github"
       },
       "original": {
@@ -146,11 +145,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1781846205,
-        "narHash": "sha256-jEE7MmhT8HsJnR5Xe9+e0lh+2fi/0PnsmGS2tFKzWGQ=",
+        "lastModified": 1782088896,
+        "narHash": "sha256-NEthEO71TGcwtBp9ufCBbIILTaEmZrG7Wk+EzTSp/kA=",
         "owner": "thou-vow",
         "repo": "nix-packages",
-        "rev": "b7664657ed195853068f01ee540fe82e02e74636",
+        "rev": "17f8f3a679f9d9c3d61a97715fbdae63bb1a4da2",
         "type": "github"
       },
       "original": {

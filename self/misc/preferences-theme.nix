@@ -38,13 +38,13 @@ _: {
 
         boolean = bright-red;
         class = bright-green;
-        constant = bright-violet;
+        constant = bright-blue;
         escape = bright-red;
-        function = bright-magenta;
+        function = bright-violet;
         keyword = bright-magenta;
-        namespace = bright-blue;
+        namespace = bright-aqua;
         number = bright-green;
-        operator = bright-blue;
+        operator = bright-aqua;
         parameter = bright-orange;
         path = bright-violet;
         string = bright-yellow;

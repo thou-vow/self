@@ -184,10 +184,8 @@
       daemonCPUSchedPolicy = "idle";
       daemonIOSchedClass = "idle";
 
-      package = pkgs.lix;
-
       settings = {
-        max-jobs = 8;
+        max-jobs = 4;
         max-substitution-jobs = 2;
         tarball-ttl = 604800;
       };

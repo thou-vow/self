@@ -29,10 +29,7 @@ rec {
     };
     hjem = {
       url = "github:feel-co/hjem";
-      inputs = {
-        nix-darwin.follows = "";
-        nixpkgs.follows = "nixpkgs";
-      };
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     import-tree = {
       url = "github:denful/import-tree";

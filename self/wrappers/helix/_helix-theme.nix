@@ -79,7 +79,8 @@ with style.palette; {
   };
   "ui.text.inactive" = {fg = dark-foreground;};
   "ui.text.directory" = {fg = blue;};
-  "ui.virtual" = {
+  "ui.virtual" = {fg = invisible;};
+  "ui.virtual.inlay-hint" = {
     fg = invisible;
     modifiers = ["italic"];
   };

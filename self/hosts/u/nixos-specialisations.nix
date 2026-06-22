@@ -17,6 +17,8 @@
           "8.8.4.4"
           "8.8.8.8"
         ];
+
+        nix.package = pkgs.lix;
       })
       (lib.mkIf (specialisation == "attuned") {
         boot.kernelParams = [
@@ -33,18 +35,18 @@
           enableRedistributableFirmware = true;
         };
 
+        nix.package = inputs'.nix-packages.packages.lix-attuned;
+
         systemd.services.disable-i915-mitigations = {
           description = "Set i915 (Intel Graphics) mitigations off at runtime";
           before = ["graphical.target"];
           wantedBy = ["multi-user.target"];
           serviceConfig = {
-            ExecStart = let
-              script = pkgs.writeShellScript "disable-i915-mitigations" ''
-                if [ -w /sys/module/i915/parameters/mitigations ]; then
-                  echo off > /sys/module/i915/parameters/mitigations
-                fi
-              '';
-            in "${script}";
+            ExecStart = "${pkgs.writeShellScript "disable-i915-mitigations" ''
+              if [ -w /sys/module/i915/parameters/mitigations ]; then
+                echo off > /sys/module/i915/parameters/mitigations
+              fi
+            ''}";
             Type = "oneshot";
             RemainAfterExit = "yes";
           };
