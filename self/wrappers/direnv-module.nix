@@ -1,6 +1,7 @@
 {
   lib,
   self,
+  wlib,
   ...
 }: {
   flake.wrapperModules.direnv = {
@@ -11,7 +12,8 @@
     tomlFmt = pkgs.formats.toml {};
   in {
     imports = [
-      self.wrapperModules.writeFiles
+      wlib.modules.constructFiles
+      wlib.modules.makeWrapper
     ];
 
     options = {
@@ -30,21 +32,27 @@
     };
 
     config = {
-      envDefault."DIRENV_CONFIG" =
-        self.lib.potentiallyWritableShellInline config.writeFiles.direnvConfig.drv;
+      constructFiles = {
+        "config/direnv.toml" = {
+          content = builtins.toJSON config.settings;
+          relPath = "config/direnv.toml";
+          builder = ''${pkgs.remarshal}/bin/json2toml "$1" "$2"'';
+        };
+        "config/lib/nix-direnv.sh" = lib.mkIf config.nix-direnv.enable {
+          relPath = "config/lib/nix-direnv.sh";
+          builder = ''${pkgs.coreutils}/bin/cp "${config.nix-direnv.package}/share/nix-direnv/direnvrc" "$2"'';
+        };
+      };
+
+      envDefault."DIRENV_CONFIG" = "${
+        self.lib.potentiallyWritableShellInline (placeholder config.outputName)
+      }/config";
 
       package = lib.mkDefault pkgs.direnv;
 
       settings.global = lib.mkIf config.silent {
         log_format = "-";
         log_filter = "^$";
-      };
-
-      writeFiles.direnvConfig.entries = {
-        "direnv.toml".subject.source = tomlFmt.generate "direnv.toml" config.settings;
-        "lib/nix-direnv.sh" = lib.mkIf config.nix-direnv.enable {
-          subject.source = "${config.nix-direnv.package}/share/nix-direnv/direnvrc";
-        };
       };
     };
   };

@@ -11,48 +11,55 @@
     ...
   }: {
     imports = [
-      self.wrapperModules.writeFiles
+      wlib.modules.constructFiles
+      wlib.modules.makeWrapper
     ];
 
     options = {
-      steel = {
-        cogs = lib.mkOption {
-          type = self.lib.types.files pkgs;
-          default = {};
-        };
-        extraConfigFiles = lib.mkOption {
-          type = self.lib.types.files pkgs;
-          default = {};
-        };
-        initScm = lib.mkOption {
-          type = wlib.types.dagOf lib.types.str;
-          default = {};
-        };
-        helixScm = lib.mkOption {
-          type = wlib.types.dagOf lib.types.str;
-          default = {};
-        };
+      cogs = lib.mkOption {
+        type = lib.types.attrsOf (wlib.types.file pkgs);
+        default = {};
+      };
+      extraConfigFiles = lib.mkOption {
+        type = lib.types.attrsOf (wlib.types.file pkgs);
+        default = {};
+      };
+      initScm = lib.mkOption {
+        type = wlib.types.dagOf lib.types.str;
+        default = {};
+      };
+      helixScm = lib.mkOption {
+        type = wlib.types.dagOf lib.types.str;
+        default = {};
       };
     };
 
     config = {
+      constructFiles = lib.mkMerge [
+        {
+          "config/helix.scm" = {
+            content = self.lib.convertDagOfStrToLines config.helixScm;
+            relPath = "config/helix.scm";
+          };
+          "config/init.scm" = {
+            content = self.lib.convertDagOfStrToLines config.initScm;
+            relPath = "config/init.scm";
+          };
+        }
+        (self.lib.filesToConstruct pkgs {parentDir = "cogs";} config.cogs)
+        (self.lib.filesToConstruct pkgs {parentDir = "config";} config.extraConfigFiles)
+      ];
+
       envDefault = {
-        "HELIX_STEEL_CONFIG" = self.lib.potentiallyWritableShellInline config.writeFiles.helixSteelConfig.drv;
-        "STEEL_SEARCH_PATHS" = self.lib.potentiallyWritableShellInline config.writeFiles.helixSteelSearchPaths.drv;
+        "HELIX_STEEL_CONFIG" = "${
+          self.lib.potentiallyWritableShellInline (placeholder config.outputName)
+        }/config";
+        "STEEL_SEARCH_PATHS" = "${
+          self.lib.potentiallyWritableShellInline (placeholder config.outputName)
+        }/cogs";
       };
 
       package = lib.mkDefault inputs'.nix-packages.packages.helix-steel;
-
-      writeFiles = {
-        helixSteelConfig.entries = lib.mkMerge [
-          {
-            "helix.scm".subject.text = self.lib.convertDagOfStrToLines config.steel.helixScm;
-            "init.scm".subject.text = self.lib.convertDagOfStrToLines config.steel.initScm;
-          }
-          config.steel.extraConfigFiles
-        ];
-        helixSteelSearchPaths.entries = config.steel.cogs;
-      };
     };
   };
 }

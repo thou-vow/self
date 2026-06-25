@@ -1,6 +1,7 @@
 {
   lib,
   self,
+  wlib,
   ...
 }: {
   flake.wrapperModules.starship = {
@@ -11,7 +12,8 @@
     tomlFmt = pkgs.formats.toml {};
   in {
     imports = [
-      self.wrapperModules.writeFiles
+      wlib.modules.constructFiles
+      wlib.modules.makeWrapper
     ];
 
     options = {
@@ -26,13 +28,19 @@
     };
 
     config = {
-      envDefault."STARSHIP_CONFIG" = "${self.lib.potentiallyWritableShellInline config.writeFiles.starshipConfig.drv}/starship.toml";
+      constructFiles = {
+        "config/starship.toml" = {
+          content = builtins.toJSON config.settings;
+          relPath = "config/starship.toml";
+          builder = ''${pkgs.remarshal}/bin/json2toml "$1" "$2"'';
+        }; 
+      };
+      
+      envDefault."STARSHIP_CONFIG" = "${
+        self.lib.potentiallyWritableShellInline (placeholder config.outputName)
+      }/config/starship.toml";
 
       package = lib.mkDefault pkgs.starship;
-
-      writeFiles.starshipConfig.entries = {
-        "starship.toml".subject.source = tomlFmt.generate "starship.toml" config.settings;
-      };
     };
   };
 }

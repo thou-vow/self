@@ -13,8 +13,8 @@
 
   flake.wrapperPresets.kitty = {wlib, ...}: {
     extraConfigFiles = {
-      "kittens".subject.source = ./kittens;
-      "manual-kitty.conf".subject.source = ./manual-kitty.conf;
+      "kittens".path = ./kittens;
+      "manual-kitty.conf".path = ./manual-kitty.conf;
     };
 
     kittyConf.manual = wlib.dag.entryAfter ["settings"] ''
@@ -26,7 +26,7 @@
 
   flake.wrapperIntegrationPresets.kitty = {config, ...}: {
     kitty = lib.mkIf (config.preferences or {} != {}) {
-      extraConfigFiles."theme.conf".subject.text = let
+      extraConfigFiles."theme.conf".content = let
         theme = import ./_kitty-theme.nix config.preferences.style;
       in
         self.lib.toKittyAssignments theme;

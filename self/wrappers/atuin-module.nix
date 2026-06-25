@@ -1,6 +1,7 @@
 {
   lib,
   self,
+  wlib,
   ...
 }: {
   flake.wrapperModules.atuin = {
@@ -11,7 +12,8 @@
     tomlFmt = pkgs.formats.toml {};
   in {
     imports = [
-      self.wrapperModules.writeFiles
+      wlib.modules.constructFiles
+      wlib.modules.makeWrapper
     ];
 
     options = {
@@ -23,18 +25,23 @@
     };
 
     config = {
-      envDefault."ATUIN_CONFIG_DIR" =
-        self.lib.potentiallyWritableShellInline config.writeFiles.atuinConfig.drv;
+      constructFiles = {
+        "config/config.toml" = {
+          content = builtins.toJSON config.settings;
+          relPath = "config/config.toml";
+          builder = ''${pkgs.remarshal}/bin/json2toml "$1" "$2"'';
+        };
+      };
+
+      envDefault."ATUIN_CONFIG_DIR" = "${
+        self.lib.potentiallyWritableShellInline (placeholder config.outputName)
+      }/config";
 
       package = lib.mkDefault pkgs.atuin;
 
       settings = lib.mkIf config.daemon.enable {
         enabled = true;
         autostart = true;
-      };
-
-      writeFiles.atuinConfig.entries = {
-        "config.toml".subject.source = tomlFmt.generate "config.toml" config.settings;
       };
     };
   };

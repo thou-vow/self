@@ -10,7 +10,8 @@
     ...
   }: {
     imports = [
-      self.wrapperModules.writeFiles
+      wlib.modules.constructFiles
+      wlib.modules.makeWrapper
       wlib.modules.symlinkScript
     ];
 
@@ -20,7 +21,7 @@
         default = {};
       };
       extraConfigFiles = lib.mkOption {
-        type = self.lib.types.files pkgs;
+        type = lib.types.attrsOf (wlib.types.file pkgs);
         default = {};
       };
       keybindings = lib.mkOption {
@@ -42,8 +43,19 @@
     };
 
     config = {
-      envDefault."KITTY_CONFIG_DIRECTORY" =
-        self.lib.potentiallyWritableShellInline config.writeFiles.kittyConfig.drv;
+      constructFiles = lib.mkMerge [
+        {
+          "config/kitty.conf" = {
+            content = self.lib.convertDagOfStrToLines config.kittyConf;
+            relPath = "config/kitty.conf";
+          };
+        }
+        (self.lib.filesToConstruct pkgs {parentDir = "config";} config.extraConfigFiles)
+      ];
+
+      envDefault."KITTY_CONFIG_DIRECTORY" = "${
+        self.lib.potentiallyWritableShellInline (placeholder config.outputName)
+      }/config";
 
       kittyConf = {
         environmentVariables = lib.pipe config.environmentVariables [
@@ -74,15 +86,6 @@
       };
 
       package = lib.mkDefault pkgs.kitty;
-
-      writeFiles = {
-        kittyConfig.entries = lib.mkMerge [
-          {
-            "kitty.conf".subject.text = self.lib.convertDagOfStrToLines config.kittyConf;
-          }
-          config.extraConfigFiles
-        ];
-      };
     };
   };
 

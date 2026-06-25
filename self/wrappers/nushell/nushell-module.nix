@@ -10,7 +10,8 @@
     ...
   }: {
     imports = [
-      self.wrapperModules.writeFiles
+      wlib.modules.constructFiles
+      wlib.modules.makeWrapper
     ];
 
     options = {
@@ -23,7 +24,7 @@
         default = {};
       };
       extraConfigFiles = lib.mkOption {
-        type = self.lib.types.files pkgs;
+        type = lib.types.attrsOf (wlib.types.file pkgs);
         default = {};
       };
       plugins = lib.mkOption {
@@ -79,35 +80,43 @@
         ];
       };
 
+      constructFiles = lib.mkMerge [
+        {
+          "config/config.nu" = {
+            content = self.lib.convertDagOfStrToLines config.configNu;
+            relPath = "config/config.nu";
+          };
+          "config/plugins.msgpackz" = let
+            pluginCommands = lib.pipe config.plugins [
+              (map (plugin: "plugin add ${lib.getExe plugin}"))
+              (lib.concatStringsSep "; ")
+            ];
+            msgPackzDir = pkgs.runCommand "nushell-plugin-msgpackz-dir" {} ''
+              mkdir -p $out
+              ${lib.getExe config.package} \
+                --plugin-config "$out/plugin.msgpackz" \
+                --commands '${pluginCommands}'
+            '';
+          in {
+            relPath = "config/plugins.msgpackz";
+            builder = ''${pkgs.coreutils}/bin/cp "${msgPackzDir}/plugin.msgpackz" "$2" || true'';
+          };
+        }
+        (self.lib.filesToConstruct pkgs {parentDir = "config";} config.extraConfigFiles)
+      ];
+
       flags = {
-        "--config" = "${self.lib.potentiallyWritableShellInline config.writeFiles.nushellConfig.drv}/config.nu";
-        "--plugin-config" = "${self.lib.potentiallyWritableShellInline config.writeFiles.nushellConfig.drv}/plugin.msgpackz";
+        "--config" = "${
+          self.lib.potentiallyWritableShellInline (placeholder config.outputName)
+        }/config/config.nu";
+        "--plugin-config" = "${
+          self.lib.potentiallyWritableShellInline (placeholder config.outputName)
+        }/config/plugins.msgpackz";
       };
 
       package = lib.mkDefault pkgs.nushell;
 
       passthru.shellPath = config.wrapperPaths.relPath;
-
-      writeFiles = {
-        nushellConfig.entries = lib.mkMerge [
-          {
-            "config.nu".subject.text = self.lib.convertDagOfStrToLines config.configNu;
-            "plugins.msgpackz".subject.source = let
-              pluginCommands = lib.pipe config.plugins [
-                (map (plugin: "plugin add ${lib.getExe plugin}"))
-                (lib.concatStringsSep "; ")
-              ];
-              msgPackzDir = pkgs.runCommand "nushell-plugin-msgpackz-dir" {} ''
-                mkdir -p $out
-                ${lib.getExe config.package} \
-                  --plugin-config "$out/plugin.msgpackz" \
-                  --commands '${pluginCommands}'
-              '';
-            in "${msgPackzDir}/plugin.msgpackz";
-          }
-          config.extraConfigFiles
-        ];
-      };
     };
   };
 

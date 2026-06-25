@@ -10,7 +10,8 @@
     ...
   }: {
     imports = [
-      self.wrapperModules.writeFiles
+      wlib.modules.constructFiles
+      wlib.modules.makeWrapper
       wlib.modules.symlinkScript
     ];
 
@@ -20,7 +21,7 @@
         default = {};
       };
       extraConfigFiles = lib.mkOption {
-        type = self.lib.types.files pkgs;
+        type = lib.types.attrsOf (wlib.types.file pkgs);
         default = {};
       };
       settings = lib.mkOption {
@@ -41,13 +42,25 @@
         ];
       };
 
+      constructFiles = lib.mkMerge [
+        {
+          "config/config.kdl" = {
+            content = self.lib.convertDagOfStrToLines config.configKdl;
+            relPath = "config/config.kdl";
+          };
+        }
+        (self.lib.filesToConstruct pkgs {parentDir = "config";} config.extraConfigFiles)
+      ];
+
       drv.installPhase = ''
         runHook preInstall
-        ${lib.getExe config.package} validate -c "${config.writeFiles.niriConfig.drv}/config.kdl"
+        ${lib.getExe config.package} validate -c "${config.constructFiles."config/config.kdl".path}"
         runHook postInstall
       '';
 
-      envDefault."NIRI_CONFIG" = "${self.lib.potentiallyWritableShellInline config.writeFiles.niriConfig.drv}/config.kdl";
+      envDefault."NIRI_CONFIG" = "${
+        self.lib.potentiallyWritableShellInline (placeholder config.outputName)
+      }/config/config.kdl";
 
       filesToPatch = ["share/systemd/user/niri.service"];
 
@@ -55,13 +68,6 @@
 
       runtimePkgs = [
         config.xwayland-satellite.package
-      ];
-
-      writeFiles.niriConfig.entries = lib.mkMerge [
-        {
-          "config.kdl".subject.text = self.lib.convertDagOfStrToLines config.configKdl;
-        }
-        config.extraConfigFiles
       ];
     };
   };

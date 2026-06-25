@@ -11,6 +11,16 @@
 
     emptyDir = pkgs: pkgs.runCommand "empty-dir" {} ''mkdir -p $out'';
 
+    filesToConstruct = pkgs: {parentDir ? null, ...}: attrsFiles:
+      lib.mapAttrs' (name: value: {
+        name = lib.optionalString (parentDir != null) "${parentDir}/" + name;
+        value = {
+          relPath = lib.optionalString (parentDir != null) "${parentDir}/" + name;
+          builder = ''${pkgs.coreutils}/bin/cp -RL "${value.path}" "$2" || true'';
+        };
+      })
+      attrsFiles;
+
     makeExecutable = pkgs: name: path:
       pkgs.runCommand name {} ''
         cp -R ${path} $out
@@ -34,12 +44,12 @@
     };
 
     potentiallyWritableShellInline = source: let
-      wSource = "$WRITABLE_STORE/${baseNameOf source}";
+      wSource = "$WRITABLE_STORE/$base";
       wInit =
         # sh
-        ''if [ ! -e ${wSource} ]; then mkdir -p ${wSource}; cp -R --no-preserve=mode,ownership ${source} "$WRITABLE_STORE/"; fi'';
+        ''if [ ! -e ${wSource} ]; then mkdir -p ${wSource}; cp -RL --no-preserve=mode,ownership ${source} "$WRITABLE_STORE/"; fi'';
     in
       # sh
-      ''$(if [ -n "$WRITABLE_STORE" ]; then ${wInit}; echo ${wSource}; else echo ${source}; fi)'';
+      ''$(base=$(basename ${source}); if [ -n "$WRITABLE_STORE" ]; then ${wInit}; echo ${wSource}; else echo ${source}; fi)'';
   };
 }

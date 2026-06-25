@@ -10,7 +10,8 @@
     ...
   }: {
     imports = [
-      self.wrapperModules.writeFiles
+      wlib.modules.constructFiles
+      wlib.modules.makeWrapper
       wlib.modules.symlinkScript
     ];
 
@@ -26,9 +27,16 @@
     };
 
     config = {
+      constructFiles = {
+        "config/gitconfig" = {
+          content = self.lib.convertDagOfStrToLines config.gitconfig;
+          relPath = "config/gitconfig";
+        };
+      };
+
       envDefault."GIT_CONFIG_GLOBAL" = "${
-        self.lib.potentiallyWritableShellInline config.writeFiles.gitConfig.drv
-      }/gitconfig";
+        self.lib.potentiallyWritableShellInline (placeholder config.outputName)
+      }/config/gitconfig";
 
       gitconfig = {
         settings = lib.pipe config.settings [
@@ -38,10 +46,6 @@
       };
 
       package = lib.mkDefault pkgs.git;
-
-      writeFiles.gitConfig.entries = {
-        "gitconfig".subject.text = self.lib.convertDagOfStrToLines config.gitconfig;
-      };
     };
   };
 }

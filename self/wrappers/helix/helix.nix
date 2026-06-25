@@ -12,38 +12,36 @@
   };
 
   flake.wrapperPresets.helix = {pkgs, ...}: {
-    steel = {
-      cogs = {
-        "mattwparas-helix-package".subject.source = pkgs.fetchFromGitHub {
-          owner = "mattwparas";
-          repo = "helix-config";
-          rev = "a101da0852932f10792f098dbb14ea88811985ff";
-          hash = "sha256-N4Y78H9HDJernQkdH+24tylfl1bleBZewTB7Fk9LlGg=";
-        };
-        "self".subject.source = ./cogs;
-        "steel-pty".subject.source = pkgs.fetchFromGitHub {
-          owner = "mattwparas";
-          repo = "steel-pty";
-          rev = "4d41b6988107b50777d87e587fba7b6b272f069e";
-          hash = "sha256-7teIMyLmfPkNEhTFlzmtKaewwwDrlcgmx06prUqXz1g=";
-        };
+    cogs = {
+      "mattwparas-helix-package".path = pkgs.fetchFromGitHub {
+        owner = "mattwparas";
+        repo = "helix-config";
+        rev = "a101da0852932f10792f098dbb14ea88811985ff";
+        hash = "sha256-N4Y78H9HDJernQkdH+24tylfl1bleBZewTB7Fk9LlGg=";
       };
-      extraConfigFiles = {
-        "init".subject.source = ./init;
-        "manual-init.scm".subject.source = ./manual-init.scm;
+      "self".path = ./cogs;
+      "steel-pty".path = pkgs.fetchFromGitHub {
+        owner = "mattwparas";
+        repo = "steel-pty";
+        rev = "4d41b6988107b50777d87e587fba7b6b272f069e";
+        hash = "sha256-7teIMyLmfPkNEhTFlzmtKaewwwDrlcgmx06prUqXz1g=";
       };
-      initScm.manual =
-        wlib.dag.entryAnywhere
-        # scm
-        ''
-          (require "manual-init.scm")
-        '';
     };
+    extraConfigFiles = {
+      "init".path = ./init;
+      "manual-init.scm".path = ./manual-init.scm;
+    };
+    initScm.manual =
+      wlib.dag.entryAnywhere
+      # scm
+      ''
+        (require "manual-init.scm")
+      '';
   };
 
   flake.wrapperIntegrationPresets.helix = {config, ...}: {
-    helix.steel = lib.mkIf (config.preferences or {} != {}) {
-      extraConfigFiles."init-theme.scm".subject.text = let
+    helix = lib.mkIf (config.preferences or {} != {}) {
+      extraConfigFiles."init-theme.scm".content = let
         theme = import ./_helix-theme.nix config.preferences.style;
       in
         # scm

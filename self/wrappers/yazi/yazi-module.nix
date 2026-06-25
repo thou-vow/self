@@ -1,6 +1,7 @@
 {
   lib,
   self,
+  wlib,
   ...
 }: {
   flake.wrapperModules.yazi = {
@@ -11,7 +12,8 @@
     tomlFmt = pkgs.formats.toml {};
   in {
     imports = [
-      self.wrapperModules.writeFiles
+      wlib.modules.constructFiles
+      wlib.modules.makeWrapper
     ];
 
     options = {
@@ -26,14 +28,24 @@
     };
 
     config = {
-      envDefault."YAZI_CONFIG_HOME" = self.lib.potentiallyWritableShellInline config.writeFiles.yaziConfig.drv;
+      constructFiles = {
+        "config/yazi.toml" = {
+          content = builtins.toJSON config.settings;
+          relPath = "config/yazi.toml";
+          builder = ''${pkgs.remarshal}/bin/json2toml "$1" "$2"'';
+        };
+        "config/keymap.toml" = {
+          content = builtins.toJSON config.keymap;
+          relPath = "config/keymap.toml";
+          builder = ''${pkgs.remarshal}/bin/json2toml "$1" "$2"'';
+        };
+      };
+
+      envDefault."YAZI_CONFIG_HOME" = "${
+        self.lib.potentiallyWritableShellInline (placeholder config.outputName)
+      }/config";
 
       package = lib.mkDefault pkgs.yazi;
-
-      writeFiles.yaziConfig.entries = {
-        "yazi.toml".subject.source = tomlFmt.generate "yazi.toml" config.settings;
-        "keymap.toml".subject.source = tomlFmt.generate "keymap.toml" config.keymap;
-      };
     };
   };
 }

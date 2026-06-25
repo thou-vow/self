@@ -18,7 +18,7 @@
       include "manual-config.kdl"
     '';
     extraConfigFiles = {
-      "manual-config.kdl".subject.source = ./manual-config.kdl;
+      "manual-config.kdl".path = ./manual-config.kdl;
     };
 
     runtimePkgs =
@@ -31,7 +31,7 @@
         wl-clipboard
       ])
       ++ (with inputs'.nix-packages.packages; [
-        brave-latest
+        brave
       ]);
   };
 }

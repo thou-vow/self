@@ -65,7 +65,10 @@
             gpu
             network
             pipewire
+            unsafe-dbus
+            unsafe-x11
             wayland
+            (readonly "/etc/machine-id")
             (readonly "/nix/store")
             (try-rw-bind (noescape "~/.jail") (noescape "~"))
             (try-readonly (noescape "~/.local/share/Steam"))

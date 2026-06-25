@@ -56,7 +56,7 @@
     };
 
     extraConfigFiles = {
-      "manual-config.nu".subject.source = ./manual-config.nu;
+      "manual-config.nu".path = ./manual-config.nu;
     };
 
     runtimePkgs = with pkgs; [
