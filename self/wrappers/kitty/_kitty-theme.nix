@@ -17,7 +17,7 @@ with style.palette; {
 
   foreground = foreground;
   background = dark-background;
-  transparent_background_colors = [
+  transparent_background_colors = toString [
     background
     other-highlight
     main-highlight

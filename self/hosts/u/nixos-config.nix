@@ -47,27 +47,33 @@
       ]);
 
     boot = {
-      initrd.availableKernelModules = [
-        "ehci_pci"
-        "xhci_pci"
+      initrd.kernelModules = [
         "ahci"
-        "usb_storage"
-        "uas"
         "sd_mod"
+        "uas"
+        "usb_storage"
         "usbhid"
+        "xhci_pci"
       ];
       kernel.sysctl = {
         "kernel.nmi_watchdog" = 0;
         "kernel.split_lock_mitigate" = 0;
-        "vm.dirty_background_bytes" = 16777216;
-        "vm.dirty_bytes" = 67108864;
+        "vm.dirty_background_bytes" = 33554432;
+        "vm.dirty_bytes" = 268435456;
+        "vm.dirty_expire_centisecs" = 6000;
+        "vm.dirty_writeback_centisecs" = 1500;
         "vm.max_map_count" = 2147483642;
+        "vm.min_free_kbytes" = 122880;
         "vm.page-cluster" = 0;
-        "vm.swappiness" = 1;
-        "vm.vfs_cache_pressure" = 10;
+        "vm.swappiness" = 15;
+        "vm.vfs_cache_pressure" = 25;
+        "vm.watermark_scale_factor" = 100;
       };
       kernelPackages = inputs'.chaotic-nyx.legacyPackages.linuxPackages_cachyos-lto;
-      kernelParams = ["mitigations=off"];
+      kernelParams = [
+        "8250.nr_uarts=0"
+        "mitigations=off"
+      ];
     };
 
     console.useXkbConfig = true;
@@ -146,7 +152,6 @@
     };
 
     hardware = {
-      bluetooth.enable = true;
       cpu.intel.updateMicrocode = true;
       graphics = {
         enable = true;
@@ -172,30 +177,23 @@
     networking = {
       dhcpcd.enable = false;
       hostName = "u";
-      networkmanager = {
-        enable = true;
-        wifi.powersave = false;
-      };
       nftables.enable = true;
       useNetworkd = true;
+      wireless.iwd = {
+        enable = true;
+        settings = {
+          DriverQuirks.PowerSaveDisable = "ath9k";
+          General.EnableNetworkConfiguration = true;
+          Settings.AutoConnect = true;
+        };
+      };
     };
 
     nix = {
       daemonCPUSchedPolicy = "idle";
       daemonIOSchedClass = "idle";
 
-      settings = {
-        max-jobs = 4;
-        max-substitution-jobs = 2;
-        tarball-ttl = 604800;
-      };
-    };
-
-    programs = {
-      appimage = {
-        enable = true;
-        binfmt = true;
-      };
+      settings.tarball-ttl = 604800;
     };
 
     security = {
@@ -225,7 +223,6 @@
           };
         };
       };
-      blueman.enable = true;
       flatpak.enable = true;
       lvm.enable = false;
       openssh.enable = true;
@@ -246,7 +243,16 @@
 
     system.stateVersion = "25.11";
 
-    systemd.oomd.enable = false;
+    systemd = {
+      network = {
+        networks."10-wired" = {
+          matchConfig.Type = "ether";
+          networkConfig.DHCP = "yes";
+        };
+        wait-online.enable = false;
+      };
+      oomd.enable = false;
+    };
 
     time = {
       hardwareClockInLocalTime = true;
@@ -270,15 +276,16 @@
     xdg.portal = {
       enable = true;
       config.common = {
-        "default" = ["gnome" "gtk" "kde"];
-        "org.freedesktop.impl.portal.Access" = "gtk";
+        "default" = ["gtk" "kde"];
         "org.freedesktop.impl.portal.FileChooser" = "kde";
-        "org.freedesktop.impl.portal.Notification" = "gtk";
+        "org.freedesktop.impl.portal.Inhibit" = "none";
+        "org.freedesktop.impl.portal.ScreenCast" = "wlr";
+        "org.freedesktop.impl.portal.Screenshot" = "wlr";
       };
       extraPortals = with pkgs; [
         kdePackages.xdg-desktop-portal-kde
-        xdg-desktop-portal-gnome
         xdg-desktop-portal-gtk
+        xdg-desktop-portal-wlr
       ];
     };
   };

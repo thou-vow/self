@@ -4,7 +4,9 @@ _: {
       buildInputs = with pkgs; [
         alejandra
         kdlfmt
+        nixd
         schemat
+        steel
         taplo
       ];
     };

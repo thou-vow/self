@@ -21,44 +21,7 @@ in {
     modules.mapState.flakePath = "/self";
 
     boot = {
-      initrd.systemd = {
-        extraBin = {
-          btrfs = "${pkgs.btrfs-progs}/bin/btrfs";
-          date = "${pkgs.coreutils}/bin/date";
-          mkdir = "${pkgs.coreutils}/bin/mkdir";
-          mv = "${pkgs.coreutils}/bin/mv";
-          stat = "${pkgs.coreutils}/bin/stat";
-        };
-
-        services.btrfs-rolling = {
-          description = "Archiving existing Btrfs @ subvolume and creating a fresh one";
-
-          after = ["initrd-root-device.target" "local-fs-pre.target"];
-          before = ["initrd.target"];
-          requiredBy = ["initrd.target"];
-          requires = ["initrd-root-device.target"];
-
-          script = ''
-            mkdir "/btrfs_tmp"
-            mount ${config.fileSystems."/".device} "/btrfs_tmp"
-
-            if [[ -e "/btrfs_tmp/@" ]]; then
-              mkdir -p /btrfs_tmp/.archive
-              timestamp=$(date '+%Y-%m-%d_%H-%M-%S' --date="@$(stat -c %Y "/btrfs_tmp/@")")
-              mv "/btrfs_tmp/@" "/btrfs_tmp/.archive/@$timestamp"
-            fi
-
-            btrfs subvolume create "/btrfs_tmp/@"
-
-            umount "/btrfs_tmp"
-          '';
-
-          serviceConfig.Type = "oneshot";
-          unitConfig.DefaultDependencies = false;
-        };
-
-        tmpfiles.settings.preservation."/sysroot/persist/etc/machine-id".f.argument = "uninitialized";
-      };
+      initrd.systemd.tmpfiles.settings.preservation."/sysroot/persist/etc/machine-id".f.argument = "uninitialized";
       loader = {
         efi.efiSysMountPoint = "/boot";
         limine = {
@@ -69,6 +32,7 @@ in {
           efiSupport = true;
           maxGenerations = 7;
         };
+        timeout = 15;
       };
     };
 
@@ -76,30 +40,21 @@ in {
       ${config.boot.loader.efi.efiSysMountPoint} = {
         device = "/dev/disk/by-id/wwn-${mainId}-part2";
         fsType = "vfat";
+        noCheck = true;
         options = ["fmask=0077" "dmask=0077"];
       };
       "/" =
         if specialisation == "attuned"
         then {
           device = "/dev/disk/by-id/wwn-${attunedInternalDrive}-part5";
-          fsType = "btrfs";
-          options = ["subvol=@" "commit=60" "compress=zstd:11" "noatime"];
+          fsType = "xfs";
+          options = ["noatime"];
         }
         else {
           device = "/dev/disk/by-id/wwn-${mainId}-part4";
-          fsType = "btrfs";
-          options = ["subvol=@" "commit=60" "compress=zstd:11" "noatime"];
+          fsType = "xfs";
+          options = ["noatime"];
         };
-      "/mnt/attuned-internal" = lib.mkIf (specialisation == "attuned") {
-        device = "/dev/disk/by-id/wwn-${attunedInternalDrive}-part5";
-        fsType = "btrfs";
-        options = ["commit=60" "compress=zstd:11" "noatime"];
-      };
-      "/mnt/main" = {
-        device = "/dev/disk/by-id/wwn-${mainId}-part4";
-        fsType = "btrfs";
-        options = ["commit=60" "compress=zstd:11" "noatime"];
-      };
       "/nix" = {
         device = "/dev/disk/by-id/wwn-${mainId}-part4";
         fsType = "btrfs";
@@ -121,11 +76,12 @@ in {
             directory = config.modules.mapState.flakePath;
             user = "thou";
           }
-          "/etc/NetworkManager/system-connections"
           "/root/.cache/nix"
           "/root/.local/share/nix"
+          "/srv"
           "/var/lib/flatpak"
           "/var/lib/hjem"
+          "/var/lib/iwd"
           "/var/lib/machines"
           "/var/lib/nixos"
           "/var/lib/nixos-containers"
@@ -135,6 +91,7 @@ in {
           "/var/lib/systemd/timers"
           "/var/lib/waydroid"
           "/var/log"
+          "/var/tmp"
         ];
         files = [
           {
@@ -207,6 +164,17 @@ in {
           extraOptions = ["--loadavg-target" "2.0"];
         };
       };
+      udev.extraRules = builtins.concatStringsSep ", " [
+        ''ACTION=="add|change"''
+        ''SUBSYSTEM=="block"''
+        ''ENV{DEVTYPE}=="disk"''
+        ''ENV{ID_WWN}=="${mainId}"''
+        ''ATTR{queue/add_random}="0"''
+        ''ATTR{queue/nr_requests}="16"''
+        ''ATTR{queue/read_ahead_kb}="1024"''
+        ''ATTR{queue/rq_affinity}="2"''
+        ''RUN+="${lib.getExe pkgs.hdparm} -B 255 /dev/%k"''
+      ];
       zram-generator = {
         enable = true;
         settings.zram0 = {
@@ -218,10 +186,6 @@ in {
         };
       };
     };
-
-    swapDevices = [
-      {device = "/dev/disk/by-id/wwn-${mainId}-part3";}
-    ];
 
     systemd.services = {
       "beesd@attuned-internal" = lib.mkIf (specialisation == "attuned") {wantedBy = lib.mkForce [];};

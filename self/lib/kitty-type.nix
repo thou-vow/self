@@ -11,12 +11,6 @@
               if expr
               then "yes"
               else "no"
-            else if builtins.isList expr
-            then
-              lib.pipe expr [
-                (map toKitty)
-                (lib.concatStringsSep " ")
-              ]
             else toString value;
         in "${key} ${toKitty value}";
       }
@@ -28,13 +22,6 @@
         lib.types.float
         lib.types.int
         lib.types.str
-        (lib.types.listOf
-          (lib.types.nullOr (lib.types.oneOf [
-            lib.types.bool
-            lib.types.float
-            lib.types.int
-            lib.types.str
-          ])))
       ]);
     };
   };
