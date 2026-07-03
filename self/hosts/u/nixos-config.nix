@@ -11,15 +11,6 @@
     } {
       modules = [
         self.nixosPresets."!u"
-        ({
-          config,
-          specialisation,
-          ...
-        }: {
-          _module.args.specialisation = lib.mkIf (config.specialisation != {}) null;
-          hjem.specialArgs = {inherit specialisation;};
-          specialisation.attuned.configuration._module.args.specialisation = "attuned";
-        })
       ];
     };
 
@@ -27,7 +18,6 @@
     inputs',
     pkgs,
     self',
-    specialisation,
     ...
   }: {
     imports =
@@ -47,14 +37,17 @@
       ]);
 
     boot = {
-      initrd.kernelModules = [
-        "ahci"
-        "sd_mod"
-        "uas"
-        "usb_storage"
-        "usbhid"
-        "xhci_pci"
-      ];
+      initrd = {
+        kernelModules = [
+          "ahci"
+          "sd_mod"
+          "uas"
+          "usb_storage"
+          "usbhid"
+          "xhci_pci"
+        ];
+        systemd.emergencyAccess = true;
+      };
       kernel.sysctl = {
         "kernel.nmi_watchdog" = 0;
         "kernel.split_lock_mitigate" = 0;
@@ -79,8 +72,8 @@
     console.useXkbConfig = true;
 
     environment = {
-      etc."specialisation" = lib.mkIf (specialisation != null) {text = specialisation;};
       sessionVariables = {
+        GSK_RENDERER = "gl";
         MESA_SHADER_CACHE_MAX_SIZE = "10G";
         NIXPKGS_ALLOW_UNFREE = "1";
         PERSIST = "/persist";
@@ -94,6 +87,7 @@
           cachix
           cpuid
           curl
+          ddrescue
           dmidecode
           dnsutils
           fastfetch
@@ -152,10 +146,12 @@
     };
 
     hardware = {
+      enableRedistributableFirmware = true;
       cpu.intel.updateMicrocode = true;
       graphics = {
         enable = true;
         enable32Bit = true;
+        package = inputs'.nix-packages.packages.mesa-attuned;
       };
     };
 
@@ -192,6 +188,8 @@
     nix = {
       daemonCPUSchedPolicy = "idle";
       daemonIOSchedClass = "idle";
+
+      package = inputs'.nix-packages.packages.lix-attuned;
 
       settings.tarball-ttl = 604800;
     };
@@ -252,6 +250,20 @@
         wait-online.enable = false;
       };
       oomd.enable = false;
+      services.disable-i915-mitigations = {
+        description = "Set i915 (Intel Graphics) mitigations off at runtime";
+        before = ["graphical.target"];
+        wantedBy = ["multi-user.target"];
+        serviceConfig = {
+          ExecStart = "${pkgs.writeShellScript "disable-i915-mitigations" ''
+            if [ -w /sys/module/i915/parameters/mitigations ]; then
+              echo off > /sys/module/i915/parameters/mitigations
+            fi
+          ''}";
+          Type = "oneshot";
+          RemainAfterExit = "yes";
+        };
+      };
     };
 
     time = {

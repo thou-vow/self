@@ -14,7 +14,6 @@
     inputs',
     osConfig,
     pkgs,
-    specialisation,
     ...
   }: {
     imports = [
@@ -44,44 +43,35 @@
       })
     ];
 
-    wrappers = lib.mkMerge [
-      {
-        atuin.daemon.systemd.enable = true;
-        git.settings.user = {
-          email = "thou.vow.etoile@gmail.com";
-          name = "thou-vow";
+    wrappers = {
+      atuin.daemon.systemd.enable = true;
+      git.settings.user = {
+        email = "thou.vow.etoile@gmail.com";
+        name = "thou-vow";
+      };
+      helix.package = inputs'.nix-packages.packages.helix-steel-attuned;
+      kitty.package = inputs'.nix-packages.packages.kitty-attuned;
+      mangowc.package = inputs'.nix-packages.packages.mangowc-attuned;
+      nushell.package = inputs'.nix-packages.packages.nushell-attuned;
+      preferences = {
+        apps = {
+          browser = "brave";
+          editor = "hx";
+          shell = "nu";
+          terminal = "kitty -1";
         };
-        preferences = {
-          apps = {
-            browser = "brave";
-            editor = "hx";
-            shell = "nu";
-            terminal = "kitty -1";
-          };
-          environmentVariables = {
-            PERSIST_HOME = osConfig.environment.variables.PERSIST + config.directory;
-          };
-          shellAliases = {};
+        environmentVariables = {
+          PERSIST_HOME = osConfig.environment.variables.PERSIST + config.directory;
         };
-      }
-      (lib.mkIf (specialisation == "attuned") {
-        helix.package =
-          inputs'.nix-packages.packages.helix-steel-attuned;
-        kitty.package =
-          inputs'.nix-packages.packages.kitty-attuned;
-        mangowc.package =
-          inputs'.nix-packages.packages.mangowc-attuned;
-        nushell.package =
-          inputs'.nix-packages.packages.nushell-attuned;
-      })
-    ];
+        shellAliases = {};
+      };
+    };
 
     directory = "/home/${config.user}";
 
     files = let
       protonPackages = with inputs'.nix-packages.packages; {
         "DW-Proton" = dwproton.steamcompattool;
-        "Proton-CachyOS" = proton-cachyos.steamcompattool;
         "Proton-CachyOS-v3" = proton-cachyos-v3.steamcompattool;
         "Proton-GE" = proton-ge.steamcompattool;
       };
@@ -121,30 +111,29 @@
         (pkgs.buildEnv {
           name = "dev-nix";
           paths =
-            [
-              (
-                if specialisation == "attuned"
-                then inputs'.nix-packages.packages.nixd-attuned
-                else pkgs.nixd
-              )
-            ]
-            ++ (with pkgs; [alejandra statix]);
+            [inputs'.nix-packages.packages.nixd-attuned]
+            ++ (with pkgs; [
+              alejandra
+              statix
+            ]);
         })
         (pkgs.buildEnv {
           name = "dev-rust";
           paths =
-            [
-              (
-                if specialisation == "attuned"
-                then inputs'.nix-packages.packages.rust-analyzer-attuned
-                else pkgs.rust-analyzer
-              )
-            ]
-            ++ (with pkgs; [cargo clippy rustc rustfmt]);
+            [inputs'.nix-packages.packages.rust-analyzer-attuned]
+            ++ (with pkgs; [
+              cargo
+              clippy
+              rustc
+              rustfmt
+            ]);
         })
         (pkgs.buildEnv {
           name = "dev-typst";
-          paths = with pkgs; [tinymist typst];
+          paths = with pkgs; [
+            tinymist
+            typst
+          ];
         })
       ];
 
