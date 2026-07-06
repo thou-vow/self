@@ -23,12 +23,12 @@ rec {
       url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
       inputs = {
         flake-schemas.follows = "";
-        home-manager.follows = "";
+        home-manager.follows = "home-manager";
         # nixpkgs.follows breaks substituters
       };
     };
-    hjem = {
-      url = "github:feel-co/hjem";
+    home-manager = {
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     import-tree = {
@@ -43,23 +43,6 @@ rec {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-on-droid = {
-      url = "github:nix-community/nix-on-droid";
-      inputs = {
-        home-manager.follows = "";
-        nix-formatter-pack.follows = "";
-        nixpkgs.follows = "nixpkgs";
-        nixpkgs-docs.follows = "";
-        nixpkgs-for-bootstrap.follows = "";
-        nmd.follows = "";
-      };
-    };
-    nix-wrapper-modules = {
-      url = "github:BirdeeHub/nix-wrapper-modules";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nixpkgs-nod.url = "github:NixOS/nixpkgs/88d3861acdd3d2f0e361767018218e51810df8a1";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
     preservation.url = "github:nix-community/preservation";
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -67,41 +50,50 @@ rec {
     };
   };
 
-  outputs = inputs: let
-    wlib = inputs.nix-wrapper-modules.lib;
-  in
+  outputs = inputs:
     inputs.flake-parts.lib.mkFlake {
       inherit inputs;
-      specialArgs = {inherit nixConfig wlib;};
+      specialArgs = {inherit nixConfig;};
     } ({lib, ...}: {
       imports = [
         (import inputs.import-tree ./self)
-        ./parts.nix
+        inputs.home-manager.flakeModules.home-manager
       ];
 
-      perSystem = {
-        pkgs,
-        system,
-        ...
-      }: {
-        _module.args = {
-          jail = (import inputs.jail-nix {}).init pkgs;
-
-          pkgs = import inputs.nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-          };
-          pkgs-nod = import inputs.nixpkgs-nod {
-            inherit system;
-            config.allowUnfree = true;
-          };
-          pkgs-stable = import inputs.nixpkgs-stable {
-            inherit system;
-            config.allowUnfree = true;
+      options = {
+        flake = {
+          lib = lib.mkOption {
+            type = lib.types.submodule {
+              freeformType = lib.types.lazyAttrsOf lib.types.raw;
+              options = {
+                types = lib.mkOption {
+                  type = lib.types.attrsOf lib.types.raw;
+                  default = {};
+                };
+              };
+            };
+            default = {};
           };
         };
       };
 
-      systems = lib.systems.flakeExposed;
+      config = {
+        perSystem = {
+          pkgs,
+          system,
+          ...
+        }: {
+          _module.args = {
+            jail = (import inputs.jail-nix {}).init pkgs;
+
+            pkgs = import inputs.nixpkgs {
+              inherit system;
+              config.allowUnfree = true;
+            };
+          };
+        };
+
+        systems = lib.systems.flakeExposed;
+      };
     });
 }

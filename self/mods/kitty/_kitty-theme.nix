@@ -24,7 +24,7 @@ with style.palette; {
     other-selection
     main-selection
   ];
-  selection_foreground = null;
+  selection_foreground = "none";
   selection_background = main-selection;
 
   color0 = background;

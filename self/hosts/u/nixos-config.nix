@@ -7,34 +7,33 @@
   flake.nixosConfigurations.u =
     self.lib.nixosSystem {
       inherit (withSystem "x86_64-linux" (args: args)) pkgs;
-      hjem = true;
+      useHomeManager = true;
     } {
       modules = [
-        self.nixosPresets."!u"
+        self.nixosModules.u
+        ({pkgs, ...}: {
+          home-manager = {
+            backupCommand = "${pkgs.trash-cli}/bin/trash";
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            verbose = true;
+          };
+        })
       ];
     };
 
-  flake.nixosPresets."!u" = {
+  flake.nixosModules.u = {
     inputs',
     pkgs,
     self',
     ...
   }: {
-    imports =
-      [
-        (self.lib.installWrappers {
-          method.nixos = true;
-          wrappers = {
-            inherit
-              (self.wrappers)
-              nh
-              ;
-          };
-        })
-      ]
-      ++ (with self.nixosPresets; [
-        waydroid
-      ]);
+    imports = with self.nixosModules; [
+      style
+
+      nh
+      waydroid
+    ];
 
     boot = {
       initrd = {
@@ -77,7 +76,6 @@
         MESA_SHADER_CACHE_MAX_SIZE = "10G";
         NIXPKGS_ALLOW_UNFREE = "1";
         PERSIST = "/persist";
-        WRITABLE_STORE = "/tmp/store";
       };
       systemPackages =
         (with pkgs; [
@@ -122,27 +120,6 @@
         ++ (with self'.packages; [
           steam-run
         ]);
-    };
-
-    fonts = {
-      enableDefaultPackages = true;
-      fontconfig = {
-        enable = true;
-        defaultFonts = {
-          monospace = ["VictorMono Nerd Font Mono"];
-          sansSerif = ["Noto Sans"];
-          serif = ["Noto Serif"];
-          emoji = ["Noto Color Emoji"];
-        };
-      };
-      packages = with pkgs; [
-        corefonts
-        nerd-fonts.victor-mono
-        noto-fonts
-        noto-fonts-cjk-sans
-        noto-fonts-cjk-serif
-        noto-fonts-color-emoji
-      ];
     };
 
     hardware = {
@@ -239,7 +216,7 @@
       };
     };
 
-    system.stateVersion = "25.11";
+    system.stateVersion = "26.05";
 
     systemd = {
       network = {
@@ -287,18 +264,8 @@
 
     xdg.portal = {
       enable = true;
-      config.common = {
-        "default" = ["gtk" "kde"];
-        "org.freedesktop.impl.portal.FileChooser" = "kde";
-        "org.freedesktop.impl.portal.Inhibit" = "none";
-        "org.freedesktop.impl.portal.ScreenCast" = "wlr";
-        "org.freedesktop.impl.portal.Screenshot" = "wlr";
-      };
-      extraPortals = with pkgs; [
-        kdePackages.xdg-desktop-portal-kde
-        xdg-desktop-portal-gtk
-        xdg-desktop-portal-wlr
-      ];
+      config.common.default = ["gtk"];
+      extraPortals = [pkgs.xdg-desktop-portal-gtk];
     };
   };
 }

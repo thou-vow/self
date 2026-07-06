@@ -169,10 +169,7 @@ with style.palette; {
   "variable.builtin" = {fg = keyword;};
   "variable.parameter" = {fg = parameter;};
   "label" = {fg = namespace;};
-  "punctuation" = {
-    fg = dark-foreground;
-    # modifiers = ["dim"];
-  };
+  "punctuation" = {fg = dark-foreground;};
   "keyword" = {fg = keyword;};
   "operator" = {fg = operator;};
   "function" = {fg = function;};

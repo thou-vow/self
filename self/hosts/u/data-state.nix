@@ -5,13 +5,12 @@
 }: let
   driveId = "0x50014ee6b2ede306";
 in {
-  flake.nixosPresets."!u" = {config, ...}: {
+  flake.nixosModules.u = {config, ...}: {
     imports = [
-      self.nixosModules.mapState
       inputs.preservation.nixosModules.default
     ];
 
-    modules.mapState.flakePath = "/self";
+    self.base.flakePath = "/self";
 
     boot = {
       initrd.systemd.tmpfiles.settings.preservation."/sysroot/persist/etc/machine-id".f.argument = "uninitialized";
@@ -64,13 +63,12 @@ in {
       preserveAt."/persist" = {
         directories = [
           {
-            directory = config.modules.mapState.flakePath;
+            directory = config.self.base.flakePath;
             user = "thou";
           }
           "/root/.local/share/nix"
           "/srv"
           "/var/lib/flatpak"
-          "/var/lib/hjem"
           "/var/lib/iwd"
           "/var/lib/nixos"
           "/var/lib/nixos-containers"
@@ -106,6 +104,7 @@ in {
             ".local/share/Trash"
             ".local/share/waydroid"
             ".local/share/zoxide"
+            ".local/state/nix"
             ".ssh"
             ".var"
             "Desktop"
