@@ -53,8 +53,11 @@
       programs.helix = lib.mkMerge [
         {inherit (cfg) enable package;}
         (lib.mkIf (config.self.style.enable or false) {
-          settings.theme = "self";
-          themes.self = import ./_helix-theme.nix config.self.style;
+          settings.theme = "helix-theme";
+          themes.helix-theme =
+            self.lib.renderMustache pkgs "helix-theme.toml"
+            config.self.style.palette
+            ./helix-theme.toml.mustache;
         })
       ];
 
@@ -63,9 +66,9 @@
         "helix/init.scm".text =
           # scm
           ''
-            (require "manual-init.scm")
+            (require "helix-manual-init.scm")
           '';
-        "helix/manual-init.scm".source = ./manual-init.scm;
+        "helix/helix-manual-init.scm".source = ./helix-manual-init.scm;
       };
     };
   };

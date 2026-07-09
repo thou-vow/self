@@ -1,4 +1,5 @@
 {
+  inputs,
   lib,
   self,
   ...
@@ -14,19 +15,24 @@
     pkgs,
     ...
   }: {
-    imports = with self.homeModules; [
-      style
+    imports =
+      (with self.homeModules; [
+        style
 
-      atuin
-      helix
-      kitty
-      mango
-      nushell
-      prismlauncher
-      starship
-      yazi
-      zoxide
-    ];
+        atuin
+        helix
+        kitty
+        mango
+        noctalia
+        nushell
+        prismlauncher
+        starship
+        yazi
+        zoxide
+      ])
+      ++ [
+        "${inputs.nix-index-database}/home-manager-module.nix"
+      ];
 
     self = {
       base = {inherit (osConfig.self.base) flakePath;};
@@ -34,6 +40,7 @@
         helix.package = inputs'.nix-packages.packages.helix-steel-attuned;
         kitty.package = inputs'.nix-packages.packages.kitty-attuned;
         mango.package = inputs'.nix-packages.packages.mango-attuned;
+        noctalia.package = inputs'.nix-packages.packages.noctalia-attuned;
         nushell.package = inputs'.nix-packages.packages.nushell-attuned;
       };
     };
@@ -134,6 +141,7 @@
       sessionVariables = {
         BROWSER = "brave";
         EDITOR = "hx";
+        LAUNCHER = "noctalia msg panel-toggle launcher";
         SHELL = "nu";
         TERMINAL = "kitty -1";
 
@@ -156,6 +164,8 @@
           email = "thou.vow.etoile@gmail.com";
         };
       };
+      nix-index.package = (import inputs.nix-index-database {inherit pkgs;}).nix-index-with-small-db;
+      nix-index-database.comma.enable = true;
     };
 
     xdg.enable = true;

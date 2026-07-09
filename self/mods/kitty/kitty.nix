@@ -22,19 +22,26 @@
     config = lib.mkIf cfg.enable {
       programs.kitty = {
         inherit (cfg) enable package;
-        extraConfig = lib.mkAfter ''
-          include ./manual-kitty.conf
-        '';
-        settings = lib.mkMerge [
-          (lib.mkIf (config.self.style.enable or false)
-            (import ./_kitty-theme.nix config.self.style))
-          {clear_all_shortcuts = true;}
+        extraConfig = lib.mkMerge [
+          (lib.mkIf (config.self.style.enable or false) ''
+            include ./kitty-theme.conf
+          '')
+          (lib.mkAfter ''
+            include ./kitty-manual.conf
+          '')
         ];
+        settings.clear_all_shortcuts = true;
       };
 
       xdg.configFile = {
         "kitty/kittens".source = ./kittens;
-        "kitty/manual-kitty.conf".source = ./manual-kitty.conf;
+        "kitty/kitty-manual.conf".source = ./kitty-manual.conf;
+        "kitty/kitty-theme.conf" = lib.mkIf (config.self.style.enable or false) {
+          source =
+            self.lib.renderMustache pkgs "kitty-theme.conf"
+            config.self.style.palette
+            ./kitty-theme.conf.mustache;
+        };
       };
     };
   };

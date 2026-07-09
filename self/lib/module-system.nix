@@ -15,16 +15,6 @@
   };
 in {
   flake.lib = {
-    homeManagerConfiguration = {pkgs}: primaryAttrs: let
-      system = pkgs.stdenv.hostPlatform.system;
-    in
-      inputs.home-manager.lib.homeManagerConfiguration (primaryAttrs
-        // {
-          inherit pkgs;
-          extraSpecialArgs = commonArgs system // primaryAttrs.extraSpecialArgs or {};
-          modules = [self.homeModules.base] ++ primaryAttrs.modules or [];
-        });
-
     nixosSystem = {
       pkgs,
       useHomeManager ? false,
@@ -39,7 +29,7 @@ in {
               {nixpkgs = {inherit pkgs;};}
             ]
             ++ lib.optionals useHomeManager [
-              inputs.home-manager.nixosModules.home-manager
+              "${inputs.home-manager}/nixos"
               {
                 home-manager = {
                   sharedModules = [self.homeModules.base];

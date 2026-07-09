@@ -1,19 +1,54 @@
-{
-  inputs,
-  self,
-  ...
-}: let
+{inputs, ...}: let
   driveId = "0x50014ee6b2ede306";
 in {
-  flake.nixosModules.u = {config, ...}: {
+  flake.nixosModules.u = {
+    config,
+    pkgs,
+    ...
+  }: {
     imports = [
-      inputs.preservation.nixosModules.default
+      "${inputs.preservation}/module.nix"
     ];
 
     self.base.flakePath = "/self";
 
     boot = {
-      initrd.systemd.tmpfiles.settings.preservation."/sysroot/persist/etc/machine-id".f.argument = "uninitialized";
+      initrd.systemd = {
+        extraBin = {
+          date = "${pkgs.coreutils}/bin/date";
+          mkdir = "${pkgs.coreutils}/bin/mkdir";
+          mv = "${pkgs.coreutils}/bin/mv";
+          stat = "${pkgs.coreutils}/bin/stat";
+        };
+
+        services.root-rolling = {
+          description = "Archiving current / and creating a fresh one";
+
+          after = ["initrd-root-device.target" "local-fs-pre.target"];
+          before = ["initrd.target" "sysroot.mount"];
+          requiredBy = ["initrd.target"];
+          requires = ["initrd-root-device.target"];
+
+          script = ''
+            mkdir "/xfs"
+            mount -o noatime ${config.fileSystems."/".device} "/xfs"
+
+            if [[ -e "/xfs/@" ]]; then
+              mkdir -p "/xfs/.archive"
+              timestamp=$(date '+%Y-%m-%d_%H-%M-%S' --date="@$(stat -c %Y "/xfs/@")")
+              mv "/xfs/@" "/xfs/.archive/@$timestamp"
+            fi
+
+            mkdir "/xfs/@"
+            umount "/xfs"
+          '';
+
+          serviceConfig.Type = "oneshot";
+          unitConfig.DefaultDependencies = false;
+        };
+
+        tmpfiles.settings.preservation."/sysroot/persist/etc/machine-id".f.argument = "uninitialized";
+      };
       loader = {
         efi.efiSysMountPoint = "/boot";
         limine = {
@@ -39,6 +74,11 @@ in {
         fsType = "xfs";
         options = ["X-mount.subdir=@" "noatime"];
       };
+      "/cache" = {
+        device = "/dev/disk/by-id/wwn-${driveId}-part10";
+        fsType = "xfs";
+        options = ["X-mount.subdir=@cache" "noatime"];
+      };
       "/nix" = {
         device = "/dev/disk/by-id/wwn-${driveId}-part10";
         fsType = "xfs";
@@ -60,72 +100,85 @@ in {
 
     preservation = {
       enable = true;
-      preserveAt."/persist" = {
-        directories = [
-          {
-            directory = config.self.base.flakePath;
-            user = "thou";
-          }
-          "/root/.local/share/nix"
-          "/srv"
-          "/var/lib/flatpak"
-          "/var/lib/iwd"
-          "/var/lib/nixos"
-          "/var/lib/nixos-containers"
-          "/var/lib/waydroid"
-          "/var/log"
-          "/var/tmp"
-        ];
-        files = [
-          {
-            file = "/etc/machine-id";
-            inInitrd = true;
-          }
-          {
-            file = "/var/lib/systemd/random-seed";
-            how = "symlink";
-            inInitrd = true;
-            configureParent = true;
-          }
-        ];
-        users.thou = {
+      preserveAt = {
+        "/cache" = {
           directories = [
-            ".config/Cemu"
-            ".config/BraveSoftware"
-            ".config/PCSX2"
-            ".jail"
-            ".local/bin"
-            ".local/share/atuin"
-            ".local/share/direnv"
-            ".local/share/flatpak"
-            ".local/share/helix"
-            ".local/share/nix"
-            ".local/share/qBittorrent"
-            ".local/share/Trash"
-            ".local/share/waydroid"
-            ".local/share/zoxide"
-            ".local/state/nix"
-            ".ssh"
-            ".var"
-            "Desktop"
-            "Documents"
-            "Downloads"
-            "Games"
-            "Music"
-            "Pictures"
-            "Projects"
-            "Public"
-            "Templates"
-            "Videos"
+            "/root/.cache/nix"
+          ];
+          users.thou.directories = [
+            ".cache/BraveSoftware"
+            ".cache/mesa_shader_cache"
+            ".cache/nix"
+          ];
+        };
+
+        "/persist" = {
+          directories = [
+            {
+              directory = config.self.base.flakePath;
+              user = "thou";
+            }
+            "/root/.local/share/nix"
+            "/srv"
+            "/var/lib/flatpak"
+            "/var/lib/iwd"
+            "/var/lib/nixos"
+            "/var/lib/nixos-containers"
+            "/var/lib/waydroid"
+            "/var/log"
+            "/var/tmp"
           ];
           files = [
-            ".bash_history"
-            ".config/nushell/history.txt"
             {
-              file = ".env";
-              mode = "0600";
+              file = "/etc/machine-id";
+              inInitrd = true;
+            }
+            {
+              file = "/var/lib/systemd/random-seed";
+              how = "symlink";
+              inInitrd = true;
+              configureParent = true;
             }
           ];
+          users.thou = {
+            directories = [
+              ".config/Cemu"
+              ".config/BraveSoftware"
+              ".config/PCSX2"
+              ".jail"
+              ".local/bin"
+              ".local/share/atuin"
+              ".local/share/direnv"
+              ".local/share/flatpak"
+              ".local/share/helix"
+              ".local/share/nix"
+              ".local/share/qBittorrent"
+              ".local/share/Trash"
+              ".local/share/waydroid"
+              ".local/share/zoxide"
+              ".local/state/nix"
+              ".ssh"
+              ".var"
+              "Desktop"
+              "Documents"
+              "Downloads"
+              "Games"
+              "Music"
+              "Pictures"
+              "Projects"
+              "Public"
+              "Templates"
+              "Videos"
+            ];
+            files = [
+              ".bash_history"
+              ".config/nushell/history.txt"
+              {
+                file = ".env";
+                mode = "0600";
+              }
+            ];
+          };
         };
       };
     };

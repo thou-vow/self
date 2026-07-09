@@ -1,0 +1,164 @@
+"ui.background" = { bg = "background" }
+"ui.cursor.normal" = { bg = "main-selection" }
+"ui.cursor.insert" = { bg = "main-selection" }
+"ui.cursor.select" = { bg = "main-selection" }
+"ui.cursor.primary.normal" = { fg = "dark-background", bg = "main-cursor", modifiers = [
+  "bold",
+] }
+"ui.cursor.primary.insert" = { fg = "dark-background", bg = "bright-green", modifiers = [
+  "bold",
+] }
+"ui.cursor.primary.select" = { fg = "dark-background", bg = "bright-blue", modifiers = [
+  "bold",
+] }
+"ui.cursor.match" = { fg = "main-cursor", underline = { color = "main-cursor", style = "line" } }
+"ui.linenr" = "invisible"
+"ui.linenr.selected" = "foreground"
+"ui.statusline" = { fg = "foreground", bg = "dark-background" }
+"ui.statusline.inactive" = { fg = "invisible", bg = "dark-background" }
+"ui.statusline.normal" = { fg = "main-cursor", modifiers = ["bold"] }
+"ui.statusline.insert" = { fg = "dark-background", bg = "bright-green", modifiers = [
+  "bold",
+] }
+"ui.statusline.select" = { fg = "dark-background", bg = "bright-blue", modifiers = [
+  "bold",
+] }
+"ui.bufferline" = { fg = "dark-foreground", bg = "dark-background" }
+"ui.bufferline.active" = { fg = "main-cursor", bg = "background", underline = { color = "main-cursor", style = "line" } }
+"ui.popup" = { fg = "foreground", bg = "other-highlight" }
+"ui.window" = "dark-background"
+"ui.help" = { fg = "foreground", bg = "other-highlight" }
+"ui.text" = "foreground"
+"ui.text.focus" = { fg = "main-cursor", bg = "other-highlight", modifiers = [
+  "bold",
+] }
+"ui.text.inactive" = "dark-foreground"
+"ui.text.directory" = "blue"
+"ui.virtual" = "invisible"
+"ui.virtual.inlay-hint" = { fg = "invisible", modifiers = ["italic"] }
+"ui.virtual.ruler" = { bg = "other-highlight" }
+"ui.virtual.jump-label" = { fg = "main-cursor", modifiers = ["bold"] }
+"ui.menu" = { fg = "foreground", bg = "other-highlight" }
+"ui.menu.selected" = { fg = "main-cursor", bg = "main-highlight", modifiers = [
+  "bold",
+] }
+"ui.menu.scroll" = { fg = "foreground", bg = "dark-background" }
+"ui.selection" = { bg = "other-selection" }
+"ui.selection.primary" = { bg = "main-selection" }
+"ui.highlight" = { bg = "main-highlight" }
+"ui.cursorline.primary" = { bg = "main-highlight" }
+"ui.cursorline.secondary" = { bg = "other-highlight" }
+"ui.cursorcolumn.primary" = { bg = "main-highlight" }
+"ui.cursorcolumn.secondary" = { bg = "other-highlight" }
+
+"warning" = "bright-yellow"
+"error" = "bright-red"
+"info" = "bright-cyan"
+"hint" = "foreground"
+
+"diagnostic.warning" = { underline = { color = "bright-yellow", style = "curl" } }
+"diagnostic.error" = { underline = { color = "bright-red", style = "curl" } }
+"diagnostic.info" = { underline = { color = "bright-cyan", style = "curl" } }
+"diagnostic.hint" = { underline = { color = "foreground", style = "curl" } }
+"diagnostic.unnecessary" = { underline = { color = "dark-foreground", style = "curl" } }
+"diagnostic.deprecated" = { modifiers = ["crossed_out"] }
+
+"attribute" = "variable"
+"type" = "class"
+"type.enum.variant" = "variable"
+"constant" = "constant"
+"constant.builtin.boolean" = "boolean"
+"constant.character" = "string"
+"constant.character.escape" = "escape"
+"constant.numeric" = "number"
+"string" = "string"
+"string.regexp" = "escape"
+"string.special" = "escape"
+"string.special.path" = "path"
+"string.special.url" = { fg = "escape", underline = { color = "escape", style = "dotted" } }
+"comment" = "comment"
+"variable" = "variable"
+"variable.builtin" = "keyword"
+"variable.parameter" = "parameter"
+"label" = "namespace"
+"punctuation" = "dark-foreground"
+"keyword" = "keyword"
+"operator" = "operator"
+"function" = "function"
+"tag" = "keyword"
+"namespace" = "namespace"
+"special" = "escape"
+
+"diff.plus" = "green"
+"diff.minus" = "red"
+"diff.delta" = "yellow"
+
+"markup.heading" = "function"
+"markup.list" = "namespace"
+"markup.bold" = { fg = 'number', modifiers = ["bold"] }
+"markup.italic" = { fg = "operator", modifiers = ["italic"] }
+"markup.strikethrough" = { fg = "boolean", modifiers = ["crossed-out"] }
+"markup.link" = { fg = "path", underline = { color = "path", style = "dotted" } }
+"markup.raw" = "constant"
+
+"rainbow" = [
+  "green",
+  "magenta",
+  "aqua",
+  "red",
+  "cyan",
+  "orange",
+  "blue",
+  "yellow",
+  "violet",
+]
+
+
+[palette]
+main-cursor = "#{{main-cursor}}"
+other-cursor = "#{{other-cursor}}"
+
+dark-background = "#{{dark-background}}"
+background = "#{{background}}"
+other-highlight = "#{{other-highlight}}"
+main-highlight = "#{{main-highlight}}"
+other-selection = "#{{other-selection}}"
+main-selection = "#{{main-selection}}"
+invisible = "#{{invisible}}"
+comment = "#{{comment}}"
+dark-foreground = "#{{dark-foreground}}"
+foreground = "#{{foreground}}"
+
+red = "#{{red}}"
+orange = "#{{orange}}"
+yellow = "#{{yellow}}"
+green = "#{{green}}"
+aqua = "#{{aqua}}"
+cyan = "#{{cyan}}"
+blue = "#{{blue}}"
+violet = "#{{violet}}"
+magenta = "#{{magenta}}"
+
+bright-red = "#{{bright-red}}"
+bright-orange = "#{{bright-orange}}"
+bright-yellow = "#{{bright-yellow}}"
+bright-green = "#{{bright-green}}"
+bright-aqua = "#{{bright-aqua}}"
+bright-cyan = "#{{bright-cyan}}"
+bright-blue = "#{{bright-blue}}"
+bright-violet = "#{{bright-violet}}"
+bright-magenta = "#{{bright-magenta}}"
+
+boolean = "#{{boolean}}"
+class = "#{{class}}"
+constant = "#{{constant}}"
+escape = "#{{escape}}"
+function = "#{{function}}"
+keyword = "#{{keyword}}"
+namespace = "#{{namespace}}"
+number = "#{{number}}"
+operator = "#{{operator}}"
+parameter = "#{{parameter}}"
+path = "#{{path}}"
+string = "#{{string}}"
+variable = "#{{variable}}"

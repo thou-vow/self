@@ -51,12 +51,12 @@
           (lib.mkAfter
             # nu
             ''
-              source ./manual-config.nu
+              source ./nu-manual-config.nu
             '')
         ];
       };
 
-      xdg.configFile."nushell/manual-config.nu".source = ./manual-config.nu;
+      xdg.configFile."nushell/nu-manual-config.nu".source = ./nu-manual-config.nu;
     };
   };
 }

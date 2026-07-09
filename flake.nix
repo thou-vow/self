@@ -3,14 +3,10 @@ rec {
     extra-substituters = [
       "https://thou-vow.cachix.org"
       "https://nix-community.cachix.org"
-      "https://nix-on-droid.cachix.org"
-      "https://nyx-cache.chaotic.cx/"
     ];
     extra-trusted-public-keys = [
       "thou-vow.cachix.org-1:n6zUvWYOI7kh0jgd+ghWhxeMd9tVdYF2KdOvufJ/Qy4="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      "nix-on-droid.cachix.org-1:56snoMJTXmDRC1Ei24CmKoUqvHJ9XCp+nidK7qkMQrU="
-      "nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk="
     ];
   };
 
@@ -19,17 +15,9 @@ rec {
     nixpkgs.follows = "nix-packages/nixpkgs";
     flake-parts.follows = "nix-packages/flake-parts";
 
-    chaotic-nyx = {
-      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-      inputs = {
-        flake-schemas.follows = "";
-        home-manager.follows = "home-manager";
-        # nixpkgs.follows breaks substituters
-      };
-    };
     home-manager = {
       url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
+      flake = false;
     };
     import-tree = {
       url = "github:denful/import-tree";
@@ -41,9 +29,16 @@ rec {
     };
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
+      flake = false;
     };
-    preservation.url = "github:nix-community/preservation";
+    noctalia = {
+      url = "github:noctalia-dev/noctalia/cachix";
+      flake = false;
+    };
+    preservation = {
+      url = "github:nix-community/preservation";
+      flake = false;
+    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       flake = false;
@@ -57,23 +52,21 @@ rec {
     } ({lib, ...}: {
       imports = [
         (import inputs.import-tree ./self)
-        inputs.home-manager.flakeModules.home-manager
+        "${inputs.home-manager}/flake-module.nix"
       ];
 
       options = {
-        flake = {
-          lib = lib.mkOption {
-            type = lib.types.submodule {
-              freeformType = lib.types.lazyAttrsOf lib.types.raw;
-              options = {
-                types = lib.mkOption {
-                  type = lib.types.attrsOf lib.types.raw;
-                  default = {};
-                };
+        flake.lib = lib.mkOption {
+          type = lib.types.submodule {
+            freeformType = lib.types.lazyAttrsOf lib.types.raw;
+            options = {
+              types = lib.mkOption {
+                type = lib.types.attrsOf lib.types.raw;
+                default = {};
               };
             };
-            default = {};
           };
+          default = {};
         };
       };
 

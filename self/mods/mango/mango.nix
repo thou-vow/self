@@ -30,7 +30,6 @@
           fuzzel
           kdePackages.dolphin
           playerctl
-          waybar
           wireplumber
           wl-clipboard
         ])
@@ -79,18 +78,46 @@
             executable = true;
           };
 
-          "mango/config.conf".text = ''
-            exec-once=./autostart.sh
+          "mango/config.conf".text = lib.mkMerge [
+            (lib.mkBefore ''
+              exec-once=~/.config/mango/autostart.sh
+            '')
+            (lib.mkIf (config.self.style.enable or false) ''
+              source=./mango-theme.conf
+            '')
+            (lib.mkIf (config.self.mods.noctalia.enable or false) ''
+              bindl=NONE,XF86AudioMicMute,spawn,noctalia msg mic-mute
+              bindl=NONE,XF86AudioMute,spawn,noctalia msg volume-mute
+              bindl=NONE,XF86AudioLowerVolume,spawn,noctalia msg volume-down
+              bindl=NONE,XF86AudioRaiseVolume,spawn,noctalia msg volume-up
+              bindl=NONE,XF86AudioNext,spawn,noctalia msg media next
+              bindl=NONE,XF86AudioPrev,spawn,noctalia msg media previous
+              bindl=NONE,XF86AudioPlay,spawn,noctalia msg media toggle
+              bindl=NONE,XF86MonBrightnessDown,spawn,noctalia msg brightness-down 1%
+              bindl=NONE,XF86MonBrightnessUp,spawn,noctalia msg brightness-up 1%
 
-            source=./manual-config.conf
-          '';
+              bind=NONE,Print,spawn,noctalia msg screenshot-region
 
-          "mango/manual-config.conf".source = ./manual-config.conf;
+              bind=SUPER,backslash,spawn,noctalia msg panel-toggle control-center
+              bind=SUPER+SHIFT,backslash,spawn,noctalia msg settings-toggle
+            '')
+            (lib.mkAfter ''
+              source=./mango-manual.conf
+            '')
+          ];
+
+          "mango/mango-manual.conf".source = ./mango-manual.conf;
+          "mango/mango-theme.conf" = lib.mkIf (config.self.style.enable or false) {
+            source =
+              self.lib.renderMustache pkgs "mango-theme.conf"
+              config.self.style.palette
+              ./mango-theme.conf.mustache;
+          };
         };
 
         portal = {
           enable = true;
-          config.mango-portals = {
+          config.mango = {
             "default" = ["gtk" "kde"];
             "org.freedesktop.impl.portal.FileChooser" = "kde";
             "org.freedesktop.impl.portal.Inhibit" = "none";

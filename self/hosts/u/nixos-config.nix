@@ -1,4 +1,5 @@
 {
+  inputs,
   lib,
   self,
   withSystem,
@@ -26,6 +27,7 @@
     inputs',
     pkgs,
     self',
+    system,
     ...
   }: {
     imports = with self.nixosModules; [
@@ -61,7 +63,13 @@
         "vm.vfs_cache_pressure" = 25;
         "vm.watermark_scale_factor" = 100;
       };
-      kernelPackages = inputs'.chaotic-nyx.legacyPackages.linuxPackages_cachyos-lto;
+
+      kernelPackages =
+        inputs.nix-packages.inputs.chaotic-nyx.legacyPackages.${system}.linuxPackages_cachyos-lto.extend
+        (_: _: {
+          kernel = inputs'.nix-packages.packages.linux_cachyos-lto-v3;
+        });
+
       kernelParams = [
         "8250.nr_uarts=0"
         "mitigations=off"
@@ -124,6 +132,7 @@
 
     hardware = {
       enableRedistributableFirmware = true;
+      bluetooth.enable = true;
       cpu.intel.updateMicrocode = true;
       graphics = {
         enable = true;
@@ -181,23 +190,6 @@
     };
 
     services = {
-      auto-cpufreq = {
-        enable = true;
-        settings = {
-          battery = {
-            energy_perf_bias = "power";
-            energy_performance_preference = "power";
-            governor = "powersave";
-            turbo = "never";
-          };
-          charger = {
-            energy_perf_bias = "performance";
-            energy_performance_preference = "performance";
-            governor = "performance";
-            turbo = "auto";
-          };
-        };
-      };
       flatpak.enable = true;
       lvm.enable = false;
       openssh.enable = true;
@@ -209,7 +201,9 @@
         };
         pulse.enable = true;
       };
+      power-profiles-daemon.enable = true;
       pulseaudio.enable = false;
+      upower.enable = true;
       xserver.xkb = {
         layout = "br,us";
         options = "caps:escape_shifted_capslock,grp:win_space_toggle";

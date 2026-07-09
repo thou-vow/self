@@ -1,0 +1,36 @@
+[shell]
+ui_scale = 0.9
+ui_radius_scale = 0.5
+time_format = "{:%H:%M:%S}"
+
+
+[shell.animation]
+speed = 1.5
+
+
+[shell.screenshot]
+save_to_file =  false
+
+freeze_screen = true
+confirm_region = true
+pipe_to_command = true
+pipe_command = "satty -f -"
+
+
+[bar.main]
+position = "bottom"
+
+thickness = 20
+background_opacity = 0.9
+shadow = false
+radius = 0
+margin_ends = 0
+margin_edge = 0
+padding = 37
+widget_spacing = 21
+scale = 0.9
+
+start = ["session", "launcher", "wallpaper", "control-center", "workspaces"]
+center = ["clock"]
+end    = ["media", "tray", "notifications", "clipboard", "network", "bluetooth", "volume", "brightness", "battery"]
+
