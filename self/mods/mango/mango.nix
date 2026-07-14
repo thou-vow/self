@@ -24,14 +24,7 @@
       home.packages =
         [cfg.package]
         ++ (with pkgs; [
-          brightnessctl
           dash
-          flameshot
-          fuzzel
-          kdePackages.dolphin
-          playerctl
-          wireplumber
-          wl-clipboard
         ])
         ++ (with inputs'.nix-packages.packages; [
           brave

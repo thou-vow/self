@@ -1,20 +1,25 @@
 [shell]
 ui_scale = 0.9
 ui_radius_scale = 0.5
-time_format = "{:%H:%M:%S}"
+setup_wizard_enabled = false
+polkit_agent = true
 
 
 [shell.animation]
 speed = 1.5
 
 
+[shell.panel]
+transparency_mode = "soft"
+open_near_click_control_center = true
+open_near_click_wallpaper = true
+open_near_click_session = true
+
+
 [shell.screenshot]
-save_to_file =  false
+copy_to_clipboard = true
 
 freeze_screen = true
-confirm_region = true
-pipe_to_command = true
-pipe_command = "satty -f -"
 
 
 [bar.main]
@@ -32,5 +37,14 @@ scale = 0.9
 
 start = ["session", "launcher", "wallpaper", "control-center", "workspaces"]
 center = ["clock"]
-end    = ["media", "tray", "notifications", "clipboard", "network", "bluetooth", "volume", "brightness", "battery"]
-
+end = [
+  "media",
+  "tray",
+  "notifications",
+  "clipboard",
+  "network",
+  "bluetooth",
+  "volume",
+  "brightness",
+  "battery",
+]

@@ -25,8 +25,6 @@
     };
 
     config = lib.mkIf cfg.enable {
-      home.packages = [pkgs.satty];
-
       programs.noctalia = lib.mkMerge [
         {
           inherit (cfg) enable package;
