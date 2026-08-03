@@ -25,8 +25,8 @@ freeze_screen = true
 [bar.main]
 position = "bottom"
 
-thickness = 20
-background_opacity = 0.9
+thickness = 16
+background_opacity = 0.8
 shadow = false
 radius = 0
 margin_ends = 0

@@ -6,20 +6,22 @@
 }: {
   flake.homeModules.noctalia = {
     config,
+    inputs',
     pkgs,
+    system,
     ...
   }: let
     cfg = config.self.mods.noctalia;
   in {
     imports = [
-      "${inputs.noctalia}/nix/home-module.nix"
+      "${inputs.nix-packages.nvfetcherSources.${system}.noctalia.src}/nix/home-module.nix"
     ];
 
     options.self.mods.noctalia = {
       enable = self.lib.mkAutoEnableOption "Noctalia";
       package = lib.mkOption {
         type = lib.types.package;
-        default = pkgs.callPackage "${inputs.noctalia}/nix/package.nix" {};
+        default = pkgs.callPackage "${inputs'.nix-packages.nvfetcherSources.noctalia.src}/nix/package.nix" {};
         description = "The Noctalia package to use.";
       };
     };

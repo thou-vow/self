@@ -59,19 +59,20 @@
         "vm.max_map_count" = 2147483642;
         "vm.min_free_kbytes" = 122880;
         "vm.page-cluster" = 0;
-        "vm.swappiness" = 15;
+        "vm.swappiness" = 20;
         "vm.vfs_cache_pressure" = 25;
         "vm.watermark_scale_factor" = 100;
       };
 
       kernelPackages =
-        inputs.nix-packages.inputs.chaotic-nyx.legacyPackages.${system}.linuxPackages_cachyos-lto.extend
+        inputs.linux-cachyos-lto-v3.inputs.chaotic-nyx.legacyPackages.${system}.linuxPackages_cachyos-lto.extend
         (_: _: {
-          kernel = inputs'.nix-packages.packages.linux_cachyos-lto-v3;
+          kernel = inputs'.linux-cachyos-lto-v3.packages.default;
         });
 
       kernelParams = [
         "8250.nr_uarts=0"
+        "ath9k_core.nohwcrypt=1"
         "mitigations=off"
       ];
     };
@@ -88,6 +89,7 @@
       systemPackages =
         (with pkgs; [
           android-tools
+          brightnessctl
           btop
           cabextract
           cachix
@@ -178,6 +180,10 @@
       package = inputs'.nix-packages.packages.lix-attuned;
 
       settings.tarball-ttl = 604800;
+    };
+
+    programs = {
+      dconf.enable = true;
     };
 
     security = {

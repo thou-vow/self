@@ -11,94 +11,65 @@
   }: let
     cfg = config.self.mods.mango;
   in {
+    imports = [
+      (import "${inputs'.nixpkgs.legacyPackages.mango.src}/nix/hm-modules.nix" null)
+    ];
+
     options.self.mods.mango = {
       enable = self.lib.mkAutoEnableOption "Mango";
       package = lib.mkOption {
         type = lib.types.package;
-        default = inputs'.nix-packages.packages.mango;
+        default = pkgs.mango;
         description = "The Mango package to use.";
       };
     };
 
     config = lib.mkIf cfg.enable {
-      home.packages =
-        [cfg.package]
-        ++ (with pkgs; [
-          dash
-        ])
-        ++ (with inputs'.nix-packages.packages; [
-          brave
-        ]);
+      home.packages = with pkgs; [
+        dash
+        wl-clipboard
+      ];
 
-      systemd.user.targets.mango-session = {
-        Unit = {
-          Description = "mango compositor session";
-          Documentation = ["man:systemd.special(7)"];
-          BindsTo = ["graphical-session.target"];
-          Wants = [
-            "graphical-session-pre.target"
-            "xdg-desktop-autostart.target"
-          ];
-          After = ["graphical-session-pre.target"];
-          Before = "xdg-desktop-autostart.target";
+      wayland.windowManager.mango = {
+        inherit (cfg) enable package;
+        autostart_sh = "\n";
+        extraConfig = lib.mkMerge [
+          (lib.mkIf (config.self.style.enable or false) ''
+            source=./mango-theme.conf
+          '')
+          (lib.mkAfter ''
+            source=./mango-manual.conf
+          '')
+        ];
+        settings = lib.mkMerge [
+          (lib.mkIf (config.self.mods.noctalia.enable or false) {
+            bindl = [
+              "NONE,XF86AudioMicMute,spawn,noctalia msg mic-mute"
+              "NONE,XF86AudioMute,spawn,noctalia msg volume-mute"
+              "NONE,XF86AudioLowerVolume,spawn,noctalia msg volume-down"
+              "NONE,XF86AudioRaiseVolume,spawn,noctalia msg volume-up"
+              "NONE,XF86AudioNext,spawn,noctalia msg media next"
+              "NONE,XF86AudioPrev,spawn,noctalia msg media previous"
+              "NONE,XF86AudioPlay,spawn,noctalia msg media toggle"
+              "NONE,XF86MonBrightnessDown,spawn,noctalia msg brightness-down 1%"
+              "NONE,XF86MonBrightnessUp,spawn,noctalia msg brightness-up 1%"
+            ];
+
+            bind = [
+              "NONE,Print,spawn,noctalia msg screenshot-region"
+              "SUPER,backslash,spawn,noctalia msg panel-toggle control-center"
+              "SUPER+SHIFT,backslash,spawn,noctalia msg settings-toggle"
+            ];
+          })
+        ];
+        systemd = {
+          enable = true;
+          xdgAutostart = true;
         };
       };
 
       xdg = {
         configFile = {
-          "mango/autostart.sh" = let
-            systemdActivationStr = ''
-              ${pkgs.dbus}/bin/dbus-update-activation-environment --systemd ${builtins.concatStringsSep " " [
-                "DISPLAY"
-                "WAYLAND_DISPLAY"
-                "XDG_CURRENT_DESKTOP"
-                "XDG_SESSION_TYPE"
-                "NIXOS_OZONE_WL"
-                "XCURSOR_THEME"
-                "XCURSOR_SIZE"
-              ]}; ${builtins.concatStringsSep " && " [
-                "systemctl --user reset-failed"
-                "systemctl --user start mango-session.target"
-              ]}
-            '';
-          in {
-            text =
-              # sh
-              ''
-                #!${lib.getExe pkgs.dash}
-                ${lib.optionalString config.systemd.user.enable systemdActivationStr}
-              '';
-            executable = true;
-          };
-
-          "mango/config.conf".text = lib.mkMerge [
-            (lib.mkBefore ''
-              exec-once=~/.config/mango/autostart.sh
-            '')
-            (lib.mkIf (config.self.style.enable or false) ''
-              source=./mango-theme.conf
-            '')
-            (lib.mkIf (config.self.mods.noctalia.enable or false) ''
-              bindl=NONE,XF86AudioMicMute,spawn,noctalia msg mic-mute
-              bindl=NONE,XF86AudioMute,spawn,noctalia msg volume-mute
-              bindl=NONE,XF86AudioLowerVolume,spawn,noctalia msg volume-down
-              bindl=NONE,XF86AudioRaiseVolume,spawn,noctalia msg volume-up
-              bindl=NONE,XF86AudioNext,spawn,noctalia msg media next
-              bindl=NONE,XF86AudioPrev,spawn,noctalia msg media previous
-              bindl=NONE,XF86AudioPlay,spawn,noctalia msg media toggle
-              bindl=NONE,XF86MonBrightnessDown,spawn,noctalia msg brightness-down 1%
-              bindl=NONE,XF86MonBrightnessUp,spawn,noctalia msg brightness-up 1%
-
-              bind=NONE,Print,spawn,noctalia msg screenshot-region
-
-              bind=SUPER,backslash,spawn,noctalia msg panel-toggle control-center
-              bind=SUPER+SHIFT,backslash,spawn,noctalia msg settings-toggle
-            '')
-            (lib.mkAfter ''
-              source=./mango-manual.conf
-            '')
-          ];
-
           "mango/mango-manual.conf".source = ./mango-manual.conf;
           "mango/mango-theme.conf" = lib.mkIf (config.self.style.enable or false) {
             source =

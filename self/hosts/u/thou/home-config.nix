@@ -41,7 +41,7 @@
         kitty.package = inputs'.nix-packages.packages.kitty-attuned;
         mango.package = inputs'.nix-packages.packages.mango-attuned;
         noctalia.package = inputs'.nix-packages.packages.noctalia-attuned;
-        nushell.package = inputs'.nix-packages.packages.nushell-attuned;
+        # nushell.package = inputs'.nix-packages.packages.nushell-attuned;
       };
     };
 
@@ -53,6 +53,11 @@
         sansSerif = ["Noto Sans"];
         serif = ["Noto Serif"];
       };
+    };
+
+    gtk = {
+      enable = true;
+      colorScheme = "dark";
     };
 
     home = {
@@ -87,6 +92,8 @@
           geminicommit
           imagemagick
           krita
+          liberation_ttf
+          libreoffice
           mangohud
           melonds
           mgba
@@ -95,8 +102,8 @@
           noto-fonts-cjk-sans
           noto-fonts-cjk-serif
           noto-fonts-color-emoji
-          nautilus
           pcsx2
+          poppins
           qbittorrent
           rclone
           ripgrep
@@ -106,6 +113,7 @@
           zathura
         ])
         ++ (with inputs'.nix-packages.packages; [
+          brave
           discord-rpc-lsp
         ])
         ++ [
