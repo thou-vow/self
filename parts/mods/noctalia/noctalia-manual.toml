@@ -16,6 +16,14 @@ open_near_click_wallpaper = true
 open_near_click_session = true
 
 
+[shell.launcher.dmenu.entry.run]
+exec = "dash -c \"{query}\""
+prefix = "x"
+label = "Execute"
+global = false
+freeform = true
+
+
 [shell.screenshot]
 copy_to_clipboard = true
 

@@ -88,11 +88,14 @@
             "org.freedesktop.impl.portal.ScreenCast" = "wlr";
             "org.freedesktop.impl.portal.Screenshot" = "wlr";
           };
-          extraPortals = with pkgs; [
-            kdePackages.xdg-desktop-portal-kde
-            xdg-desktop-portal-gtk
-            xdg-desktop-portal-wlr
-          ];
+          extraPortals =
+            (with pkgs; [
+              kdePackages.xdg-desktop-portal-kde
+            ])
+            ++ (with pkgs; [
+              xdg-desktop-portal-gtk
+              xdg-desktop-portal-wlr
+            ]);
         };
       };
     };

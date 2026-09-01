@@ -3,7 +3,10 @@
   self,
   ...
 }: {
-  flake.homeModules.atuin = {config, ...}: let
+  flake.homeModules.atuin = {
+    config,
+    ...
+  }: let
     cfg = config.self.mods.atuin;
   in {
     options.self.mods.atuin = {

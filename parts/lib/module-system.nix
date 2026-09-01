@@ -21,7 +21,7 @@ in {
     }: primaryAttrs: let
       system = pkgs.stdenv.hostPlatform.system;
     in
-      lib.nixosSystem (primaryAttrs
+      inputs.linux-cachyos-lto-v3.inputs.nixpkgs.lib.nixosSystem (primaryAttrs
         // {
           modules =
             [

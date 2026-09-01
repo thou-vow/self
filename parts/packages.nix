@@ -1,4 +1,4 @@
-{...}: {
+{self, ...}: {
   perSystem = {
     inputs',
     jail,
@@ -6,6 +6,13 @@
     ...
   }: {
     packages = {
+      test = self.lib.mkShellPackage pkgs {
+        name = "dev-aaa";
+        packages = [
+          pkgs.dwm
+        ];
+      };
+
       steam-run =
         (pkgs.steam.override {
           extraLibraries = pkgs:

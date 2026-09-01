@@ -17,6 +17,7 @@ rec {
   inputs = {
     linux-cachyos-lto-v3.url = "github:thou-vow/linux-cachyos-lto-v3-nix";
     nix-packages.url = "github:thou-vow/nix-packages";
+
     nixpkgs.follows = "nix-packages/nixpkgs";
 
     flake-parts = {
@@ -55,7 +56,7 @@ rec {
       specialArgs = {inherit nixConfig;};
     } ({lib, ...}: {
       imports = [
-        (import inputs.import-tree ./self)
+        (import inputs.import-tree ./parts)
         "${inputs.home-manager}/flake-module.nix"
       ];
 

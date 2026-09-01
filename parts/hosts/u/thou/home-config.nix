@@ -41,7 +41,7 @@
         kitty.package = inputs'.nix-packages.packages.kitty-attuned;
         mango.package = inputs'.nix-packages.packages.mango-attuned;
         noctalia.package = inputs'.nix-packages.packages.noctalia-attuned;
-        # nushell.package = inputs'.nix-packages.packages.nushell-attuned;
+        nushell.package = inputs'.nix-packages.packages.nushell-attuned;
       };
     };
 
@@ -83,10 +83,14 @@
 
       packages =
         (with pkgs; [
+          corefonts
+          mgba
+          nerd-fonts.victor-mono
+        ])
+        ++ (with pkgs; [
           azahar
           bc
           cemu
-          corefonts
           distrobox
           dolphin-emu
           geminicommit
@@ -96,8 +100,6 @@
           libreoffice
           mangohud
           melonds
-          mgba
-          nerd-fonts.victor-mono
           noto-fonts
           noto-fonts-cjk-sans
           noto-fonts-cjk-serif
@@ -117,18 +119,16 @@
           discord-rpc-lsp
         ])
         ++ [
-          (pkgs.buildEnv {
-            name = "dev-nix";
-            paths =
+          (self.lib.mkShellPackage pkgs "dev-nix" {
+            packages =
               [inputs'.nix-packages.packages.nixd-attuned]
               ++ (with pkgs; [
                 alejandra
                 statix
               ]);
           })
-          (pkgs.buildEnv {
-            name = "dev-rust";
-            paths =
+          (self.lib.mkShellPackage pkgs "dev-rust" {
+            packages =
               [inputs'.nix-packages.packages.rust-analyzer-attuned]
               ++ (with pkgs; [
                 cargo
@@ -137,9 +137,8 @@
                 rustfmt
               ]);
           })
-          (pkgs.buildEnv {
-            name = "dev-typst";
-            paths = with pkgs; [
+          (self.lib.mkShellPackage pkgs "dev-typst" {
+            packages = with pkgs; [
               tinymist
               typst
             ];

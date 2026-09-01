@@ -1,5 +1,8 @@
 _: {
-  perSystem = {pkgs, ...}: {
+  perSystem = {
+    pkgs,
+    ...
+  }: {
     devShells.default = pkgs.mkShell {
       buildInputs = with pkgs; [
         alejandra

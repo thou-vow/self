@@ -3,7 +3,10 @@
   self,
   ...
 }: {
-  flake.nixosModules.nh = {config, ...}: let
+  flake.nixosModules.nh = {
+    config,
+    ...
+  }: let
     cfg = config.self.mods.nh;
   in {
     options.self.mods.nh = {

@@ -38,17 +38,6 @@
     ];
 
     boot = {
-      initrd = {
-        kernelModules = [
-          "ahci"
-          "sd_mod"
-          "uas"
-          "usb_storage"
-          "usbhid"
-          "xhci_pci"
-        ];
-        systemd.emergencyAccess = true;
-      };
       kernel.sysctl = {
         "kernel.nmi_watchdog" = 0;
         "kernel.split_lock_mitigate" = 0;
@@ -196,6 +185,10 @@
     };
 
     services = {
+      crossmacro = {
+        enable = true;
+        users = ["thou"];
+      };
       flatpak.enable = true;
       lvm.enable = false;
       openssh.enable = true;
@@ -260,7 +253,13 @@
       };
     };
 
-    virtualisation.waydroid.package = pkgs.waydroid-nftables;
+    virtualisation = {
+      podman = {
+        enable = true;
+        dockerCompat = true;
+      };
+      waydroid.package = pkgs.waydroid-nftables;
+    };
 
     xdg.portal = {
       enable = true;
