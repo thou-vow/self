@@ -68,6 +68,8 @@
 
     console.useXkbConfig = true;
 
+    # documentation.enable = false;
+
     environment = {
       sessionVariables = {
         GSK_RENDERER = "gl";
@@ -168,11 +170,18 @@
 
       package = inputs'.nix-packages.packages.lix-attuned;
 
-      settings.tarball-ttl = 604800;
+      settings = {
+        max-substitution-jobs = 2;
+        tarball-ttl = 604800;
+      };
     };
 
     programs = {
       dconf.enable = true;
+      gpu-screen-recorder = {
+        enable = true;
+        ui.enable = true;
+      };
     };
 
     security = {

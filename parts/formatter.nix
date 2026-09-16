@@ -3,10 +3,7 @@
   lib,
   ...
 }: {
-  perSystem = {
-    pkgs,
-    ...
-  }: {
+  perSystem = {pkgs, ...}: {
     formatter = (import inputs.treefmt-nix).mkWrapper pkgs {
       projectRootFile = "flake.nix";
       programs = {

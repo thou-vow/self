@@ -27,6 +27,9 @@
     config = lib.mkIf cfg.enable {
       home.packages = with pkgs; [
         dash
+        brightnessctl
+        playerctl
+        wireplumber
         wl-clipboard
       ];
 
@@ -43,22 +46,14 @@
         ];
         settings = lib.mkMerge [
           (lib.mkIf (config.self.mods.noctalia.enable or false) {
-            bindl = [
-              "NONE,XF86AudioMicMute,spawn,noctalia msg mic-mute"
-              "NONE,XF86AudioMute,spawn,noctalia msg volume-mute"
-              "NONE,XF86AudioLowerVolume,spawn,noctalia msg volume-down"
-              "NONE,XF86AudioRaiseVolume,spawn,noctalia msg volume-up"
-              "NONE,XF86AudioNext,spawn,noctalia msg media next"
-              "NONE,XF86AudioPrev,spawn,noctalia msg media previous"
-              "NONE,XF86AudioPlay,spawn,noctalia msg media toggle"
-              "NONE,XF86MonBrightnessDown,spawn,noctalia msg brightness-down 1%"
-              "NONE,XF86MonBrightnessUp,spawn,noctalia msg brightness-up 1%"
-            ];
-
             bind = [
-              "NONE,Print,spawn,noctalia msg screenshot-region"
-              "SUPER,backslash,spawn,noctalia msg panel-toggle control-center"
-              "SUPER+SHIFT,backslash,spawn,noctalia msg settings-toggle"
+              "NONE,Print,spawn,noctalia msg screenshot-annotate"
+              "SHIFT,Print,spawn,noctalia msg annotate"
+              "CTRL,Print,spawn,noctalia msg screenshot-region"
+              "CTRL+SHIFT,Print,spawn,noctalia msg screenshot-fullscreen"
+              "SUPER,code:51,spawn,noctalia msg panel-toggle control-center"
+              "SUPER+SHIFT,code:51,spawn,noctalia msg settings-toggle"
+              "SUPER,V,spawn,noctalia msg panel-toggle clipboard"
             ];
           })
         ];

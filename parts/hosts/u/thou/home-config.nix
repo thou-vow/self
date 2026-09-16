@@ -84,6 +84,8 @@
       packages =
         (with pkgs; [
           corefonts
+          gpu-screen-recorder-gtk
+          kdePackages.kdenlive
           mgba
           nerd-fonts.victor-mono
         ])
@@ -119,6 +121,16 @@
           discord-rpc-lsp
         ])
         ++ [
+          (self.lib.mkShellPackage pkgs "dev-python" {
+            packages =
+              [inputs'.nix-packages.packages.nixd-attuned]
+              ++ (with pkgs; [
+                basedpyright
+                python3
+                ruff
+                uv
+              ]);
+          })
           (self.lib.mkShellPackage pkgs "dev-nix" {
             packages =
               [inputs'.nix-packages.packages.nixd-attuned]

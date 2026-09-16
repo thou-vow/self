@@ -34,25 +34,119 @@ freeze_screen = true
 position = "bottom"
 
 thickness = 16
-background_opacity = 0.8
+background_opacity = 0.85
 shadow = false
-radius = 0
-margin_ends = 0
-margin_edge = 0
-padding = 37
-widget_spacing = 21
+radius = 18
+margin_ends = 188
+margin_edge = 1
+padding = 5
+widget_spacing = 9
 scale = 0.9
 
-start = ["session", "launcher", "wallpaper", "control-center", "workspaces"]
-center = ["clock"]
-end = [
-  "media",
+
+start = ["session", "group:g1"]
+center = ["workspaces", "group:g2"]
+end = ["media", "group:g3", "keyboard_layout", "control-center"]
+
+
+[[bar.main.capsule_group]]
+id = "g1"
+members = ["weather", "date", "clock"]
+
+
+[[bar.main.capsule_group]]
+id = "g2"
+members = ["cpu", "ram"]
+
+[[bar.main.capsule_group]]
+id = "g3"
+members = [
   "tray",
   "notifications",
   "clipboard",
-  "network",
-  "bluetooth",
   "volume",
   "brightness",
+  "network",
+  "bluetooth",
   "battery",
 ]
+
+
+[widget.battery]
+display_mode = "graphic"
+show_label = false
+
+
+[widget.brightness]
+show_label = false
+
+
+[widget.clock]
+color = "secondary"
+format = "{:%-I:%M}"
+
+
+[widget.control-center]
+capsule = true
+color = "primary"
+
+
+[widget.cpu]
+label_show_units = false
+
+
+[widget.date]
+color = "tertiary"
+
+
+[widget.keyboard_layout]
+show_glyph = false
+
+
+[widget.media]
+album_art_only = true
+
+
+[widget.network]
+show_label = false
+
+
+[widget.ram]
+type = "sysmon"
+stat = "ram_pct"
+label_show_units = false
+
+
+[widget.session]
+capsule = true
+color = "primary"
+
+
+[widget.volume]
+show_label = false
+
+
+[widget.workspaces]
+capsule = true
+style = "focus_hint"
+
+
+[audio]
+enable_overdrive = true
+sound_volume = 0.8
+
+
+[battery]
+warning_threshold = 25
+
+
+[system.monitor]
+cpu_poll_seconds = 10.0
+gpu_poll_seconds = 25.0
+memory_poll_seconds = 10.0
+network_poll_seconds = 15.0
+disk_poll_seconds = 50.0
+
+
+[location]
+auto_locate = true

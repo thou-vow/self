@@ -176,6 +176,7 @@ in {
                 ".local/share/flatpak"
                 ".local/share/helix"
                 ".local/share/nix"
+                ".local/share/PrismLauncher"
                 ".local/share/qBittorrent"
                 ".local/share/Trash"
                 ".local/share/waydroid"

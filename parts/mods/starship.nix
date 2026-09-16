@@ -3,10 +3,7 @@
   self,
   ...
 }: {
-  flake.homeModules.starship = {
-    config,
-    ...
-  }: let
+  flake.homeModules.starship = {config, ...}: let
     cfg = config.self.mods.starship;
   in {
     options.self.mods.starship = {
