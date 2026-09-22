@@ -213,7 +213,7 @@ in {
       zram-generator = {
         enable = true;
         settings.zram0 = {
-          compression-algorithm = "lz4 zstd(level=3) (type=idle)";
+          compression-algorithm = "zstd zstd(level=3) (type=idle)";
           writeback-device = "/dev/disk/by-id/wwn-${driveId}-part9";
           zram-size = "4 / 5 * ram";
         };

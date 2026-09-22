@@ -47,12 +47,11 @@
         settings = lib.mkMerge [
           (lib.mkIf (config.self.mods.noctalia.enable or false) {
             bind = [
-              "NONE,Print,spawn,noctalia msg screenshot-annotate"
-              "SHIFT,Print,spawn,noctalia msg annotate"
-              "CTRL,Print,spawn,noctalia msg screenshot-region"
-              "CTRL+SHIFT,Print,spawn,noctalia msg screenshot-fullscreen"
-              "SUPER,code:51,spawn,noctalia msg panel-toggle control-center"
-              "SUPER+SHIFT,code:51,spawn,noctalia msg settings-toggle"
+              "NONE,Print,spawn,noctalia msg screenshot-region" # Frozen region
+              "SHIFT,Print,spawn,noctalia msg screenshot-annotate" # Frozen fullscreen
+              "CTRL,Print,spawn,noctalia msg annotate" # Unfrozen fullscreen
+              "SUPER,code:94,spawn,noctalia msg panel-toggle control-center"
+              "SUPER+SHIFT,code:94,spawn,noctalia msg settings-toggle"
               "SUPER,V,spawn,noctalia msg panel-toggle clipboard"
             ];
           })

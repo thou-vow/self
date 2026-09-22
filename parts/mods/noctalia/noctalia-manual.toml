@@ -25,9 +25,21 @@ freeform = true
 
 
 [shell.screenshot]
-copy_to_clipboard = true
+save_to_file = false
+directory = "~/Pictures/Noctalia Screenshots"
+copy_to_clipboard = false
+remember_last_region = true
+annotate = true
 
-freeze_screen = true
+
+[keybinds]
+left     = ["left", "ctrl+h"]
+right    = ["right", "ctrl+l"]
+up       = ["up", "ctrl+k"]
+down     = ["down", "ctrl+j"]
+tab_next = ["tab", "ctrl+n"]
+tab_previous = ["shift+tab", "iso_left_tab", "ctrl+p"]
+delete = ["del", "ctrl+d"]
 
 
 [bar.main]
@@ -83,7 +95,6 @@ show_label = false
 
 [widget.clock]
 color = "secondary"
-format = "{:%-I:%M}"
 
 
 [widget.control-center]
