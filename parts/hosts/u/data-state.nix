@@ -1,8 +1,7 @@
-{inputs, ...}: let
-  driveId = "0x50014ee6b2ede306";
-in {
+{inputs, ...}: {
   flake.nixosModules.u = {
     config,
+    driveId,
     pkgs,
     ...
   }: {
@@ -78,35 +77,33 @@ in {
       ${config.boot.loader.efi.efiSysMountPoint} = {
         device = "/dev/disk/by-id/wwn-${driveId}-part8";
         fsType = "vfat";
-        noCheck = true;
         options = ["fmask=0077" "dmask=0077"];
       };
       "/" = {
         device = "/dev/disk/by-id/wwn-${driveId}-part10";
         fsType = "xfs";
-        options = ["X-mount.subdir=@" "noatime"];
+        options = ["X-mount.subdir=@"];
       };
       "/cache" = {
         device = "/dev/disk/by-id/wwn-${driveId}-part10";
         fsType = "xfs";
-        options = ["X-mount.subdir=@cache" "noatime"];
+        options = ["X-mount.subdir=@cache"];
       };
       "/nix" = {
         device = "/dev/disk/by-id/wwn-${driveId}-part10";
         fsType = "xfs";
-        options = ["X-mount.subdir=@nix" "noatime"];
+        options = ["X-mount.subdir=@nix"];
       };
       "/persist" = {
         device = "/dev/disk/by-id/wwn-${driveId}-part10";
         fsType = "xfs";
         neededForBoot = true;
-        options = ["X-mount.subdir=@persist" "noatime"];
+        options = ["X-mount.subdir=@persist"];
       };
 
       "/mnt/u" = {
         device = "/dev/disk/by-id/wwn-${driveId}-part10";
         fsType = "xfs";
-        options = ["noatime"];
       };
     };
 
@@ -127,6 +124,7 @@ in {
             };
             thou.directories = [
               ".cache/BraveSoftware"
+              ".cache/huggingface"
               ".cache/mesa_shader_cache"
               ".cache/nix"
             ];
@@ -166,8 +164,11 @@ in {
             };
             thou = {
               directories = [
-                ".config/Cemu"
+                ".cargo"
                 ".config/BraveSoftware"
+                ".config/Cemu"
+                ".config/Code"
+                ".config/discord"
                 ".config/PCSX2"
                 ".jail"
                 ".local/bin"
@@ -209,19 +210,6 @@ in {
       };
     };
 
-    services = {
-      zram-generator = {
-        enable = true;
-        settings.zram0 = {
-          compression-algorithm = "zstd zstd(level=3) (type=idle)";
-          writeback-device = "/dev/disk/by-id/wwn-${driveId}-part9";
-          zram-size = "4 / 5 * ram";
-        };
-      };
-    };
-
-    systemd.services = {
-      systemd-machine-id-commit.unitConfig.ConditionFirstBoot = true;
-    };
+    systemd.services.systemd-machine-id-commit.unitConfig.ConditionFirstBoot = true;
   };
 }

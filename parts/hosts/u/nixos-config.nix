@@ -21,6 +21,8 @@
           };
         })
       ];
+
+      specialArgs.driveId = "0x50014ee6b2ede306";
     };
 
   flake.nixosModules.u = {
@@ -37,59 +39,10 @@
       waydroid
     ];
 
-    boot = {
-      blacklistedKernelModules = [
-        "iTCO_wdt"
-        "sp5100_tco"
-      ];
-
-      extraModprobeConfig = ''
-        options snd_hda_intel power_save=0
-      '';
-
-      kernel.sysctl = {
-        "kernel.split_lock_mitigate" = 0;
-        "vm.dirty_background_bytes" = 33554432;
-        "vm.dirty_bytes" = 134217728;
-        "vm.dirty_expire_centisecs" = 6000;
-        "vm.dirty_writeback_centisecs" = 1500;
-        "vm.min_free_kbytes" = 122880;
-        "vm.page-cluster" = 0;
-        "vm.swappiness" = 20;
-        "vm.vfs_cache_pressure" = 25;
-        "vm.watermark_scale_factor" = 50;
-
-        "fs.file-max" = 2097152;
-        "kernel.printk" = "3 3 3 3";
-        "net.core.netdev_max_backlog" = 4096;
-        "vm.max_map_count" = 2147483642;
-      };
-
-      kernelModules = [
-        "ntsync"
-      ];
-
-      kernelPackages =
-        inputs.linux-cachyos-lto-v3.inputs.chaotic-nyx.legacyPackages.${system}.linuxPackages_cachyos-lto.extend
-        (_: _: {
-          kernel = inputs'.linux-cachyos-lto-v3.packages.default;
-        });
-
-      kernelParams = [
-        "8250.nr_uarts=0"
-        "ath9k_core.nohwcrypt=1"
-        "mitigations=off"
-      ];
-    };
-
     console.useXkbConfig = true;
-
-    # documentation.enable = false;
 
     environment = {
       sessionVariables = {
-        GSK_RENDERER = "gl";
-        MESA_SHADER_CACHE_MAX_SIZE = "10G";
         NIXPKGS_ALLOW_UNFREE = "1";
         PERSIST = "/persist";
       };
@@ -98,6 +51,7 @@
           android-tools
           brightnessctl
           btop
+          busybox
           cabextract
           cachix
           cpuid
@@ -110,11 +64,14 @@
           fio
           git
           hdparm
+          intel-gpu-tools
           inxi
           iotop
           jq
+          keyd
           lm_sensors
           lsof
+          mesa-demos
           ncdu
           nix-output-monitor
           ntfs3g
@@ -131,6 +88,7 @@
           unzip
           usbutils
           util-linux
+          vulkan-tools
           wev
           wget
           zip
@@ -174,26 +132,17 @@
       wireless.iwd = {
         enable = true;
         settings = {
-          DriverQuirks.PowerSaveDisable = "ath9k";
           General.EnableNetworkConfiguration = true;
           Settings.AutoConnect = true;
         };
       };
     };
 
-    nix = {
-      daemonCPUSchedPolicy = "idle";
-      daemonIOSchedClass = "idle";
-
-      package = inputs'.nix-packages.packages.lix-attuned;
-
-      settings = {
-        max-substitution-jobs = 2;
-        tarball-ttl = 604800;
-      };
-    };
-
     programs = {
+      appimage = {
+        enable = true;
+        binfmt = true;
+      };
       dconf.enable = true;
       gpu-screen-recorder = {
         enable = true;
@@ -216,6 +165,20 @@
         users = ["thou"];
       };
       flatpak.enable = true;
+      keyd = {
+        enable = true;
+        keyboards.default = {
+          ids = ["*" "m:10c4:0005:0e62ec36"];
+          settings = {
+            main.capslock = "overload(middle, escape)";
+            middle = {
+              leftmouse = "scrollup";
+              rightmouse = "scrolldown";
+              tab = "middlemouse";
+            };
+          };
+        };
+      };
       lvm.enable = false;
       openssh.enable = true;
       pipewire = {
@@ -235,12 +198,12 @@
           ATTR{link_power_management_policy}="max_performance"
 
         ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", \
-          ATTRS{id/bus}=="ata", RUN+="${lib.getExe pkgs.hdparm} -B 254 -S 0 /dev/%k"
+          ENV{ID_BUS}=="ata", RUN+="${lib.getExe pkgs.hdparm} -B 254 -S 0 /dev/%k"
       '';
       upower.enable = true;
       xserver.xkb = {
         layout = "br,us";
-        options = "caps:escape_shifted_capslock,grp:win_space_toggle";
+        options = "grp:win_space_toggle";
       };
     };
 
@@ -254,24 +217,8 @@
         };
         wait-online.enable = false;
       };
-      oomd.enable = false;
       services = {
         crossmacro.wantedBy = lib.mkForce [];
-        disable-i915-mitigations = {
-          description = "Set i915 (Intel Graphics) mitigations off at runtime";
-          before = ["graphical.target"];
-          wantedBy = ["multi-user.target"];
-          serviceConfig = {
-            ExecStart = "${pkgs.writeShellScript "disable-i915-mitigations" ''
-              if [ -w /sys/module/i915/parameters/mitigations ]; then
-                echo off > /sys/module/i915/parameters/mitigations
-              fi
-            ''}";
-            Type = "oneshot";
-            RemainAfterExit = "yes";
-          };
-        };
-        rtkit-daemon.serviceConfig.LogLevelMax = "info";
         "user@".serviceConfig.Delegate = lib.mkDefault [
           "cpu"
           "cpuset"
@@ -279,16 +226,6 @@
           "memory"
           "pids"
         ];
-      };
-      settings.Manager = {
-        DefaultLimitNOFILE = "2048:2097152";
-        DefaultTimeoutStartSec = "15s";
-        DefaultTimeoutStopSec = "10s";
-      };
-      user.settings.Manager = {
-        DefaultLimitNOFILE = "2048:2097152";
-        DefaultTimeoutStartSec = "15s";
-        DefaultTimeoutStopSec = "10s";
       };
     };
 

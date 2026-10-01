@@ -13,12 +13,17 @@
   in {
     options.self.mods.prismlauncher = {
       enable = self.lib.mkAutoEnableOption "Prismlauncher";
+      package = lib.mkOption {
+        type = lib.types.package;
+        default = pkgs.prismlauncher;
+        description = "The Prismlauncher package to use.";
+      };
     };
 
     config = lib.mkIf cfg.enable {
       programs.prismlauncher = {
         inherit (cfg) enable;
-        package = pkgs.prismlauncher.override {
+        package = cfg.package.override {
           jdks =
             (with pkgs; [
               jdk8
@@ -28,7 +33,7 @@
             ++ (with inputs'.nix-packages.packages; [
               graalvm-oracle_21
               graalvm-oracle_25
-              graalvm-oracle_25i3
+              graalvm-oracle_25i
             ]);
         };
       };

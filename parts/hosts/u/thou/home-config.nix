@@ -13,10 +13,12 @@
     inputs',
     osConfig,
     pkgs,
+    self',
     ...
   }: {
     imports =
       (with self.homeModules; [
+        dev
         style
 
         atuin
@@ -36,12 +38,29 @@
 
     self = {
       base = {inherit (osConfig.self.base) flakePath;};
-      mods = {
-        helix.package = inputs'.nix-packages.packages.helix-steel-attuned;
-        kitty.package = inputs'.nix-packages.packages.kitty-attuned;
-        mango.package = inputs'.nix-packages.packages.mango-attuned;
-        noctalia.package = inputs'.nix-packages.packages.noctalia-attuned;
-        nushell.package = inputs'.nix-packages.packages.nushell-attuned;
+      dev = {
+        nix.packages = with pkgs; [
+          alejandra
+          statix
+        ];
+        python.packages = with pkgs; [
+          basedpyright
+          python3
+          ruff
+          uv
+        ];
+        rust.packages = with pkgs; [
+          cargo
+          clang
+          clippy
+          rustc
+          rustfmt
+          rustup
+        ];
+        typst.packages = with pkgs; [
+          tinymist
+          typst
+        ];
       };
     };
 
@@ -63,9 +82,10 @@
     home = {
       file = let
         protonPackages = with inputs'.nix-packages.packages; {
-          "DW-Proton" = dwproton.steamcompattool;
-          "Proton-CachyOS-v3" = proton-cachyos-v3.steamcompattool;
+          # "DW-Proton" = dwproton.steamcompattool;
+          # "Proton-CachyOS-v3" = proton-cachyos-v3.steamcompattool;
           "Proton-GE" = proton-ge.steamcompattool;
+          "Proton-Wineland-v3" = proton-wineland-v3.steamcompattool;
         };
       in
         lib.mkMerge (lib.mapAttrsToList (name: value: {
@@ -82,13 +102,9 @@
           ]);
 
       packages =
-        (with pkgs; [
-          corefonts
-          gpu-screen-recorder-gtk
-          kdePackages.kdenlive
-          mgba
-          nerd-fonts.victor-mono
-        ])
+        [
+          self'.packages.faugus-launcher
+        ]
         ++ (with pkgs; [
           azahar
           bc
@@ -96,18 +112,22 @@
           distrobox
           dolphin-emu
           geminicommit
+          gpu-screen-recorder-gtk
           imagemagick
+          kdePackages.kdenlive
           krita
           liberation_ttf
           libreoffice
           mangohud
           melonds
+          mgba
           noto-fonts
           noto-fonts-cjk-sans
           noto-fonts-cjk-serif
           noto-fonts-color-emoji
           pcsx2
           poppins
+          python314Packages.huggingface-hub
           qbittorrent
           rclone
           ripgrep
@@ -115,47 +135,20 @@
           vlc
           xdg-utils
           zathura
+
+          corefonts
+          discord
+          nerd-fonts.victor-mono
+          vscode
         ])
         ++ (with inputs'.nix-packages.packages; [
           brave
           discord-rpc-lsp
-        ])
-        ++ [
-          (self.lib.mkShellPackage pkgs "dev-python" {
-            packages =
-              [inputs'.nix-packages.packages.nixd-attuned]
-              ++ (with pkgs; [
-                basedpyright
-                python3
-                ruff
-                uv
-              ]);
-          })
-          (self.lib.mkShellPackage pkgs "dev-nix" {
-            packages =
-              [inputs'.nix-packages.packages.nixd-attuned]
-              ++ (with pkgs; [
-                alejandra
-                statix
-              ]);
-          })
-          (self.lib.mkShellPackage pkgs "dev-rust" {
-            packages =
-              [inputs'.nix-packages.packages.rust-analyzer-attuned]
-              ++ (with pkgs; [
-                cargo
-                clippy
-                rustc
-                rustfmt
-              ]);
-          })
-          (self.lib.mkShellPackage pkgs "dev-typst" {
-            packages = with pkgs; [
-              tinymist
-              typst
-            ];
-          })
-        ];
+        ]);
+
+      sessionPath = [
+        "$HOME/.local/bin"
+      ];
 
       sessionVariables = {
         BROWSER = "brave";

@@ -2,7 +2,7 @@
   flake.lib = {
     mkAutoEnableOption = name: lib.mkEnableOption name // {default = true;};
 
-    mkShellPackage = pkgs: name: {packages ? []}:
+    mkShellEnv = pkgs: name: {packages ? []}:
       pkgs.writeShellScriptBin name ''
         export PATH="${pkgs.lib.makeBinPath packages}:$PATH"
 
