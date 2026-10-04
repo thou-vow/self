@@ -7,6 +7,7 @@
     config,
     inputs',
     pkgs,
+    self',
     ...
   }: let
     cfg = config.self.mods.prismlauncher;
@@ -25,7 +26,10 @@
         inherit (cfg) enable;
         package = cfg.package.override {
           jdks =
-            (with pkgs; [
+            [
+              self'.packages.graalvm-oracle_25i
+            ]
+            ++ (with pkgs; [
               jdk8
               jdk17
               jdk21
@@ -33,7 +37,6 @@
             ++ (with inputs'.nix-packages.packages; [
               graalvm-oracle_21
               graalvm-oracle_25
-              graalvm-oracle_25i
             ]);
         };
       };

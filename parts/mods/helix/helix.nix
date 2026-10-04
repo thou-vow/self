@@ -15,7 +15,7 @@
       enable = self.lib.mkAutoEnableOption "Helix";
       package = lib.mkOption {
         type = lib.types.package;
-        default = inputs'.nix-packages.packages.helix-steel;
+        default = pkgs.steelix;
         description = "The Helix package to use.";
       };
     };

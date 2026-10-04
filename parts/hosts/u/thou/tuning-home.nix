@@ -10,7 +10,7 @@
         rust.packages = [inputs'.nix-packages.packages.rust-analyzer-attuned];
       };
       mods = {
-        helix.package = inputs'.nix-packages.packages.helix-steel-attuned;
+        helix.package = inputs'.nix-packages.packages.steelix-attuned;
         kitty.package = inputs'.nix-packages.packages.kitty-attuned;
         mango.package = inputs'.nix-packages.packages.mango-attuned;
         noctalia.package = inputs'.nix-packages.packages.noctalia-attuned;

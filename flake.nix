@@ -18,12 +18,9 @@ rec {
     linux-cachyos-lto-v3.url = "github:thou-vow/linux-cachyos-lto-v3-nix";
     nix-packages.url = "github:thou-vow/nix-packages";
 
-    nixpkgs.follows = "nix-packages/nixpkgs";
+    nixpkgs.follows = "linux-cachyos-lto-v3/nixpkgs";
 
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
-    };
+    flake-parts.url = "github:hercules-ci/flake-parts";
     home-manager = {
       url = "github:nix-community/home-manager";
       flake = false;

@@ -1,5 +1,4 @@
 {
-  inputs,
   lib,
   self,
   withSystem,
@@ -26,10 +25,8 @@
     };
 
   flake.nixosModules.u = {
-    inputs',
     pkgs,
     self',
-    system,
     ...
   }: {
     imports = with self.nixosModules; [
@@ -69,6 +66,7 @@
           iotop
           jq
           keyd
+          libva-utils
           lm_sensors
           lsof
           mesa-demos
@@ -102,11 +100,6 @@
       enableRedistributableFirmware = true;
       bluetooth.enable = true;
       cpu.intel.updateMicrocode = true;
-      graphics = {
-        enable = true;
-        enable32Bit = true;
-        package = inputs'.nix-packages.packages.mesa-attuned;
-      };
     };
 
     i18n = {
@@ -210,12 +203,9 @@
     system.stateVersion = "26.05";
 
     systemd = {
-      network = {
-        networks."10-wired" = {
-          matchConfig.Type = "ether";
-          networkConfig.DHCP = "yes";
-        };
-        wait-online.enable = false;
+      network.networks."10-wired" = {
+        matchConfig.Type = "ether";
+        networkConfig.DHCP = "yes";
       };
       services = {
         crossmacro.wantedBy = lib.mkForce [];

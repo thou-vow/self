@@ -3,6 +3,7 @@
     inputs',
     jail,
     pkgs,
+    system,
     ...
   }: {
     packages = {
@@ -34,6 +35,7 @@
           (try-rw-bind (noescape "~/.jail/.local/share/umu") (noescape "~/.local/share/umu"))
           (try-rw-bind (noescape "~/.jail/Desktop") (noescape "~/Desktop"))
           (try-rw-bind (noescape "~/.jail/Documents") (noescape "~/Documents"))
+          (try-rw-bind (noescape "~/.jail/Downloads") (noescape "~/Downloads"))
           (try-rw-bind (noescape "~/.jail/Games") (noescape "~/Games"))
           (try-rw-bind (noescape "~/.jail/Music") (noescape "~/Music"))
           (try-rw-bind (noescape "~/.jail/Pictures") (noescape "~/Pictures"))
@@ -44,6 +46,20 @@
           (try-readonly (noescape "~/.local/share/Steam"))
         ]
       );
+
+      graalvm-oracle_25i = inputs'.nix-packages.packages.graalvm-oracle_25.overrideAttrs {
+        version = "25i4-25.0.4.1.1";
+        src = builtins.getAttr system {
+          aarch64-linux = pkgs.fetchurl {
+            url = "https://gds.oracle.com/download/graal/25i4/archive/graalvm-jdk-25i4-25.0.4.1.1_linux-aarch64_bin.tar.gz";
+            sha256 = "sha256-eA1XhNPbm7z/d3dcTQJuSg4hoEG6nbp8WRNZSepSNKQ=";
+          };
+          x86_64-linux = pkgs.fetchurl {
+            url = "https://gds.oracle.com/download/graal/25i4/archive/graalvm-jdk-25i4-25.0.4.1.1_linux-x64_bin.tar.gz";
+            sha256 = "sha256-T8xjLPxo6Y9J+TFvijWIuv5PUonxIBBOLSkKdc8z4o4=";
+          };
+        };
+      };
     };
   };
 }

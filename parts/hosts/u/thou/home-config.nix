@@ -82,8 +82,8 @@
     home = {
       file = let
         protonPackages = with inputs'.nix-packages.packages; {
-          # "DW-Proton" = dwproton.steamcompattool;
-          # "Proton-CachyOS-v3" = proton-cachyos-v3.steamcompattool;
+          "DW-Proton" = dwproton.steamcompattool;
+          "Proton-CachyOS-v3" = proton-cachyos-v3.steamcompattool;
           "Proton-GE" = proton-ge.steamcompattool;
           "Proton-Wineland-v3" = proton-wineland-v3.steamcompattool;
         };
