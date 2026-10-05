@@ -1,0 +1,115 @@
+{
+  "$declared": {
+    "flake-parts": "github:hercules-ci/flake-parts",
+    "graalvm-oracle-25i-aarch64-linux": "https://gds.oracle.com/download/graal/25i4/archive/graalvm-jdk-25i4-25.0.4.1.1_linux-aarch64_bin.tar.gz",
+    "graalvm-oracle-25i-x86-64-linux": "https://gds.oracle.com/download/graal/25i4/archive/graalvm-jdk-25i4-25.0.4.1.1_linux-x64_bin.tar.gz",
+    "home-manager": "github:nix-community/home-manager",
+    "import-tree": "github:denful/import-tree",
+    "jail-nix": "git+https://git.sr.ht/~alexdavid/jail.nix?shallow=1",
+    "linux-cachyos-lto-v3": "github:thou-vow/linux-cachyos-lto-v3-nix",
+    "nix-index-database": "github:nix-community/nix-index-database",
+    "nix-packages": "github:thou-vow/nix-packages",
+    "nixpkgs": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst",
+    "preservation": "github:nix-community/preservation",
+    "tack": "github:manic-systems/tack",
+    "treefmt-nix": "github:numtide/treefmt-nix"
+  },
+  "flake-parts": {
+    "type": "github",
+    "owner": "hercules-ci",
+    "repo": "flake-parts",
+    "rev": "024633cd702b10285db5cb19b40ad48d2399ba60",
+    "narHash": "sha256-zTwuwezD0w3hpga6a6P8emidzAZFyWqlNeRBlpWOOl8=",
+    "lastModified": 1790898470
+  },
+  "graalvm-oracle-25i-aarch64-linux": {
+    "type": "fixed",
+    "url": "https://gds.oracle.com/download/graal/25i4/archive/graalvm-jdk-25i4-25.0.4.1.1_linux-aarch64_bin.tar.gz",
+    "sha256": "sha256-eA1XhNPbm7z/d3dcTQJuSg4hoEG6nbp8WRNZSepSNKQ=",
+    "unpack": "file"
+  },
+  "graalvm-oracle-25i-x86-64-linux": {
+    "type": "fixed",
+    "url": "https://gds.oracle.com/download/graal/25i4/archive/graalvm-jdk-25i4-25.0.4.1.1_linux-x64_bin.tar.gz",
+    "sha256": "sha256-T8xjLPxo6Y9J+TFvijWIuv5PUonxIBBOLSkKdc8z4o4=",
+    "unpack": "file"
+  },
+  "home-manager": {
+    "type": "github",
+    "owner": "nix-community",
+    "repo": "home-manager",
+    "rev": "6807ee9587ecc28f7f05509e2043d68efa7fe0f4",
+    "narHash": "sha256-+IqnyJotwLNMkhyqa3F3YtX58W2HrUBqRz++RGt42SM=",
+    "lastModified": 1791153770
+  },
+  "import-tree": {
+    "type": "github",
+    "owner": "denful",
+    "repo": "import-tree",
+    "rev": "eb1b52eaecc57f7c136d07ae8a93e724dfecac46",
+    "narHash": "sha256-ljEMTXP/rH0tOvDzc9gzwww6KcHRPRnEHzd9lK48V7s=",
+    "lastModified": 1788467110
+  },
+  "jail-nix": {
+    "type": "git",
+    "url": "https://git.sr.ht/~alexdavid/jail.nix",
+    "ref": "HEAD",
+    "rev": "7cd53acef3ad51b9c775be759f5643f8d3bcf6eb",
+    "narHash": "sha256-UQRytK4SsshV1CeX6aKF+P855Sbcqg9aA731eYTakNg=",
+    "lastModified": 1788928033
+  },
+  "linux-cachyos-lto-v3": {
+    "type": "github",
+    "owner": "thou-vow",
+    "repo": "linux-cachyos-lto-v3-nix",
+    "rev": "28f90ee0da5a3e7a61c474c0b40b9059709d8328",
+    "narHash": "sha256-or5X+NmzHJZQ7Q6YzgIFZn63sx1WKmcNDeZ2F4vGrvg=",
+    "lastModified": 1791041829
+  },
+  "nix-index-database": {
+    "type": "github",
+    "owner": "nix-community",
+    "repo": "nix-index-database",
+    "rev": "e740bc4e9d8918d7819a51486d5099930c65c72e",
+    "narHash": "sha256-oTM7QFgRQ+vxBpMBMc7hEYpqBtpXAzXu2xuB/tru84U=",
+    "lastModified": 1791105314
+  },
+  "nix-packages": {
+    "type": "github",
+    "owner": "thou-vow",
+    "repo": "nix-packages",
+    "rev": "6baaa581a4aaa289ba83b96623835c1bbb0fafa2",
+    "narHash": "sha256-Ci6cqxgp3VbfKX4pGk78b8aczi24Gi0JoFe+j1CS9lE=",
+    "lastModified": 1791156840
+  },
+  "nixpkgs": {
+    "type": "tarball",
+    "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1084968.a7868a727837/nixexprs.tar.zst?rev=a7868a727837f3c09cee2ce0ca671c76b1589fed&lastModified=1791048980",
+    "rev": "a7868a727837f3c09cee2ce0ca671c76b1589fed",
+    "narHash": "sha256-u3KCLxsnf1622GdFccg8hmkEIutOZ1h4pvia5ERjIuI="
+  },
+  "preservation": {
+    "type": "github",
+    "owner": "nix-community",
+    "repo": "preservation",
+    "rev": "93416f4614ad2dfed5b0dcf12f27e57d27a5ab11",
+    "narHash": "sha256-mMI9IanU+Xw+pVogD2oT0I2kTmvz2Un/Apc5+CwUpEY=",
+    "lastModified": 1757436102
+  },
+  "tack": {
+    "type": "github",
+    "owner": "manic-systems",
+    "repo": "tack",
+    "rev": "4a8b68df58488b311840eb0244c75b4857871789",
+    "narHash": "sha256-ST/08SMwfjtXeP/+72GJYVFkO2xT6PDU5ofh9Gh9IJ8=",
+    "lastModified": 1791058919
+  },
+  "treefmt-nix": {
+    "type": "github",
+    "owner": "numtide",
+    "repo": "treefmt-nix",
+    "rev": "27b3b12a8e6375f28ebe122f07d230ca5459bbfa",
+    "narHash": "sha256-WSFCsDSE5ffgD2MqzkM2CYjeFiKhRF/dJUN8uedb6YE=",
+    "lastModified": 1786901030
+  }
+}

@@ -49,12 +49,12 @@ in {
     options.self.base = commonOptions;
 
     config = lib.mkIf cfg.enable {
-      environment.etc =
-        lib.mapAttrs' (k: v: {
-          name = "inputs/${k}";
-          value.source = v;
-        })
-        inputs;
+      # environment.etc =
+      #   lib.mapAttrs' (k: v: {
+      #     name = "inputs/${k}";
+      #     value.source = v;
+      #   })
+      #   inputs;
 
       nix = {
         registry = lib.mkIf (config.self.base.flakePath != null) {

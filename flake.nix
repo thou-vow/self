@@ -3,53 +3,27 @@ rec {
     extra-substituters = [
       "https://thou-vow.cachix.org"
       "https://thou-vow-linux.cachix.org"
+      "https://cache.manic.systems"
       "https://nix-community.cachix.org"
       "https://nyx-cache.chaotic.cx/"
     ];
     extra-trusted-public-keys = [
       "thou-vow.cachix.org-1:X9yN6WSwyoFihH/tOriqxpaJEP3pd43z8UPmfipvoK8="
       "thou-vow-linux.cachix.org-1:DdL3Lv29JWukrCFnGJrWnfoWMcU3sQ0Js8C1ubd7bXE="
+      "cache.manic.systems-1:s6OZanN8Us8vRi0jVivP3qlMn0cYHBjBALKrNe5nH8s="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk="
     ];
   };
 
-  inputs = {
-    linux-cachyos-lto-v3.url = "github:thou-vow/linux-cachyos-lto-v3-nix";
-    nix-packages.url = "github:thou-vow/nix-packages";
-
-    nixpkgs.follows = "linux-cachyos-lto-v3/nixpkgs";
-
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      flake = false;
+  outputs = {self, ...} @ args: let
+    inputs = import ./.tack {
+      overrides = args.tackOverrides or {};
     };
-    import-tree = {
-      url = "github:denful/import-tree";
-      flake = false;
-    };
-    jail-nix = {
-      url = "sourcehut:~alexdavid/jail.nix";
-      flake = false;
-    };
-    nix-index-database = {
-      url = "github:nix-community/nix-index-database";
-      flake = false;
-    };
-    preservation = {
-      url = "github:nix-community/preservation";
-      flake = false;
-    };
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
-      flake = false;
-    };
-  };
-
-  outputs = inputs:
+  in
     inputs.flake-parts.lib.mkFlake {
       inherit inputs;
+      self = self // {inherit inputs;};
       specialArgs = {inherit nixConfig;};
     } ({lib, ...}: {
       imports = [
@@ -74,6 +48,7 @@ rec {
 
       config = {
         perSystem = {
+          inputs',
           pkgs,
           system,
           ...
@@ -88,14 +63,19 @@ rec {
           };
 
           devShells.default = pkgs.mkShell {
-            buildInputs = with pkgs; [
-              alejandra
-              kdlfmt
-              nixd
-              schemat
-              steel
-              taplo
-            ];
+            buildInputs =
+              [
+                inputs'.tack.packages.tack
+              ]
+              ++ (with pkgs; [
+                alejandra
+                git
+                kdlfmt
+                nixd
+                schemat
+                steel
+                taplo
+              ]);
           };
 
           formatter = (import inputs.treefmt-nix).mkWrapper pkgs {

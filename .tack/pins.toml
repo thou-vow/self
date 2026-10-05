@@ -1,0 +1,83 @@
+[shorturls]
+gh = "github:{path}"
+
+
+[all_follow]
+flake-parts = ["flake-parts"]
+home-manager = ["home-manager"]
+nixpkgs = ["nixpkgs", "nixpkgs-lib"]
+treefmt-nix = ["treefmt-nix"]
+
+
+# Flakes
+
+[inputs.flake-parts]
+url = "gh:hercules-ci/flake-parts"
+group = "general"
+
+[inputs.linux-cachyos-lto-v3]
+url = "gh:thou-vow/linux-cachyos-lto-v3-nix"
+exclude_follow = ["nixpkgs"]
+group = "general"
+
+[inputs.nix-packages]
+url = "gh:thou-vow/nix-packages"
+exclude_follow = ["nixpkgs"]
+group = "general"
+
+[inputs.nixpkgs]
+url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst"
+group = "general"
+
+[inputs.tack]
+url = "gh:manic-systems/tack"
+exclude_follow = ["nixpkgs"]
+group = "general"
+
+
+# Non-flakes
+
+[inputs.home-manager]
+url = "gh:nix-community/home-manager"
+type = "fetch"
+group = "general"
+
+[inputs.import-tree]
+url = "gh:denful/import-tree"
+type = "fetch"
+group = "general"
+
+[inputs.jail-nix]
+url = "git+https://git.sr.ht/~alexdavid/jail.nix?shallow=1"
+type = "fetch"
+group = "general"
+
+[inputs.nix-index-database]
+url = "gh:nix-community/nix-index-database"
+type = "fetch"
+group = "general"
+
+[inputs.preservation]
+url = "gh:nix-community/preservation"
+type = "fetch"
+group = "general"
+
+[inputs.treefmt-nix]
+url = "gh:numtide/treefmt-nix"
+type = "fetch"
+group = "general"
+
+
+# Packages
+
+[inputs.graalvm-oracle-25i-aarch64-linux]
+url = "https://gds.oracle.com/download/graal/25i4/archive/graalvm-jdk-25i4-25.0.4.1.1_linux-aarch64_bin.tar.gz"
+type = "fixed"
+unpack = "file"
+group = "packages"
+
+[inputs.graalvm-oracle-25i-x86-64-linux]
+url = "https://gds.oracle.com/download/graal/25i4/archive/graalvm-jdk-25i4-25.0.4.1.1_linux-x64_bin.tar.gz"
+type = "fixed"
+unpack = "file"
+group = "packages"

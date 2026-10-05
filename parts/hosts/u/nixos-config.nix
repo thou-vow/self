@@ -25,6 +25,7 @@
     };
 
   flake.nixosModules.u = {
+    inputs',
     pkgs,
     self',
     ...
@@ -44,7 +45,10 @@
         PERSIST = "/persist";
       };
       systemPackages =
-        (with pkgs; [
+        [
+          inputs'.tack.packages.tack
+        ]
+        ++ (with pkgs; [
           android-tools
           brightnessctl
           btop
