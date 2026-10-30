@@ -17,14 +17,14 @@ rec {
   };
 
   outputs = {self, ...} @ args: let
-    inputs = import ./.tack {
-      overrides = args.tackOverrides or {};
-    };
+    tackInputs = import ./.tack {overrides = args.tackOverrides or {};};
+
+    inherit (tackInputs.nixpkgs) lib;
+    inputs = lib.filterAttrs (k: v: !lib.hasPrefix "_" k) tackInputs;
   in
     inputs.flake-parts.lib.mkFlake {
-      inherit inputs;
-      self = self // {inherit inputs;};
-      specialArgs = {inherit nixConfig;};
+      inherit inputs self;
+      specialArgs = {inherit nixConfig tackInputs;};
     } ({lib, ...}: {
       imports = [
         (import inputs.import-tree ./parts)
@@ -65,7 +65,7 @@ rec {
           devShells.default = pkgs.mkShell {
             buildInputs =
               [
-                inputs'.tack.packages.tack
+                inputs'.nix-packages.packages.tack
               ]
               ++ (with pkgs; [
                 alejandra

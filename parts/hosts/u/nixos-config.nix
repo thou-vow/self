@@ -1,4 +1,5 @@
 {
+  inputs,
   lib,
   self,
   withSystem,
@@ -25,6 +26,7 @@
     };
 
   flake.nixosModules.u = {
+    config,
     inputs',
     pkgs,
     self',
@@ -37,16 +39,27 @@
       waydroid
     ];
 
+    boot.kernel.sysctl = {
+      "net.ipv4.ip_unprivileged_port_start" = 80;
+    };
+
     console.useXkbConfig = true;
 
     environment = {
+      etc =
+        lib.mapAttrs' (k: v: {
+          name = "inputs/${k}";
+          value.source = v;
+        })
+        inputs;
+
       sessionVariables = {
         NIXPKGS_ALLOW_UNFREE = "1";
         PERSIST = "/persist";
       };
       systemPackages =
         [
-          inputs'.tack.packages.tack
+          inputs'.nix-packages.packages.tack
         ]
         ++ (with pkgs; [
           android-tools
@@ -123,6 +136,10 @@
 
     networking = {
       dhcpcd.enable = false;
+      firewall = {
+        allowedUDPPorts = [config.services.tailscale.port];
+        trustedInterfaces = [config.services.tailscale.interfaceName];
+      };
       hostName = "u";
       nftables.enable = true;
       useNetworkd = true;
@@ -188,15 +205,7 @@
       };
       power-profiles-daemon.enable = true;
       pulseaudio.enable = false;
-      udev.extraRules = ''
-        ACTION=="add", SUBSYSTEM=="scsi_host", KERNEL=="host*", \
-          ATTR{link_power_management_supported}=="1", \
-          ATTR{link_power_management_policy}=="*", \
-          ATTR{link_power_management_policy}="max_performance"
-
-        ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", \
-          ENV{ID_BUS}=="ata", RUN+="${lib.getExe pkgs.hdparm} -B 254 -S 0 /dev/%k"
-      '';
+      tailscale.enable = true;
       upower.enable = true;
       xserver.xkb = {
         layout = "br,us";
@@ -204,7 +213,7 @@
       };
     };
 
-    system.stateVersion = "26.05";
+    system.stateVersion = "26.11";
 
     systemd = {
       network.networks."10-wired" = {
@@ -232,21 +241,16 @@
       root.password = "123";
       thou = {
         uid = 1000;
-        isNormalUser = true;
         description = "thou";
         extraGroups = ["networkmanager" "wheel"];
+        isNormalUser = true;
+        linger = true;
         password = "123";
         shell = lib.getExe pkgs.bash;
       };
     };
 
-    virtualisation = {
-      podman = {
-        enable = true;
-        dockerCompat = true;
-      };
-      waydroid.package = pkgs.waydroid-nftables;
-    };
+    virtualisation.waydroid.package = pkgs.waydroid-nftables;
 
     xdg.portal = {
       enable = true;

@@ -3,6 +3,7 @@ ui_scale = 0.9
 ui_radius_scale = 0.5
 setup_wizard_enabled = false
 polkit_agent = true
+launch_apps_as_systemd_services = true
 
 
 [shell.animation]
@@ -33,10 +34,10 @@ annotate = true
 
 
 [keybinds]
-left     = ["left", "ctrl+h"]
-right    = ["right", "ctrl+l"]
-up       = ["up", "ctrl+k"]
-down     = ["down", "ctrl+j"]
+left = ["left", "ctrl+h"]
+right = ["right", "ctrl+l"]
+up = ["up", "ctrl+k"]
+down = ["down", "ctrl+j"]
 tab_next = ["tab", "ctrl+n"]
 tab_previous = ["shift+tab", "iso_left_tab", "ctrl+p"]
 delete = ["del", "ctrl+d"]

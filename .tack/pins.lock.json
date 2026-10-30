@@ -1,8 +1,6 @@
 {
   "$declared": {
     "flake-parts": "github:hercules-ci/flake-parts",
-    "graalvm-oracle-25i-aarch64-linux": "https://gds.oracle.com/download/graal/25i4/archive/graalvm-jdk-25i4-25.0.4.1.1_linux-aarch64_bin.tar.gz",
-    "graalvm-oracle-25i-x86-64-linux": "https://gds.oracle.com/download/graal/25i4/archive/graalvm-jdk-25i4-25.0.4.1.1_linux-x64_bin.tar.gz",
     "home-manager": "github:nix-community/home-manager",
     "import-tree": "github:denful/import-tree",
     "jail-nix": "git+https://git.sr.ht/~alexdavid/jail.nix?shallow=1",
@@ -11,7 +9,6 @@
     "nix-packages": "github:thou-vow/nix-packages",
     "nixpkgs": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst",
     "preservation": "github:nix-community/preservation",
-    "tack": "github:manic-systems/tack",
     "treefmt-nix": "github:numtide/treefmt-nix"
   },
   "flake-parts": {
@@ -20,27 +17,29 @@
     "repo": "flake-parts",
     "rev": "024633cd702b10285db5cb19b40ad48d2399ba60",
     "narHash": "sha256-zTwuwezD0w3hpga6a6P8emidzAZFyWqlNeRBlpWOOl8=",
-    "lastModified": 1790898470
-  },
-  "graalvm-oracle-25i-aarch64-linux": {
-    "type": "fixed",
-    "url": "https://gds.oracle.com/download/graal/25i4/archive/graalvm-jdk-25i4-25.0.4.1.1_linux-aarch64_bin.tar.gz",
-    "sha256": "sha256-eA1XhNPbm7z/d3dcTQJuSg4hoEG6nbp8WRNZSepSNKQ=",
-    "unpack": "file"
-  },
-  "graalvm-oracle-25i-x86-64-linux": {
-    "type": "fixed",
-    "url": "https://gds.oracle.com/download/graal/25i4/archive/graalvm-jdk-25i4-25.0.4.1.1_linux-x64_bin.tar.gz",
-    "sha256": "sha256-T8xjLPxo6Y9J+TFvijWIuv5PUonxIBBOLSkKdc8z4o4=",
-    "unpack": "file"
+    "lastModified": 1790898470,
+    "patched": {
+      "path": "/nix/store/ddi8nm3ddgphb6m6scq99r4jxcckm1n7-source",
+      "narHash": "sha256-z6dFIPvcKmQq7a8Wlih6vqhbUXcpsTj3PaevIawLB/4=",
+      "lastModified": 1790898470,
+      "patches": [
+        {
+          "source": "https://github.com/hercules-ci/flake-parts/pull/357",
+          "url": "https://github.com/hercules-ci/flake-parts/pull/357",
+          "file": "patches/flake-parts/pr-357.patch",
+          "sha256": "c4b64f59f41ac4dfc9d2a2350a0b2330819ee3a8b5105670108ec1d328ba986f",
+          "head": "123840d2e75d0ad6012365b145ec9cf507622f6a"
+        }
+      ]
+    }
   },
   "home-manager": {
     "type": "github",
     "owner": "nix-community",
     "repo": "home-manager",
-    "rev": "6807ee9587ecc28f7f05509e2043d68efa7fe0f4",
-    "narHash": "sha256-+IqnyJotwLNMkhyqa3F3YtX58W2HrUBqRz++RGt42SM=",
-    "lastModified": 1791153770
+    "rev": "095fef2f265c3c0da4fe315efba8f8a04495ab34",
+    "narHash": "sha256-X6xa6sGA7RnJQuZGbFMC+K+KToWAlBDCCjJXfTwEPsw=",
+    "lastModified": 1793193205
   },
   "import-tree": {
     "type": "github",
@@ -62,54 +61,47 @@
     "type": "github",
     "owner": "thou-vow",
     "repo": "linux-cachyos-lto-v3-nix",
-    "rev": "28f90ee0da5a3e7a61c474c0b40b9059709d8328",
-    "narHash": "sha256-or5X+NmzHJZQ7Q6YzgIFZn63sx1WKmcNDeZ2F4vGrvg=",
-    "lastModified": 1791041829
+    "rev": "257a1dd012028aa0445b7aacf29906eb966c8aa7",
+    "narHash": "sha256-7LxlJAGpjJtD+2YgsOz5RIwFoYZOvZa+gd11xKo+few=",
+    "lastModified": 1793312529
   },
   "nix-index-database": {
     "type": "github",
     "owner": "nix-community",
     "repo": "nix-index-database",
-    "rev": "e740bc4e9d8918d7819a51486d5099930c65c72e",
-    "narHash": "sha256-oTM7QFgRQ+vxBpMBMc7hEYpqBtpXAzXu2xuB/tru84U=",
-    "lastModified": 1791105314
+    "rev": "93696586f3463024cceb089353539be95a38ae2b",
+    "narHash": "sha256-v75hPw5NJ+mRRcwUzKi2OQtVSVv1hgq6ceAlPQB2kEE=",
+    "lastModified": 1792915725
   },
   "nix-packages": {
     "type": "github",
     "owner": "thou-vow",
     "repo": "nix-packages",
-    "rev": "6baaa581a4aaa289ba83b96623835c1bbb0fafa2",
-    "narHash": "sha256-Ci6cqxgp3VbfKX4pGk78b8aczi24Gi0JoFe+j1CS9lE=",
-    "lastModified": 1791156840
+    "rev": "5d986c0dd00337e798b84e91e7ed3557e7dc7581",
+    "narHash": "sha256-Ui6FxK2V87zFXVHHx+YvJ2KdKD5w8gyeij/ghb7ejw0=",
+    "lastModified": 1793381133
   },
   "nixpkgs": {
     "type": "tarball",
-    "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1084968.a7868a727837/nixexprs.tar.zst?rev=a7868a727837f3c09cee2ce0ca671c76b1589fed&lastModified=1791048980",
-    "rev": "a7868a727837f3c09cee2ce0ca671c76b1589fed",
-    "narHash": "sha256-u3KCLxsnf1622GdFccg8hmkEIutOZ1h4pvia5ERjIuI="
+    "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1105037.1c89083e451e/nixexprs.tar.zst?rev=1c89083e451e891152365b799595cf7790a43325&lastModified=1793341285",
+    "rev": "1c89083e451e891152365b799595cf7790a43325",
+    "narHash": "sha256-LOv16TsMYV2/8BUYnhSxHkOASe7es2ORbqMeLlZJ8Hc=",
+    "lastModified": 1793341285
   },
   "preservation": {
     "type": "github",
     "owner": "nix-community",
     "repo": "preservation",
-    "rev": "93416f4614ad2dfed5b0dcf12f27e57d27a5ab11",
-    "narHash": "sha256-mMI9IanU+Xw+pVogD2oT0I2kTmvz2Un/Apc5+CwUpEY=",
-    "lastModified": 1757436102
-  },
-  "tack": {
-    "type": "github",
-    "owner": "manic-systems",
-    "repo": "tack",
-    "rev": "4a8b68df58488b311840eb0244c75b4857871789",
-    "narHash": "sha256-ST/08SMwfjtXeP/+72GJYVFkO2xT6PDU5ofh9Gh9IJ8=",
-    "lastModified": 1791058919
+    "rev": "00be7f7dd1a11ae0605386f2272288de7cf33abe",
+    "narHash": "sha256-s/A2rSO2Ndf8Y5yiouesnI/3Zkn9pmVGF2NxFxOUvx8=",
+    "lastModified": 1792953443
   },
   "treefmt-nix": {
     "type": "github",
     "owner": "numtide",
     "repo": "treefmt-nix",
-    "rev": "27b3b12a8e6375f28ebe122f07d230ca5459bbfa",
-    "narHash": "sha256-WSFCsDSE5ffgD2MqzkM2CYjeFiKhRF/dJUN8uedb6YE=",
-    "lastModified": 1786901030
+    "rev": "0d6d739a833ba9a9c93034862e4a7b061a062a1c",
+    "narHash": "sha256-C3alQ2MEt0zVrUSho5NUDo3jmhbff72++bfwoqT9Omo=",
+    "lastModified": 1791885023
   }
 }

@@ -33,10 +33,13 @@
               jdk8
               jdk17
               jdk21
+              semeru-jre-bin-8
+              semeru-jre-bin-17
+              semeru-jre-bin-21
             ])
             ++ (with inputs'.nix-packages.packages; [
               graalvm-oracle_21
-              graalvm-oracle_25
+              semeru-jre-bin-25
             ]);
         };
       };

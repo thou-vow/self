@@ -21,39 +21,40 @@
 
     config = lib.mkIf cfg.enable {
       home.packages = with pkgs; [
-        carapace
         pokeget-rs
       ];
 
-      programs.nushell = {
-        inherit (cfg) enable package;
-        extraConfig = lib.mkMerge [
-          (lib.mkBefore
-            # nu
-            ''
-              $env.ENV_CONVERSIONS = $env.ENV_CONVERSIONS | merge {
-                ${builtins.concatStringsSep "\n" (map (env:
-                # nu
-                ''
-                  ${env}: {
-                    from_string: {|s| $s | split row (char esep) | path expand --no-symlink }
-                    to_string: {|v| $v | path expand --no-symlink | str join (char esep) }
-                  }
-                '') [
-                "PATH"
-                "STEEL_SEARCH_PATHS"
-                "TERMINFO_DIRS"
-                "XDG_CONFIG_DIRS"
-                "XDG_DATA_DIRS"
-              ])}
-              }
-            '')
-          (lib.mkAfter
+      programs = {
+        carapace.enable = true;
+
+        nushell = {
+          inherit (cfg) enable package;
+          extraConfig = lib.mkMerge [
             # nu
             ''
               source ./nu-manual-config.nu
-            '')
-        ];
+            ''
+            (lib.mkAfter
+              # nu
+              ''
+                $env.ENV_CONVERSIONS = $env.ENV_CONVERSIONS | merge {
+                  ${builtins.concatStringsSep "\n" (map (env:
+                  # nu
+                  ''
+                    ${env}: {
+                      from_string: {|s| $s | split row (char esep) | path expand --no-symlink }
+                      to_string: {|v| $v | path expand --no-symlink | str join (char esep) }
+                    }
+                  '') [
+                  "STEEL_SEARCH_PATHS"
+                  "TERMINFO_DIRS"
+                  "XDG_CONFIG_DIRS"
+                  "XDG_DATA_DIRS"
+                ])}
+                }
+              '')
+          ];
+        };
       };
 
       xdg.configFile."nushell/nu-manual-config.nu".source = ./nu-manual-config.nu;

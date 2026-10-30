@@ -27,6 +27,7 @@
         mango
         noctalia
         nushell
+        podman
         prismlauncher
         starship
         yazi
@@ -92,14 +93,7 @@
             ".local/share/Steam/compatibilitytools.d/${name}".source = "${value}";
           })
           protonPackages
-          ++ [
-            {
-              ".profile" = {
-                text = ''. "${config.home.sessionVariablesPackage}/etc/profile.d/hm-session-vars.sh"'';
-                executable = true;
-              };
-            }
-          ]);
+          ++ []);
 
       packages =
         [
@@ -109,7 +103,6 @@
           azahar
           bc
           cemu
-          distrobox
           dolphin-emu
           geminicommit
           gpu-screen-recorder-gtk
@@ -132,6 +125,7 @@
           rclone
           ripgrep
           termdown
+          uv
           vlc
           xdg-utils
           zathura
@@ -139,11 +133,12 @@
           corefonts
           discord
           nerd-fonts.victor-mono
-          vscode
+          vscode-fhs
         ])
         ++ (with inputs'.nix-packages.packages; [
           brave
           discord-rpc-lsp
+          mocktail
         ]);
 
       sessionPath = [
@@ -151,7 +146,7 @@
       ];
 
       sessionVariables = {
-        BROWSER = "brave";
+        BROWSER = "brave --enable-low-end-device-mode --disable-features=IPH_GMCSaveVideoFrame";
         EDITOR = "hx";
         LAUNCHER = "noctalia msg panel-toggle launcher";
         SHELL = "nu";
@@ -164,10 +159,29 @@
     };
 
     programs = {
+      bash.enable = true;
       direnv = {
         enable = true;
         nix-direnv.enable = true;
         silent = true;
+      };
+      distrobox = {
+        enable = true;
+        settings = {
+          container_additional_volumes = let
+            bindRO = [
+              "/etc/profiles/per-user/thou"
+              "/nix/store"
+            ];
+            bindRW = [];
+          in
+            lib.pipe bindRO [
+              (map (path: "${path}:${path}:ro"))
+              (ro: ro ++ map (path: "${path}:${path}:rw") bindRW)
+              toString
+            ];
+          non_interactive = "1";
+        };
       };
       git = {
         enable = true;

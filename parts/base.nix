@@ -13,6 +13,8 @@
       default = null;
     };
   };
+
+  flakeInputs = lib.filterAttrs (k: v: lib.isAttrs v && lib.isType "flake" v) inputs;
 in {
   flake.homeModules.base = {
     config,
@@ -25,18 +27,21 @@ in {
 
     config = lib.mkIf (cfg.enable && nixosConfig != {}) {
       nix = {
-        registry = lib.mkIf (config.self.base.flakePath != null) {
-          self.to = lib.mkOverride 99 {
-            type = "git";
-            url = "file://${config.self.base.flakePath}";
-          };
-        };
+        registry = lib.mkMerge [
+          (lib.mapAttrs (_: v: {flake = v;}) flakeInputs)
+          (lib.mkIf (config.self.base.flakePath != null) {
+            self.to = {
+              type = "git";
+              url = "file://${config.self.base.flakePath}";
+            };
+          })
+        ];
 
         settings = {
           inherit (nixConfig) extra-substituters extra-trusted-public-keys;
           extra-experimental-features = ["flakes" "nix-command"];
           keep-outputs = true;
-          nix-path = lib.mapAttrsToList (k: _: "${k}=flake:${k}") config.nix.registry;
+          nix-path = lib.mapAttrsToList (k: v: "${k}=flake:${k}") config.nix.registry;
           trusted-users = ["@wheel"];
         };
       };
@@ -49,26 +54,22 @@ in {
     options.self.base = commonOptions;
 
     config = lib.mkIf cfg.enable {
-      # environment.etc =
-      #   lib.mapAttrs' (k: v: {
-      #     name = "inputs/${k}";
-      #     value.source = v;
-      #   })
-      #   inputs;
-
       nix = {
-        registry = lib.mkIf (config.self.base.flakePath != null) {
-          self.to = {
-            type = "git";
-            url = "file://${config.self.base.flakePath}";
-          };
-        };
+        registry = lib.mkMerge [
+          (lib.mapAttrs (_: v: {flake = v;}) flakeInputs)
+          (lib.mkIf (config.self.base.flakePath != null) {
+            self.to = {
+              type = "git";
+              url = "file://${config.self.base.flakePath}";
+            };
+          })
+        ];
 
         settings = {
           inherit (nixConfig) extra-substituters extra-trusted-public-keys;
           extra-experimental-features = ["flakes" "nix-command"];
           keep-outputs = true;
-          nix-path = lib.mapAttrsToList (k: _: "${k}=flake:${k}") config.nix.registry;
+          nix-path = lib.mapAttrsToList (k: v: "${k}=flake:${k}") config.nix.registry;
           trusted-users = ["@wheel"];
         };
       };
