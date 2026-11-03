@@ -22,16 +22,13 @@
       kernel.sysctl = {
         "fs.file-max" = 2097152;
         "kernel.printk" = "3 3 3 3";
-        "kernel.split_lock_mitigate" = 0;
-        "net.core.netdev_max_backlog" = 4096;
+        "net.core.netdev_max_backlog" = 16384;
         "net.ipv4.tcp_congestion_control" = "bbr";
-        "vm.dirty_background_bytes" = 33554432;
-        "vm.dirty_bytes" = 134217728;
-        "vm.dirty_expire_centisecs" = 6000;
-        "vm.dirty_writeback_centisecs" = 1500;
+        "net.ipv4.tcp_fastopen" = 3;
+        "vm.dirty_background_bytes" = 67108864;
+        "vm.dirty_bytes" = 268435456;
         "vm.max_map_count" = 2147483642;
         "vm.vfs_cache_pressure" = 50;
-        "vm.watermark_scale_factor" = 50;
       };
 
       kernelModules = ["ntsync"];
@@ -44,32 +41,40 @@
 
       kernelParams = [
         "8250.nr_uarts=0"
-        "ath9k_core.nohwcrypt=1"
+        "clocksource=tsc"
         "mitigations=off"
         "nowatchdog"
+        "split_lock_detect=off"
+        "tsc=reliable"
       ];
     };
 
     environment.sessionVariables = {
       GSK_RENDERER = "gl";
-      MESA_SHADER_CACHE_MAX_SIZE = "10G";
+      MESA_SHADER_CACHE_MAX_SIZE = "5G";
     };
 
     fileSystems = {
       ${config.boot.loader.efi.efiSysMountPoint}.noCheck = true;
-      "/".options = ["logbsize=256k" "noatime"];
-      "/cache".options = ["logbsize=256k" "noatime"];
-      "/nix".options = ["logbsize=256k" "noatime"];
-      "/persist".options = ["logbsize=256k" "noatime"];
+      "/".options = ["noatime"];
+      "/cache".options = ["noatime"];
+      "/nix".options = ["noatime"];
+      "/persist".options = ["noatime"];
 
-      "/mnt/u".options = ["logbsize=256k" "noatime"];
+      "/mnt/u".options = ["noatime"];
     };
 
     hardware.graphics = {
       enable = true;
       enable32Bit = true;
-      extraPackages = with pkgs; [intel-vaapi-driver];
-      extraPackages32 = with pkgs.pkgsi686Linux; [intel-vaapi-driver];
+      extraPackages = with pkgs; [
+        intel-media-driver
+        intel-vaapi-driver
+      ];
+      extraPackages32 = with pkgs.pkgsi686Linux; [
+        intel-media-driver
+        intel-vaapi-driver
+      ];
       package = inputs'.nix-packages.packages.mesa-attuned;
     };
 
@@ -106,6 +111,17 @@
       network.wait-online.enable = false;
       oomd.enable = false;
       services = {
+        adjust-max-ptes-none = {
+          description = "Adjust THP max_ptes_none for less memory waste";
+          wantedBy = ["multi-user.target"];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = "yes";
+          };
+          script = ''
+            echo 409 > /sys/kernel/mm/transparent_hugepage/khugepaged/max_ptes_none
+          '';
+        };
         disable-i915-mitigations = {
           description = "Set i915 (Intel Graphics) mitigations off at runtime";
           before = ["graphical.target"];

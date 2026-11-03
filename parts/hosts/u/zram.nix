@@ -39,7 +39,7 @@
             #    idle mark from step 2 is refreshed just before, so this works
             #    whether or not the mode checks idleness.
             # 4. Try zstd (priority 1, the only and therefore highest secondary
-            #    algorithm) on idle pages whose stored size is >= 3000 bytes:
+            #    algorithm) on idle pages whose stored size is >= 2500 bytes:
             #    - It saves memory and ends below the threshold: the page keeps zstd
             #      and later scans skip it (already at priority 1).
             #    - Otherwise: the page keeps its current form (HUGE or lz4) and is
@@ -49,7 +49,7 @@
             # Notes:
             # - The usage check compares mem_used_total against 50% of mem_limit.
             #   Below it, nothing is recompressed or written back.
-            # - Stored size < 3000 bytes: skipped by the threshold, stays in RAM.
+            # - Stored size < 2500 bytes: skipped by the threshold, stays in RAM.
             # - Pages younger than 300 seconds are untouched, including raw HUGE ones.
             # - HUGE: the page is stored raw at full page size because the primary
             #   algorithm (lz4) could not shrink it at swap-out. Recompression never
@@ -71,7 +71,7 @@
 
               echo 300 > /sys/block/zram0/idle
               echo incompressible > /sys/block/zram0/writeback
-              echo "type=idle threshold=3000 priority=1" > /sys/block/zram0/recompress
+              echo "type=idle threshold=2500 priority=1" > /sys/block/zram0/recompress
             '';
         };
         zram-setup = {
@@ -94,8 +94,8 @@
             echo yes > /sys/block/zram0/compressed_writeback
 
             read -r _ total_mem_kb _ < /proc/meminfo
-            echo "$((total_mem_kb * 3))K" > /sys/block/zram0/disksize
-            echo "$((total_mem_kb * 2 / 3))K" > /sys/block/zram0/mem_limit
+            echo "$((total_mem_kb * 2))K" > /sys/block/zram0/disksize
+            echo "$((total_mem_kb / 2))K" > /sys/block/zram0/mem_limit
 
             mkswap -L zram0 /dev/zram0
             swapon /dev/zram0

@@ -146,7 +146,7 @@
       ];
 
       sessionVariables = {
-        BROWSER = "brave --enable-low-end-device-mode --disable-features=IPH_GMCSaveVideoFrame";
+        BROWSER = "brave --disable-features=IPH_GMCSaveVideoFrame";
         EDITOR = "hx";
         LAUNCHER = "noctalia msg panel-toggle launcher";
         SHELL = "nu";
