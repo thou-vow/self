@@ -12,12 +12,12 @@
       mods = {
         helix.package = inputs'.nix-packages.packages.steelix-attuned;
         kitty.package = inputs'.nix-packages.packages.kitty-attuned;
-        mango.package = inputs'.nix-packages.packages.mango-attuned;
         noctalia.package = inputs'.nix-packages.packages.noctalia-attuned;
         nushell.package = inputs'.nix-packages.packages.nushell-attuned;
         prismlauncher.package = pkgs.prismlauncher.override {
           glfw3-minecraft = inputs'.nix-packages.packages.glfw-attuned;
         };
+        # umbriel.package = inputs'.nix-packages.packages.umbriel-attuned;
       };
     };
 

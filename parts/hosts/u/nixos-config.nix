@@ -53,10 +53,13 @@
         })
         inputs;
 
+      pathsToLink = ["/share/xdg-desktop-portal"];
+
       sessionVariables = {
         NIXPKGS_ALLOW_UNFREE = "1";
         PERSIST = "/persist";
       };
+
       systemPackages =
         [
           inputs'.nix-packages.packages.tack
@@ -85,6 +88,7 @@
           keyd
           libva-utils
           lm_sensors
+          lshw
           lsof
           mesa-demos
           ncdu
@@ -178,7 +182,6 @@
         enable = true;
         users = ["thou"];
       };
-      flatpak.enable = true;
       keyd = {
         enable = true;
         keyboards.default = {
@@ -205,12 +208,9 @@
       };
       power-profiles-daemon.enable = true;
       pulseaudio.enable = false;
-      tailscale.enable = true;
       upower.enable = true;
-      xserver.xkb = {
-        layout = "br,us";
-        options = "grp:win_space_toggle";
-      };
+      xserver.xkb.layout = "br";
+      zerotierone.enable = true;
     };
 
     system.stateVersion = "26.11";
@@ -251,11 +251,5 @@
     };
 
     virtualisation.waydroid.package = pkgs.waydroid-nftables;
-
-    xdg.portal = {
-      enable = true;
-      config.common.default = ["gtk"];
-      extraPortals = [pkgs.xdg-desktop-portal-gtk];
-    };
   };
 }

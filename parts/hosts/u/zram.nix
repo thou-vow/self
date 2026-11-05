@@ -5,10 +5,7 @@
     ...
   }: {
     boot = {
-      kernel.sysctl = {
-        "vm.page-cluster" = 0;
-        "vm.swappiness" = 50;
-      };
+      kernel.sysctl."vm.page-cluster" = 0;
 
       kernelModules = ["zram"];
     };
@@ -34,7 +31,7 @@
             # Each cycle:
             # 1. Read current memory usage and limit from mm_stat. If usage is
             #    at or below 50% of the limit, skip maintenance.
-            # 2. Mark pages not accessed for more than 300 seconds as idle.
+            # 2. Mark pages not accessed for more than 150 seconds as idle.
             # 3. Write back pages flagged INCOMPRESSIBLE by an earlier cycle. The
             #    idle mark from step 2 is refreshed just before, so this works
             #    whether or not the mode checks idleness.
@@ -50,7 +47,7 @@
             # - The usage check compares mem_used_total against 50% of mem_limit.
             #   Below it, nothing is recompressed or written back.
             # - Stored size < 2500 bytes: skipped by the threshold, stays in RAM.
-            # - Pages younger than 300 seconds are untouched, including raw HUGE ones.
+            # - Pages younger than 150 seconds are untouched, including raw HUGE ones.
             # - HUGE: the page is stored raw at full page size because the primary
             #   algorithm (lz4) could not shrink it at swap-out. Recompression never
             #   creates HUGE pages. The flag clears when the slot is freed or
@@ -69,7 +66,7 @@
                 exit 0
               fi
 
-              echo 300 > /sys/block/zram0/idle
+              echo 150 > /sys/block/zram0/idle
               echo incompressible > /sys/block/zram0/writeback
               echo "type=idle threshold=2500 priority=1" > /sys/block/zram0/recompress
             '';

@@ -1,0 +1,140 @@
+[general]
+show_cheatsheet = false
+
+
+[output."DP-1"]
+min_workspaces = 3
+cyclic_workspaces = true
+
+
+[keybinds]
+"XF86AudioMicMute" = { action = "spawn wpctl set-mute @DEFAULT_SOURCE@ toggle", allow_when_locked = true }
+"XF86AudioMute" = { action = "spawn wpctl set-mute @DEFAULT_SINK@ toggle", allow_when_locked = true }
+"XF86AudioLowerVolume" = { action = "spawn wpctl set-volume @DEFAULT_SINK@ 1%-", allow_when_locked = true }
+"XF86AudioRaiseVolume" = { action = "spawn wpctl set-volume @DEFAULT_SINK@ 1%+", allow_when_locked = true }
+"XF86AudioNext" = { action = "spawn playerctl next", allow_when_locked = true }
+"XF86AudioPrev" = { action = "spawn playerctl previous", allow_when_locked = true }
+"XF86AudioPlay" = { action = "spawn playerctl play-pause", allow_when_locked = true }
+"XF86MonBrightnessDown" = { action = "spawn brightnessctl s 1%-", allow_when_locked = true }
+"XF86MonBrightnessUp" = { action = "spawn brightnessctl s 1%+", allow_when_locked = true }
+
+"Mod+Ctrl+Escape" = { action = "session-quit", repeat = false }
+"Mod+Minus" = "window-modify-primary-extent -0.02"
+"Mod+Shift+Minus" = "window-modify-secondary-extent -0.02"
+"Mod+Equal" = "window-modify-primary-extent +0.02"
+"Mod+Shift+Equal" = "window-modify-secondary-extent +0.02"
+"Mod+Tab" = { action = "window-focus-switch-floating", repeat = false }
+"Mod+Shift+Tab" = { action = "overview-toggle", repeat = false }
+
+"Mod+Q" = { action = "window-close", repeat = false }
+"Mod+Shift+Q" = { action = "window-kill", repeat = false }
+"Mod+W" = "spawn dash -c \"$BROWSER\""
+"Mod+R" = "window-cycle-primary-extent"
+"Mod+Shift+R" = "window-cycle-secondary-extent"
+"Mod+T" = "spawn dash -c \"$TERMINAL\""
+"Mod+P" = "workspace-previous"
+"Mod+Shift+P" = "column-move-to-workspace-previous"
+"Mod+F" = "window-toggle-floating"
+
+"Mod+H" = { action = "window-focus-left", cooldown_ms = 100 }
+"Mod+Shift+H" = { action = "spawn dash -c \"umbriel msg column-move-left; umbriel msg window-move-by -100 0\"", cooldown_ms = 100 }
+"Mod+Ctrl+H" = { action = "window-consume-or-expel-left", cooldown_ms = 100 }
+"Mod+J" = { action = "window-focus-down", cooldown_ms = 100 }
+"Mod+Shift+J" = { action = "spawn dash -c \"umbriel msg window-swap-down; umbriel msg window-move-by 0 100\"", cooldown_ms = 100 }
+"Mod+K" = { action = "window-focus-up", cooldown_ms = 100 }
+"Mod+Shift+K" = { action = "spawn dash -c \"umbriel msg window-swap-up; umbriel msg window-move-by 0 -100\"", cooldown_ms = 100 }
+"Mod+L" = { action = "window-focus-right", cooldown_ms = 100 }
+"Mod+Shift+L" = { action = "spawn dash -c \"umbriel msg column-move-right; umbriel msg window-move-by 100 0\"", cooldown_ms = 100 }
+"Mod+Ctrl+L" = { action = "window-consume-or-expel-right", cooldown_ms = 100 }
+
+"Mod+Z" = "window-toggle-maximize-to-edges"
+"Mod+Shift+Z" = "window-toggle-fullscreen"
+"Mod+C" = "spawn dash -c \"umbriel msg column-center; umbriel msg window-center\""
+"Mod+M" = "window-toggle-maximize"
+"Mod+N" = "workspace-next"
+"Mod+Shift+N" = "column-move-to-workspace-next"
+"Mod+Shift+Slash" = "cheatsheet-toggle"
+"Mod+Return" = "spawn dash -c \"$LAUNCHER\""
+
+
+[input]
+window_drag_toggle = "floating"
+
+
+[input.keyboard]
+layout = "br,us"
+model = "thinkpad"
+repeat_rate = 60
+repeat_delay = 200
+
+
+[input.touchpad]
+natural_scroll = true
+sensitivity = 0.7
+disable_while_typing = false
+click_method = "clickfinger"
+
+
+[input.cursor]
+follows_focus = true
+
+
+[input.focus]
+follows_mouse = false
+
+
+[appearance]
+border_width = 1
+corner_radius = 3
+
+
+[animation]
+duration_ms = 120
+
+
+[animation.windows_in]
+curve = "spring:1,1800"
+
+
+[animation.windows_out]
+curve = "spring:1,2800"
+
+
+[animation.windows_move]
+curve = "spring:1,1600"
+
+
+[animation.windows_opacity]
+curve = "spring:1,1800"
+
+
+[animation.workspaces]
+curve = "spring:1,1600"
+
+
+[animation.overview]
+curve = "spring:1,1600"
+workspace_curve = "spring:1,2000"
+
+
+[animation.scratchpad]
+curve = "spring:1,1600"
+
+
+[animation.border]
+curve = "spring:1,1800"
+
+
+[layout]
+mode = "scrolling"
+gap = 1
+extent_presets = [0.333, 0.5, 0.667]
+
+
+[layout.struts]
+left = 15
+right = 15
+
+
+[layout.scrolling]
+default_extent_fraction = 0.667

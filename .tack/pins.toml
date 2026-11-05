@@ -48,6 +48,7 @@ type = "fetch"
 [inputs.preservation]
 url = "gh:nix-community/preservation"
 type = "fetch"
+patches = ["https://github.com/nix-community/preservation/pull/32"]
 
 [inputs.treefmt-nix]
 url = "gh:numtide/treefmt-nix"

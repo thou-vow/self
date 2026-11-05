@@ -24,12 +24,12 @@
         atuin
         helix
         kitty
-        mango
         noctalia
         nushell
         podman
         prismlauncher
         starship
+        umbriel
         yazi
         zoxide
       ])

@@ -109,6 +109,7 @@
 
     preservation = {
       enable = true;
+      defaultHow = "symlink";
       preserveAt = {
         "/cache" = {
           directories = [
@@ -137,22 +138,46 @@
               directory = config.self.base.flakePath;
               user = "thou";
             }
-            "/srv"
-            "/var/lib/flatpak"
-            "/var/lib/iwd"
-            "/var/lib/nixos"
-            "/var/lib/nixos-containers"
-            "/var/lib/waydroid"
-            "/var/log"
+            {
+              directory = "/srv";
+              how = "bindmount";
+            }
+            {
+              directory = "/var/lib/flatpak";
+              how = "bindmount";
+            }
+            {
+              directory = "/var/lib/iwd";
+              how = "bindmount";
+            }
+
+            {
+              directory = "/var/lib/nixos";
+              how = "bindmount";
+              inInitrd = true;
+            }
+
+            {
+              directory = "/var/lib/nixos-containers";
+              how = "bindmount";
+            }
+            {
+              directory = "/var/lib/waydroid";
+              how = "bindmount";
+            }
+            {
+              directory = "/var/log";
+              how = "bindmount";
+            }
           ];
           files = [
             {
               file = "/etc/machine-id";
+              how = "bindmount";
               inInitrd = true;
             }
             {
               file = "/var/lib/systemd/random-seed";
-              how = "symlink";
               inInitrd = true;
               configureParent = true;
             }
@@ -164,13 +189,16 @@
             };
             thou = {
               directories = [
+                {
+                  directory = ".jail";
+                  how = "bindmount";
+                }
                 ".cargo"
                 ".config/BraveSoftware"
                 ".config/Cemu"
                 ".config/Code"
                 ".config/discord"
                 ".config/PCSX2"
-                ".jail"
                 ".local/bin"
                 ".local/share/atuin"
                 ".local/share/containers"

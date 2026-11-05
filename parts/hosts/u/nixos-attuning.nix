@@ -22,13 +22,14 @@
       kernel.sysctl = {
         "fs.file-max" = 2097152;
         "kernel.printk" = "3 3 3 3";
-        "net.core.netdev_max_backlog" = 16384;
         "net.ipv4.tcp_congestion_control" = "bbr";
-        "net.ipv4.tcp_fastopen" = 3;
         "vm.dirty_background_bytes" = 67108864;
         "vm.dirty_bytes" = 268435456;
+        "vm.dirty_writeback_centisecs" = 200;
         "vm.max_map_count" = 2147483642;
+        "vm.swappiness" = 150;
         "vm.vfs_cache_pressure" = 50;
+        "vm.watermark_scale_factor" = 125;
       };
 
       kernelModules = ["ntsync"];
@@ -56,12 +57,12 @@
 
     fileSystems = {
       ${config.boot.loader.efi.efiSysMountPoint}.noCheck = true;
-      "/".options = ["noatime"];
-      "/cache".options = ["noatime"];
-      "/nix".options = ["noatime"];
-      "/persist".options = ["noatime"];
+      "/".options = ["allocsize=64m" "noatime" "logbsize=256k"];
+      "/cache".options = ["allocsize=64m" "noatime" "logbsize=256k"];
+      "/nix".options = ["allocsize=64m" "noatime" "logbsize=256k"];
+      "/persist".options = ["allocsize=64m" "noatime" "logbsize=256k"];
 
-      "/mnt/u".options = ["noatime"];
+      "/mnt/u".options = ["allocsize=64m" "noatime" "logbsize=256k"];
     };
 
     hardware.graphics = {
