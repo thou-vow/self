@@ -98,6 +98,7 @@
       packages =
         [
           self'.packages.faugus-launcher
+          (pkgs.callPackage "${inputs.brave-browser-nix}/brave" {}).brave
         ]
         ++ (with pkgs; [
           azahar
@@ -111,13 +112,16 @@
           krita
           liberation_ttf
           libreoffice
+          llama-cpp-vulkan
           mangohud
           melonds
           mgba
+          nerd-fonts.victor-mono
           noto-fonts
           noto-fonts-cjk-sans
           noto-fonts-cjk-serif
           noto-fonts-color-emoji
+          opencode
           pcsx2
           poppins
           python314Packages.huggingface-hub
@@ -132,11 +136,9 @@
 
           corefonts
           discord
-          nerd-fonts.victor-mono
           vscode-fhs
         ])
         ++ (with inputs'.nix-packages.packages; [
-          brave
           discord-rpc-lsp
           mocktail
         ]);
@@ -180,6 +182,7 @@
               (ro: ro ++ map (path: "${path}:${path}:rw") bindRW)
               toString
             ];
+          container_user_customer_home = "$HOME/Desktop/Distrobox";
           non_interactive = "1";
         };
       };

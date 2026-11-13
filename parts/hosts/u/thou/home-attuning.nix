@@ -17,12 +17,8 @@
         prismlauncher.package = pkgs.prismlauncher.override {
           glfw3-minecraft = inputs'.nix-packages.packages.glfw-attuned;
         };
-        # umbriel.package = inputs'.nix-packages.packages.umbriel-attuned;
+        umbriel.package = inputs'.nix-packages.packages.umbriel-attuned;
       };
     };
-
-    home.packages = with inputs'.nix-packages.packages; [
-      llama-prism-attuned
-    ];
   };
 }

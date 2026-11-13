@@ -4,6 +4,7 @@ rec {
       "https://thou-vow.cachix.org"
       "https://thou-vow-linux.cachix.org"
       "https://cache.manic.systems"
+      "https://ezkea.cachix.org"
       "https://nix-community.cachix.org"
       "https://nyx-cache.chaotic.cx/"
     ];
@@ -11,6 +12,7 @@ rec {
       "thou-vow.cachix.org-1:X9yN6WSwyoFihH/tOriqxpaJEP3pd43z8UPmfipvoK8="
       "thou-vow-linux.cachix.org-1:DdL3Lv29JWukrCFnGJrWnfoWMcU3sQ0Js8C1ubd7bXE="
       "cache.manic.systems-1:s6OZanN8Us8vRi0jVivP3qlMn0cYHBjBALKrNe5nH8s="
+      "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk="
     ];

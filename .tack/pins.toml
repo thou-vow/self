@@ -1,5 +1,5 @@
 [shorturls]
-gh = "github:{path}"
+codeberg = "git+https://codeberg.org/{path}"
 
 
 [all_follow]
@@ -11,16 +11,19 @@ treefmt-nix = ["treefmt-nix"]
 
 # Flakes
 
+[inputs.aagl-gtk-on-nix]
+url = "github:ezKEa/aagl-gtk-on-nix"
+
 [inputs.flake-parts]
-url = "gh:hercules-ci/flake-parts"
+url = "github:hercules-ci/flake-parts"
 patches = ["https://github.com/hercules-ci/flake-parts/pull/357"]
 
-[inputs.linux-cachyos-lto-v3]
-url = "gh:thou-vow/linux-cachyos-lto-v3-nix"
+[inputs.linux-cachyos-lto-v3-nix]
+url = "github:thou-vow/linux-cachyos-lto-v3-nix"
 exclude_follow = ["nixpkgs"]
 
 [inputs.nix-packages]
-url = "gh:thou-vow/nix-packages"
+url = "github:thou-vow/nix-packages"
 exclude_follow = ["nixpkgs"]
 
 [inputs.nixpkgs]
@@ -29,12 +32,16 @@ url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst"
 
 # Non-flakes
 
+[inputs.brave-browser-nix]
+url = "codeberg:buckley310/brave-browser-nix"
+type = "fetch"
+
 [inputs.home-manager]
-url = "gh:nix-community/home-manager"
+url = "github:nix-community/home-manager"
 type = "fetch"
 
 [inputs.import-tree]
-url = "gh:denful/import-tree"
+url = "github:denful/import-tree"
 type = "fetch"
 
 [inputs.jail-nix]
@@ -42,14 +49,14 @@ url = "git+https://git.sr.ht/~alexdavid/jail.nix?shallow=1"
 type = "fetch"
 
 [inputs.nix-index-database]
-url = "gh:nix-community/nix-index-database"
+url = "github:nix-community/nix-index-database"
 type = "fetch"
 
 [inputs.preservation]
-url = "gh:nix-community/preservation"
+url = "github:nix-community/preservation"
 type = "fetch"
 patches = ["https://github.com/nix-community/preservation/pull/32"]
 
 [inputs.treefmt-nix]
-url = "gh:numtide/treefmt-nix"
+url = "github:numtide/treefmt-nix"
 type = "fetch"

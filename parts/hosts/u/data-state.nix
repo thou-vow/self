@@ -128,6 +128,7 @@
               ".cache/huggingface"
               ".cache/mesa_shader_cache"
               ".cache/nix"
+              ".local/share/honkers-railway-launcher"
             ];
           };
         };
@@ -189,10 +190,6 @@
             };
             thou = {
               directories = [
-                {
-                  directory = ".jail";
-                  how = "bindmount";
-                }
                 ".cargo"
                 ".config/BraveSoftware"
                 ".config/Cemu"
@@ -207,6 +204,7 @@
                 ".local/share/helix"
                 ".local/share/mocktail"
                 ".local/share/nix"
+                ".local/share/opencode"
                 ".local/share/PrismLauncher"
                 ".local/share/qBittorrent"
                 ".local/share/Trash"
@@ -214,6 +212,7 @@
                 ".local/share/waydroid"
                 ".local/share/zoxide"
                 ".local/state/nix"
+                ".local/state/opencode"
                 ".ssh"
                 ".var"
                 "Desktop"

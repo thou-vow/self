@@ -17,8 +17,12 @@ open_near_click_wallpaper = true
 open_near_click_session = true
 
 
+[shell.launcher]
+width = 560
+
+
 [shell.launcher.dmenu.entry.run]
-exec = "dash -c \"{query}\""
+exec = "dash -c \"exec {query}\""
 prefix = "x"
 label = "Execute"
 global = false
@@ -28,9 +32,14 @@ freeform = true
 [shell.screenshot]
 save_to_file = false
 directory = "~/Pictures/Noctalia Screenshots"
+format = "jxl"
+quality = 100
 copy_to_clipboard = false
+confirm_region = true
 remember_last_region = true
+region_dim_opacity = 0.5  
 annotate = true
+skip_annotate_on_copy_save = true
 
 
 [keybinds]

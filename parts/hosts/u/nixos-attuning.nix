@@ -22,12 +22,11 @@
       kernel.sysctl = {
         "fs.file-max" = 2097152;
         "kernel.printk" = "3 3 3 3";
-        "net.ipv4.tcp_congestion_control" = "bbr";
         "vm.dirty_background_bytes" = 67108864;
         "vm.dirty_bytes" = 268435456;
         "vm.dirty_writeback_centisecs" = 200;
         "vm.max_map_count" = 2147483642;
-        "vm.swappiness" = 150;
+        "vm.swappiness" = 200;
         "vm.vfs_cache_pressure" = 50;
         "vm.watermark_scale_factor" = 125;
       };
@@ -35,9 +34,9 @@
       kernelModules = ["ntsync"];
 
       kernelPackages =
-        inputs.linux-cachyos-lto-v3.inputs.chaotic-nyx.legacyPackages.${system}.linuxPackages_cachyos-lto.extend
+        inputs.linux-cachyos-lto-v3-nix.inputs.chaotic-nyx.legacyPackages.${system}.linuxPackages_cachyos-lto.extend
         (_: _: {
-          kernel = inputs'.linux-cachyos-lto-v3.packages.default;
+          kernel = inputs'.linux-cachyos-lto-v3-nix.packages.default;
         });
 
       kernelParams = [

@@ -1,15 +1,33 @@
 {
   "$declared": {
+    "aagl-gtk-on-nix": "github:ezKEa/aagl-gtk-on-nix",
+    "brave-browser-nix": "git+https://codeberg.org/buckley310/brave-browser-nix",
     "flake-parts": "github:hercules-ci/flake-parts",
     "home-manager": "github:nix-community/home-manager",
     "import-tree": "github:denful/import-tree",
     "jail-nix": "git+https://git.sr.ht/~alexdavid/jail.nix?shallow=1",
-    "linux-cachyos-lto-v3": "github:thou-vow/linux-cachyos-lto-v3-nix",
+    "linux-cachyos-lto-v3-nix": "github:thou-vow/linux-cachyos-lto-v3-nix",
     "nix-index-database": "github:nix-community/nix-index-database",
     "nix-packages": "github:thou-vow/nix-packages",
     "nixpkgs": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst",
     "preservation": "github:nix-community/preservation",
     "treefmt-nix": "github:numtide/treefmt-nix"
+  },
+  "aagl-gtk-on-nix": {
+    "type": "github",
+    "owner": "ezKEa",
+    "repo": "aagl-gtk-on-nix",
+    "rev": "0968049e240f2eed9a3e3ee92bc3e06ca41d9b96",
+    "narHash": "sha256-T7WQ3yqqkEyTric9XNRHNfsHhw39jYVSLv7QhSD+avQ=",
+    "lastModified": 1794424204
+  },
+  "brave-browser-nix": {
+    "type": "git",
+    "url": "https://codeberg.org/buckley310/brave-browser-nix",
+    "ref": "HEAD",
+    "rev": "71b4d8b0229f419eaa827e9304535e43cf00a32c",
+    "narHash": "sha256-hyAei0kaPeHWV9IPG+h58nkEo9ZgniSEcfl7RtlOu+w=",
+    "lastModified": 1794356860
   },
   "flake-parts": {
     "type": "github",
@@ -30,16 +48,21 @@
           "sha256": "c4b64f59f41ac4dfc9d2a2350a0b2330819ee3a8b5105670108ec1d328ba986f",
           "head": "123840d2e75d0ad6012365b145ec9cf507622f6a"
         }
-      ]
+      ],
+      "diff": "58abeda79c252b1cef78295208730a3c39b051265b8bcd8fed8d549b2297bb77"
     }
   },
   "home-manager": {
     "type": "github",
     "owner": "nix-community",
     "repo": "home-manager",
-    "rev": "b787c48e2ec57a9d098f5c2721882a3bc1e16f97",
-    "narHash": "sha256-gyV7AtCwLnOImcrfSETP4J3Ie96bz19DY47B7m7Y3HM=",
-    "lastModified": 1793757180
+    "rev": "82ce401aa350502897c3f2e85f384d61cd3b0b6d",
+    "narHash": "sha256-rkrJwLgLSHBnXfgoSKIDa+2LLGdTqynsV3GAxOTGhUU=",
+    "lastModified": 1794278858,
+    "archive": {
+      "hash": "sha256-HnPepqy7gMBebQWr0+sSdL3GSjJQ8nydeQE03HOPeOk=",
+      "outHash": "sha256-hcRqc0PCyLnE5sTYbs4/cUiY5n96/oEqRTKkMw1kGvs="
+    }
   },
   "import-tree": {
     "type": "github",
@@ -57,36 +80,40 @@
     "narHash": "sha256-UQRytK4SsshV1CeX6aKF+P855Sbcqg9aA731eYTakNg=",
     "lastModified": 1788928033
   },
-  "linux-cachyos-lto-v3": {
+  "linux-cachyos-lto-v3-nix": {
     "type": "github",
     "owner": "thou-vow",
     "repo": "linux-cachyos-lto-v3-nix",
-    "rev": "a3149b4deda6d587d6dac64fcfd6dfb1ac4bd97e",
-    "narHash": "sha256-qW+XFQqNQNRFQ0S0i4uFYuHhrvHF/UBcATa0zagSPMM=",
-    "lastModified": 1793799695
+    "rev": "0dfb7e0f4f395642c1f02b662ceef9c92432b8a1",
+    "narHash": "sha256-n0dxQZYJUts7Hqsh1q/RLhctQPKX9aVwAPHfn3Zluv0=",
+    "lastModified": 1794441506
   },
   "nix-index-database": {
     "type": "github",
     "owner": "nix-community",
     "repo": "nix-index-database",
-    "rev": "cee0f879d338cf08f814210fa6c2b280594ade0a",
-    "narHash": "sha256-PHtGxKYM99f8WhGR5YD7iiCiwemKa2wUD4yVI2oALFg=",
-    "lastModified": 1793543282
+    "rev": "af9249ca33bc2efaae5d071e4c67ddef19dcb681",
+    "narHash": "sha256-iGNtQnUZsi+v6/4NbtYr+dsmASa6GkzXtUcTpE8F3mE=",
+    "lastModified": 1794132860,
+    "archive": {
+      "hash": "sha256-nSHM1JnjynImm+KkPmXQJxiHDfnuC3BiN4YIKExfCmc=",
+      "outHash": "sha256-j2eeuwOA/VcDE+QaV28UKymtKyGqF3C3qhNizeet5xQ="
+    }
   },
   "nix-packages": {
     "type": "github",
     "owner": "thou-vow",
     "repo": "nix-packages",
-    "rev": "6e703d17d19ff7f2c839df80ea723961c3e3dcb9",
-    "narHash": "sha256-qbR8tTUkUr95TMqz+6cAS5tvMuTMieoEZCJ+/qlK/5c=",
-    "lastModified": 1793818779
+    "rev": "e9324a57eb8946ad8e6df0d360e70ea544e0c7c8",
+    "narHash": "sha256-9oktuRktQtIPOPiDz0jSkDKefIdEn5M5kWaFrbp31/0=",
+    "lastModified": 1794458777
   },
   "nixpkgs": {
     "type": "tarball",
-    "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1107793.1d060086d60c/nixexprs.tar.zst?rev=1d060086d60cb76a40cf37109f979d88a5bd6396&lastModified=1793726008",
-    "rev": "1d060086d60cb76a40cf37109f979d88a5bd6396",
-    "narHash": "sha256-iNjybNORi/2+shilhMlkNr01UHWKOHRGzQyIyvobs9o=",
-    "lastModified": 1793726008
+    "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1114946.177d0540942f/nixexprs.tar.zst?rev=177d0540942fb205af6993b1d5fa0b57799e09f8&lastModified=1794192123",
+    "rev": "177d0540942fb205af6993b1d5fa0b57799e09f8",
+    "narHash": "sha256-YOhabADcIwaWo9992egosQF3iVpvWysmZAyhbGBzinY=",
+    "lastModified": 1794192123
   },
   "preservation": {
     "type": "github",
@@ -107,7 +134,8 @@
           "sha256": "195498e10622e913152c30713cabac45e49ed960592ac84fac720e30da63a161",
           "head": "07392905af37717286251b78289678f842460d91"
         }
-      ]
+      ],
+      "diff": "c261a20a998df20af69443231ec969382255a1d7d9935a1f632a14a8ec93dbf5"
     }
   },
   "treefmt-nix": {

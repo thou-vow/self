@@ -32,12 +32,16 @@
     self',
     ...
   }: {
-    imports = with self.nixosModules; [
-      style
+    imports =
+      (with self.nixosModules; [
+        style
 
-      nh
-      waydroid
-    ];
+        nh
+        waydroid
+      ])
+      ++ [
+        inputs.aagl-gtk-on-nix.nixosModules.default
+      ];
 
     boot.kernel.sysctl = {
       "net.ipv4.ip_unprivileged_port_start" = 80;
@@ -166,6 +170,7 @@
         enable = true;
         ui.enable = true;
       };
+      honkers-railway-launcher.enable = true;
     };
 
     security = {
@@ -247,6 +252,18 @@
         linger = true;
         password = "123";
         shell = lib.getExe pkgs.bash;
+        subGidRanges = [
+          {
+            startGid = 100000;
+            count = 65536;
+          }
+        ];
+        subUidRanges = [
+          {
+            startUid = 100000;
+            count = 65536;
+          }
+        ];
       };
     };
 

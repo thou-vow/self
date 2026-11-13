@@ -91,8 +91,8 @@
             echo yes > /sys/block/zram0/compressed_writeback
 
             read -r _ total_mem_kb _ < /proc/meminfo
-            echo "$((total_mem_kb * 2))K" > /sys/block/zram0/disksize
-            echo "$((total_mem_kb / 2))K" > /sys/block/zram0/mem_limit
+            echo "$((total_mem_kb))K" > /sys/block/zram0/disksize
+            echo "$((total_mem_kb / 3))K" > /sys/block/zram0/mem_limit
 
             mkswap -L zram0 /dev/zram0
             swapon /dev/zram0

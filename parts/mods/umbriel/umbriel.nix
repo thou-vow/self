@@ -43,9 +43,10 @@
           keybinds =
             lib.pipe {
               "Mod+Shift+Escape" = "spawn noctalia msg panel-toggle session";
-              "Print" = "spawn noctalia msg screenshot-region"; # Frozen region
-              "Shift+Print" = "spawn noctalia msg screenshot-region"; # Frozen fullscreen
-              "Ctrl+Print" = "spawn noctalia msg annotate"; # Unfrozen fullscreen
+              "Print" = "spawn noctalia msg screenshot-region";
+              "Shift+Print" = "spawn noctalia msg screenshot-window";
+              "Ctrl+Print" = "spawn noctalia msg screenshot-fullscreen";
+              "Mod+A" = "spawn noctalia msg annotate";
               "Mod+backslash" = "spawn noctalia msg panel-toggle control-center";
               "Mod+Shift+backslash" = "spawn noctalia msg settings-toggle";
               "Mod+V" = "spawn noctalia msg panel-toggle clipboard";
