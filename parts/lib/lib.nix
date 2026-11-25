@@ -1,6 +1,11 @@
 {lib, ...}: {
   flake.lib = {
-    mkAutoEnableOption = name: lib.mkEnableOption name // {default = true;};
+    mkAutoEnableOption = value:
+      if builtins.isString value
+      then lib.mkEnableOption value // {default = true;}
+      else if lib.isType "option" value
+      then value // {default = true;}
+      else throw "Unexpected value in self.lib.mkAutoEnableOption: ${value}";
 
     mkShellEnv = pkgs: name: {packages ? []}:
       pkgs.writeShellScriptBin name ''

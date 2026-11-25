@@ -5,18 +5,15 @@
 }: {
   flake.homeModules.noctalia = {
     config,
+    options,
     pkgs,
     ...
   }: let
     cfg = config.self.mods.noctalia;
   in {
     options.self.mods.noctalia = {
-      enable = self.lib.mkAutoEnableOption "Noctalia";
-      package = lib.mkOption {
-        type = lib.types.package;
-        default = pkgs.noctalia;
-        description = "The Noctalia package to use.";
-      };
+      inherit (options.programs.noctalia) package;
+      enable = self.lib.mkAutoEnableOption options.programs.noctalia.enable;
     };
 
     config = lib.mkIf cfg.enable {

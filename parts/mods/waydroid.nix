@@ -3,11 +3,15 @@
   self,
   ...
 }: {
-  flake.nixosModules.waydroid = {config, ...}: let
+  flake.nixosModules.waydroid = {
+    config,
+    options,
+    ...
+  }: let
     cfg = config.self.mods.waydroid;
   in {
     options.self.mods.waydroid = {
-      enable = self.lib.mkAutoEnableOption "Waydroid";
+      enable = self.lib.mkAutoEnableOption options.virtualisation.waydroid.enable;
     };
 
     config = lib.mkIf cfg.enable {

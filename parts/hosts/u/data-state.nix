@@ -42,13 +42,18 @@
               mkdir "/xfs"
               mount -o noatime ${config.fileSystems."/".device} "/xfs"
 
-              if [[ -e "/xfs/@" ]]; then
-                mkdir -p "/xfs/.archive"
-                timestamp=$(date '+%Y-%m-%d_%H-%M-%S' --date="@$(stat -c %Y "/xfs/@")")
-                mv "/xfs/@" "/xfs/.archive/@$timestamp"
+              if [[ -e "/xfs/@/.skip-archive" ]]; then
+                rm "/xfs/@/.skip-archive"
+              else
+                if [[ -e "/xfs/@" ]]; then
+                  mkdir -p "/xfs/.archive"
+                  timestamp=$(date '+%Y-%m-%d_%H-%M-%S' --date="@$(stat -c %Y "/xfs/@")")
+                  mv "/xfs/@" "/xfs/.archive/@$timestamp"
+                fi
+
+                mkdir "/xfs/@"
               fi
 
-              mkdir "/xfs/@"
               umount "/xfs"
             '';
 

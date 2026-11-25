@@ -5,13 +5,14 @@
 }: {
   flake.homeModules.podman = {
     config,
+    options,
     pkgs,
     ...
   }: let
     cfg = config.self.mods.podman;
   in {
     options.self.mods.podman = {
-      enable = self.lib.mkAutoEnableOption "Podman";
+      enable = self.lib.mkAutoEnableOption options.services.podman.enable;
     };
 
     config = lib.mkIf cfg.enable {

@@ -3,11 +3,15 @@
   self,
   ...
 }: {
-  flake.homeModules.starship = {config, ...}: let
+  flake.homeModules.starship = {
+    config,
+    options,
+    ...
+  }: let
     cfg = config.self.mods.starship;
   in {
     options.self.mods.starship = {
-      enable = self.lib.mkAutoEnableOption "Starship";
+      enable = self.lib.mkAutoEnableOption options.programs.starship.enable;
     };
 
     config = lib.mkIf cfg.enable {

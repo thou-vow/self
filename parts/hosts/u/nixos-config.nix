@@ -84,6 +84,7 @@
           fd
           fio
           git
+          gomi
           hdparm
           intel-gpu-tools
           inxi
@@ -251,7 +252,7 @@
         isNormalUser = true;
         linger = true;
         password = "123";
-        shell = lib.getExe pkgs.bash;
+        shell = lib.getExe pkgs.zsh;
         subGidRanges = [
           {
             startGid = 100000;

@@ -3,11 +3,11 @@
   self,
   ...
 }: {
-  flake.homeModules.atuin = {config, ...}: let
+  flake.homeModules.atuin = {config, options, ...}: let
     cfg = config.self.mods.atuin;
   in {
     options.self.mods.atuin = {
-      enable = self.lib.mkAutoEnableOption "Atuin";
+      enable = self.lib.mkAutoEnableOption options.programs.atuin.enable;
     };
 
     config = lib.mkIf cfg.enable {

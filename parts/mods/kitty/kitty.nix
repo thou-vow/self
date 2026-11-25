@@ -5,18 +5,15 @@
 }: {
   flake.homeModules.kitty = {
     config,
+    options,
     pkgs,
     ...
   }: let
     cfg = config.self.mods.kitty;
   in {
     options.self.mods.kitty = {
-      enable = self.lib.mkAutoEnableOption "Kitty";
-      package = lib.mkOption {
-        type = lib.types.package;
-        default = pkgs.kitty;
-        description = "The Kitty package to use.";
-      };
+      inherit (options.programs.kitty) package;
+      enable = self.lib.mkAutoEnableOption options.programs.kitty.enable;
     };
 
     config = lib.mkIf cfg.enable {

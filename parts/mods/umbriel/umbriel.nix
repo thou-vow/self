@@ -6,6 +6,7 @@
   flake.homeModules.umbriel = {
     config,
     inputs',
+    options,
     pkgs,
     ...
   }: let
@@ -16,12 +17,8 @@
     ];
 
     options.self.mods.umbriel = {
-      enable = self.lib.mkAutoEnableOption "Umbriel";
-      package = lib.mkOption {
-        type = lib.types.package;
-        default = pkgs.umbriel;
-        description = "The Umbriel package to use.";
-      };
+      inherit (options.programs.umbriel) package;
+      enable = self.lib.mkAutoEnableOption options.programs.umbriel.enable;
     };
 
     config = lib.mkIf cfg.enable {

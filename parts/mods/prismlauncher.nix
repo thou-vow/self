@@ -6,6 +6,7 @@
   flake.homeModules.prismlauncher = {
     config,
     inputs',
+    options,
     pkgs,
     self',
     ...
@@ -13,12 +14,8 @@
     cfg = config.self.mods.prismlauncher;
   in {
     options.self.mods.prismlauncher = {
-      enable = self.lib.mkAutoEnableOption "Prismlauncher";
-      package = lib.mkOption {
-        type = lib.types.package;
-        default = pkgs.prismlauncher;
-        description = "The Prismlauncher package to use.";
-      };
+      inherit (options.programs.prismlauncher) package;
+      enable = self.lib.mkAutoEnableOption options.programs.prismlauncher.enable;
     };
 
     config = lib.mkIf cfg.enable {

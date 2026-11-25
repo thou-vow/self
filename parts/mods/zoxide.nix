@@ -3,11 +3,15 @@
   self,
   ...
 }: {
-  flake.homeModules.zoxide = {config, ...}: let
+  flake.homeModules.zoxide = {
+    config,
+    options,
+    ...
+  }: let
     cfg = config.self.mods.zoxide;
   in {
     options.self.mods.zoxide = {
-      enable = self.lib.mkAutoEnableOption "zoxide";
+      enable = self.lib.mkAutoEnableOption options.programs.zoxide.enable;
     };
 
     config = lib.mkIf cfg.enable {

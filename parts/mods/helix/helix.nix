@@ -5,19 +5,19 @@
 }: {
   flake.homeModules.helix = {
     config,
-    inputs',
+    options,
     pkgs,
     ...
   }: let
     cfg = config.self.mods.helix;
   in {
     options.self.mods.helix = {
-      enable = self.lib.mkAutoEnableOption "Helix";
-      package = lib.mkOption {
-        type = lib.types.package;
-        default = pkgs.steelix;
-        description = "The Helix package to use.";
-      };
+      enable = self.lib.mkAutoEnableOption options.programs.helix.enable;
+      package =
+        options.programs.helix.package
+        // {
+          default = pkgs.steelix;
+        };
     };
 
     config = lib.mkIf cfg.enable {

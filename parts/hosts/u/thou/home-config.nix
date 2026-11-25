@@ -25,13 +25,13 @@
         helix
         kitty
         noctalia
-        nushell
         podman
         prismlauncher
         starship
         umbriel
         yazi
         zoxide
+        zsh
       ])
       ++ [
         "${inputs.nix-index-database}/home-manager-module.nix"
@@ -132,6 +132,7 @@
           uv
           vlc
           xdg-utils
+          yj
           zathura
 
           corefonts
@@ -151,7 +152,6 @@
         BROWSER = "brave --disable-features=IPH_GMCSaveVideoFrame";
         EDITOR = "hx";
         LAUNCHER = "noctalia msg panel-toggle launcher";
-        SHELL = "nu";
         TERMINAL = "kitty -1";
 
         PERSIST_HOME = osConfig.environment.sessionVariables.PERSIST + config.home.homeDirectory;

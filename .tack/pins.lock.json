@@ -25,9 +25,9 @@
     "type": "git",
     "url": "https://codeberg.org/buckley310/brave-browser-nix",
     "ref": "HEAD",
-    "rev": "71b4d8b0229f419eaa827e9304535e43cf00a32c",
-    "narHash": "sha256-hyAei0kaPeHWV9IPG+h58nkEo9ZgniSEcfl7RtlOu+w=",
-    "lastModified": 1794356860
+    "rev": "539ce193b353aa022c9fcb7a7bc32b057d327807",
+    "narHash": "sha256-X7xhMfn/4STesAJUa/sWfL1xK8vV85YmoIxYdz2+0dA=",
+    "lastModified": 1794536218
   },
   "flake-parts": {
     "type": "github",
@@ -84,9 +84,9 @@
     "type": "github",
     "owner": "thou-vow",
     "repo": "linux-cachyos-lto-v3-nix",
-    "rev": "0dfb7e0f4f395642c1f02b662ceef9c92432b8a1",
-    "narHash": "sha256-n0dxQZYJUts7Hqsh1q/RLhctQPKX9aVwAPHfn3Zluv0=",
-    "lastModified": 1794441506
+    "rev": "b3cc04367c695723a72c63fb345e300263c7444d",
+    "narHash": "sha256-WEL5Un/f3OOWGx5tDj4HHRvrIqWCi9M/zpNlGQ1G2sY=",
+    "lastModified": 1794611422
   },
   "nix-index-database": {
     "type": "github",
@@ -104,16 +104,16 @@
     "type": "github",
     "owner": "thou-vow",
     "repo": "nix-packages",
-    "rev": "e9324a57eb8946ad8e6df0d360e70ea544e0c7c8",
-    "narHash": "sha256-9oktuRktQtIPOPiDz0jSkDKefIdEn5M5kWaFrbp31/0=",
-    "lastModified": 1794458777
+    "rev": "ab9152fe2777479b4a7824869a8a5dd52dd44360",
+    "narHash": "sha256-QVAqa7eSZLSh8DF3QAv3O3yKhLGD+PhxC4iOChl2nsg=",
+    "lastModified": 1794603804
   },
   "nixpkgs": {
     "type": "tarball",
-    "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1114946.177d0540942f/nixexprs.tar.zst?rev=177d0540942fb205af6993b1d5fa0b57799e09f8&lastModified=1794192123",
-    "rev": "177d0540942fb205af6993b1d5fa0b57799e09f8",
-    "narHash": "sha256-YOhabADcIwaWo9992egosQF3iVpvWysmZAyhbGBzinY=",
-    "lastModified": 1794192123
+    "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1117658.d4f25a3e5620/nixexprs.tar.zst?rev=d4f25a3e562008648d45bcf2d70bcc7422cad84e&lastModified=1794386569",
+    "rev": "d4f25a3e562008648d45bcf2d70bcc7422cad84e",
+    "narHash": "sha256-W60urNAgQVS8bhNWH0bQsYoiagds8m38oTDUjEOM9FE=",
+    "lastModified": 1794386569
   },
   "preservation": {
     "type": "github",
